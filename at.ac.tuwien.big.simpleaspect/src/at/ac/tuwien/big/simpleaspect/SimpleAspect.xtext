@@ -1,0 +1,183 @@
+grammar at.ac.tuwien.big.simpleaspect.SimpleAspect with org.eclipse.xtext.common.Terminals
+
+generate simpleAspect "http://www.ac.at/tuwien/big/simpleaspect/SimpleAspect"
+
+
+Aspect:
+	'aspect' name=ID '{'
+		(
+			attributes+= ForeignAttribute |
+			methods+= Method  |
+			pointcuts+= Pointcut | 
+			advices+= Advice				
+		)*
+	'}'
+;
+
+ForeignAttribute:
+	'private' type=Type inType=QualifiedName '/' name=ID ';'
+;
+
+
+Pointcut:
+	'pointcut' name=ID '(' (parameter+=Parameter (',' parameter+= Parameter)*)?  ')' ':'
+	condition = PointcutCondition ';'
+;
+
+PointcutCondition:
+	SimplePointcutCondition | BinaryPointcutCondition | UnaryPointcutCondition
+;
+
+UnaryPointcutCondition:
+	'!' condition=PointcutCondition
+;
+
+BinaryPointcutCondition:
+	'(' first=PointcutCondition ')' (type='||' | type='&&') '(' second = PointcutCondition ')'
+;
+
+SimplePointcutCondition:
+	((type='call'|type='execution') '(' condition=PointcutMethodFilter ')') |
+	((type='within'|type='handler') '(' condition=PointcutTypeFilter ')')
+;
+
+PointcutMethodFilter:
+	(isPublic?='public')?
+	(isPrivate?='private')?
+	(isStatic?='static')?
+	
+	(anyReturn?='*' | returnType=Type)
+	(anyClass?='*' | classType=QualifiedName)
+	(anyMethod?='*' | methodName=ID)
+	'('
+		(anyParameter?='..' | ((parameter+= Type (',' parameter+= Type)* )?))
+	')'
+;
+
+PointcutTypeFilter:
+	{PointcutTypeFilter}
+	classType=QualifiedName
+;
+
+Advice:{Advice}
+	(type='before' | type='after' | type='around') '(' (parameter+= Parameter (',' parameter+= Parameter)*)? ')' 
+	(pointcut=PointcutRef | pointcut=Pointcut) code = MethodBlock
+;
+
+PointcutRef:
+	pointcut=[Pointcut|ID] '(' (parameterValue+=VariableExpression (',' parameterValue+= VariableExpression)* )?  ')'
+;
+
+Parameter:
+	type=Type name=ID
+;
+
+
+Type:
+	typeName=('int'|'double'|'String'|'boolean') | typeRef=QualifiedName | 'void' 
+;
+
+Method:
+	'public' (static?='static')? ('void'|returnType=Type) name=ID '(' (parameter+=Parameter (',' parameter+= Parameter)*)? ')' content=MethodBlock
+;
+
+MethodBlock: {MethodBlock}
+	(generated?='pointcutblock')? ( '{'
+		(statements+=Statement)*
+	'}')
+;
+
+SimpleStatement:
+	SimpleVariableDeclaration | Assignment
+;
+
+Statement:
+	MethodBlock | VariableDeclaration | Assignment | IfStatement  | ForStatement | ForInStatement | WhileStatement | ReturnStatement
+	| MethodCall
+;
+
+SimpleVariableDeclaration: {VariableDeclaration}
+	parameter = Parameter '=' expression=GenericExpression
+;
+
+VariableDeclaration:
+	parameter = Parameter '=' expression=GenericExpression ';'
+;
+
+Assignment:
+	parameter=[Parameter|QualifiedName] '=' expression=GenericExpression ';'
+;
+
+IfStatement:
+	'if' (condition=ParanthesisOrBinaryExpression) 
+		(then=MethodBlock)
+	('else' (else=MethodBlock))? 
+;
+
+ForStatement:
+	'for' '(' (init=SimpleStatement)? ';' condition=GenericExpression ';' continuation=SimpleStatement ')' body=Statement
+;
+
+ForInStatement:
+	'for' '(' subparameter=Parameter ':' expression=GenericExpression ')' body=Statement
+;
+
+WhileStatement:
+	'while' condition=ParanthesisOrBinaryExpression body=Statement
+;
+
+ReturnStatement:
+	'return' expression=GenericExpression ';'
+;
+
+MethodCall:
+	(((object=[Parameter|QualifiedName]|thisObject?='this') '.')? (method=[Method|ID] | methodName=('equals'|'hashCode'))
+		| (methodName='System.out.println')
+	)
+		 '(' (parameter+=GenericExpression (',' parameter+= GenericExpression)* )? ')' ';'
+;
+
+
+
+GenericExpression:
+	VariableExpression | MethodCall | ParanthesisOrBinaryExpression | UnaryExpression | ConstantExpression
+;
+
+ConstantExpression:
+	IntegerExpression | StringExpression | BooleanExpression | NullExpression
+;
+
+NullExpression: {NullExpression} 'null';
+
+
+IntegerExpression:
+	value=INT
+;
+
+BooleanExpression: 
+	{BooleanExpression}
+	((value?='true') |  'false')
+;
+
+StringExpression:
+	value=STRING
+;
+
+UnaryExpression:
+	type=('!') source=GenericExpression
+;
+
+VariableExpression:
+	variable = [Parameter|QualifiedName];
+
+ParanthesisOrBinaryExpression:
+	'(' source=GenericExpression (type=('||'|'&&'|'&'|'+'|'-'|'*'|'/'|'=='|'!='|'<'|'<='|'>'|'>=') argument=GenericExpression)? ')'
+;
+
+QualifiedNameWithWildcard:
+	QualifiedName '.*'?
+;
+
+QualifiedName:
+	ID ('.' ID)*
+;

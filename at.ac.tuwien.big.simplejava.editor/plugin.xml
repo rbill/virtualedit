@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated Simplejava -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="simplejava.presentation.SimplejavaModelWizardID"
+            name="%_UI_SimplejavaModelWizard_label"
+            class="simplejava.presentation.SimplejavaModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/SimplejavaModelFile.gif">
+         <description>%_UI_SimplejavaModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated Simplejava -->
+      <editor
+            id="simplejava.presentation.SimplejavaEditorID"
+            name="%_UI_SimplejavaEditor_label"
+            icon="icons/full/obj16/SimplejavaModelFile.gif"
+            extensions="simplejava"
+            class="simplejava.presentation.SimplejavaEditor"
+            contributorClass="simplejava.presentation.SimplejavaActionBarContributor">
+      </editor>
+   </extension>
+
+</plugin>

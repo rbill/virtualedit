@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ASCII"?>
+<simplejava:SimpleJava xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:simplejava="http://www.ac.at/tuwien/big/Simplejava">
+  <package name="bank"/>
+  <clazz name="Account">
+    <attribute name="ownedAmount">
+      <type typeName="int"/>
+    </attribute>
+    <method name="addAmount">
+      <parameter name="amount">
+        <type typeName="int"/>
+      </parameter>
+      <content>
+        <statements xsi:type="simplejava:Assignment" parameter="//@clazz/@attribute.0">
+          <expression xsi:type="simplejava:ParanthesisOrBinaryExpression" type="+">
+            <source xsi:type="simplejava:VariableExpression" variable="//@clazz/@attribute.0"/>
+            <argument xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.0/@parameter.0"/>
+          </expression>
+        </statements>
+      </content>
+    </method>
+    <method name="transfer">
+      <parameter name="toAccount">
+        <type typeRef="//@clazz"/>
+      </parameter>
+      <parameter name="amount">
+        <type typeName="int"/>
+      </parameter>
+      <content>
+        <statements xsi:type="simplejava:IfStatement">
+          <condition type=">">
+            <source xsi:type="simplejava:VariableExpression" variable="//@clazz/@attribute.0"/>
+            <argument xsi:type="simplejava:IntegerExpression"/>
+          </condition>
+          <then>
+            <statements xsi:type="simplejava:MethodCall" object="//@clazz/@method.1/@parameter.0" method="//@clazz/@method.0">
+              <parameter xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.1/@parameter.1"/>
+            </statements>
+            <statements xsi:type="simplejava:MethodCall" thisObject="true" method="//@clazz/@method.0">
+              <parameter xsi:type="simplejava:ParanthesisOrBinaryExpression" type="-">
+                <source xsi:type="simplejava:IntegerExpression"/>
+                <argument xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.1/@parameter.1"/>
+              </parameter>
+            </statements>
+          </then>
+        </statements>
+      </content>
+    </method>
+  </clazz>
+</simplejava:SimpleJava>
