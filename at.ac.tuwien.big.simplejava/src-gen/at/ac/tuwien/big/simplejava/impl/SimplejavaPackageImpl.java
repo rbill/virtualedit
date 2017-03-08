@@ -4,9 +4,11 @@
 package at.ac.tuwien.big.simplejava.impl;
 
 import at.ac.tuwien.big.simplejava.Assignment;
+import at.ac.tuwien.big.simplejava.Attribute;
 import at.ac.tuwien.big.simplejava.BooleanExpression;
 import at.ac.tuwien.big.simplejava.ClassDeclaration;
 import at.ac.tuwien.big.simplejava.ConstantExpression;
+import at.ac.tuwien.big.simplejava.ConstructorCall;
 import at.ac.tuwien.big.simplejava.ForInStatement;
 import at.ac.tuwien.big.simplejava.ForStatement;
 import at.ac.tuwien.big.simplejava.GenericExpression;
@@ -22,6 +24,7 @@ import at.ac.tuwien.big.simplejava.Parameter;
 import at.ac.tuwien.big.simplejava.ParanthesisOrBinaryExpression;
 import at.ac.tuwien.big.simplejava.ReturnStatement;
 import at.ac.tuwien.big.simplejava.SimpleJava;
+import at.ac.tuwien.big.simplejava.SimpleParameter;
 import at.ac.tuwien.big.simplejava.SimpleStatement;
 import at.ac.tuwien.big.simplejava.SimpleVariableDeclaration;
 import at.ac.tuwien.big.simplejava.SimplejavaFactory;
@@ -83,6 +86,20 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
    * @generated
    */
   private EClass parameterEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass simpleParameterEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass attributeEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -181,6 +198,13 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
    * @generated
    */
   private EClass methodCallEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass constructorCallEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -463,6 +487,36 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
    * <!-- end-user-doc -->
    * @generated
    */
+  public EClass getSimpleParameter()
+  {
+    return simpleParameterEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EClass getAttribute()
+  {
+    return attributeEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getAttribute_Expression()
+  {
+    return (EReference)attributeEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EClass getType()
   {
     return typeEClass;
@@ -483,9 +537,29 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
    * <!-- end-user-doc -->
    * @generated
    */
+  public EAttribute getType_IsVoid()
+  {
+    return (EAttribute)typeEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EReference getType_TypeRef()
   {
-    return (EReference)typeEClass.getEStructuralFeatures().get(1);
+    return (EReference)typeEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EAttribute getType_IsArray()
+  {
+    return (EAttribute)typeEClass.getEStructuralFeatures().get(3);
   }
 
   /**
@@ -913,6 +987,36 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
    * <!-- end-user-doc -->
    * @generated
    */
+  public EClass getConstructorCall()
+  {
+    return constructorCallEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getConstructorCall_Type()
+  {
+    return (EReference)constructorCallEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EReference getConstructorCall_Parameter()
+  {
+    return (EReference)constructorCallEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EClass getGenericExpression()
   {
     return genericExpressionEClass;
@@ -1138,9 +1242,16 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
     createEReference(parameterEClass, PARAMETER__TYPE);
     createEAttribute(parameterEClass, PARAMETER__NAME);
 
+    simpleParameterEClass = createEClass(SIMPLE_PARAMETER);
+
+    attributeEClass = createEClass(ATTRIBUTE);
+    createEReference(attributeEClass, ATTRIBUTE__EXPRESSION);
+
     typeEClass = createEClass(TYPE);
     createEAttribute(typeEClass, TYPE__TYPE_NAME);
+    createEAttribute(typeEClass, TYPE__IS_VOID);
     createEReference(typeEClass, TYPE__TYPE_REF);
+    createEAttribute(typeEClass, TYPE__IS_ARRAY);
 
     methodEClass = createEClass(METHOD);
     createEAttribute(methodEClass, METHOD__STATIC);
@@ -1196,6 +1307,10 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
     createEReference(methodCallEClass, METHOD_CALL__METHOD);
     createEAttribute(methodCallEClass, METHOD_CALL__METHOD_NAME);
     createEReference(methodCallEClass, METHOD_CALL__PARAMETER);
+
+    constructorCallEClass = createEClass(CONSTRUCTOR_CALL);
+    createEReference(constructorCallEClass, CONSTRUCTOR_CALL__TYPE);
+    createEReference(constructorCallEClass, CONSTRUCTOR_CALL__PARAMETER);
 
     genericExpressionEClass = createEClass(GENERIC_EXPRESSION);
 
@@ -1254,6 +1369,8 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
     // Set bounds for type parameters
 
     // Add supertypes to classes
+    simpleParameterEClass.getESuperTypes().add(this.getParameter());
+    attributeEClass.getESuperTypes().add(this.getParameter());
     methodBlockEClass.getESuperTypes().add(this.getStatement());
     simpleVariableDeclarationEClass.getESuperTypes().add(this.getSimpleStatement());
     variableDeclarationEClass.getESuperTypes().add(this.getStatement());
@@ -1267,6 +1384,7 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
     returnStatementEClass.getESuperTypes().add(this.getStatement());
     methodCallEClass.getESuperTypes().add(this.getStatement());
     methodCallEClass.getESuperTypes().add(this.getGenericExpression());
+    constructorCallEClass.getESuperTypes().add(this.getGenericExpression());
     constantExpressionEClass.getESuperTypes().add(this.getGenericExpression());
     nullExpressionEClass.getESuperTypes().add(this.getConstantExpression());
     integerExpressionEClass.getESuperTypes().add(this.getConstantExpression());
@@ -1297,15 +1415,22 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
     initEReference(getParameter_Type(), this.getType(), null, "type", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getParameter_Name(), ecorePackage.getEString(), "name", null, 0, 1, Parameter.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
+    initEClass(simpleParameterEClass, SimpleParameter.class, "SimpleParameter", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+    initEClass(attributeEClass, Attribute.class, "Attribute", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getAttribute_Expression(), this.getGenericExpression(), null, "expression", null, 0, 1, Attribute.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
     initEClass(typeEClass, Type.class, "Type", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getType_TypeName(), ecorePackage.getEString(), "typeName", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getType_IsVoid(), ecorePackage.getEBoolean(), "isVoid", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getType_TypeRef(), this.getClassDeclaration(), null, "typeRef", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getType_IsArray(), ecorePackage.getEBoolean(), "isArray", null, 0, 1, Type.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(methodEClass, Method.class, "Method", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getMethod_Static(), ecorePackage.getEBoolean(), "static", null, 0, 1, Method.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getMethod_ReturnType(), this.getType(), null, "returnType", null, 0, 1, Method.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getMethod_Name(), ecorePackage.getEString(), "name", null, 0, 1, Method.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getMethod_Parameter(), this.getParameter(), null, "parameter", null, 0, -1, Method.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getMethod_Parameter(), this.getSimpleParameter(), null, "parameter", null, 0, -1, Method.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getMethod_Content(), this.getMethodBlock(), null, "content", null, 0, 1, Method.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(methodBlockEClass, MethodBlock.class, "MethodBlock", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1319,7 +1444,7 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
     initEClass(simpleVariableDeclarationEClass, SimpleVariableDeclaration.class, "SimpleVariableDeclaration", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
     initEClass(variableDeclarationEClass, VariableDeclaration.class, "VariableDeclaration", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getVariableDeclaration_Parameter(), this.getParameter(), null, "parameter", null, 0, 1, VariableDeclaration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getVariableDeclaration_Parameter(), this.getSimpleParameter(), null, "parameter", null, 0, 1, VariableDeclaration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getVariableDeclaration_Expression(), this.getGenericExpression(), null, "expression", null, 0, 1, VariableDeclaration.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(assignmentEClass, Assignment.class, "Assignment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1338,7 +1463,7 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
     initEReference(getForStatement_Body(), this.getStatement(), null, "body", null, 0, 1, ForStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(forInStatementEClass, ForInStatement.class, "ForInStatement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEReference(getForInStatement_Subparameter(), this.getParameter(), null, "subparameter", null, 0, 1, ForInStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getForInStatement_Subparameter(), this.getSimpleParameter(), null, "subparameter", null, 0, 1, ForInStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getForInStatement_Expression(), this.getGenericExpression(), null, "expression", null, 0, 1, ForInStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getForInStatement_Body(), this.getStatement(), null, "body", null, 0, 1, ForInStatement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -1355,6 +1480,10 @@ public class SimplejavaPackageImpl extends EPackageImpl implements SimplejavaPac
     initEReference(getMethodCall_Method(), this.getMethod(), null, "method", null, 0, 1, MethodCall.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getMethodCall_MethodName(), ecorePackage.getEString(), "methodName", null, 0, 1, MethodCall.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getMethodCall_Parameter(), this.getGenericExpression(), null, "parameter", null, 0, -1, MethodCall.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(constructorCallEClass, ConstructorCall.class, "ConstructorCall", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getConstructorCall_Type(), this.getType(), null, "type", null, 0, 1, ConstructorCall.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getConstructorCall_Parameter(), this.getConstantExpression(), null, "parameter", null, 0, -1, ConstructorCall.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(genericExpressionEClass, GenericExpression.class, "GenericExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

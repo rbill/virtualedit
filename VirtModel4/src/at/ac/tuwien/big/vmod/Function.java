@@ -61,8 +61,12 @@ public interface Function<T,U> extends GeneralElement {
 		} else {
 			for (T key: func.keyIterable()) {
 				Counter c = func.getValue(key);
+				Object v = key;
 				if (!val.equals(key)) {
 					//Es sollte da sein
+					if ("ReturnStatement".equals(v)) {
+						System.err.println("DeleteMe");
+					}
 					c.setMax(0);
 				}
 			}
@@ -191,7 +195,7 @@ public interface Function<T,U> extends GeneralElement {
 	public static<T> void ensureNotContains(Function<Treepos, ? extends Function<T, ? extends Counter>> function, Symbol s) {
 		for (Entry<Treepos, ? extends Function<?, ? extends Counter>> fent: function.entryIterable()) {
 			for (Entry<?, ? extends Counter> subifo: fent.getValue().entryIterable()) {
-				if (Objects.equals(subifo,s)) {
+				if (Objects.equals(subifo.getKey(),s)) {
 					subifo.getValue().setMax(0);
 				}
 			}
@@ -199,6 +203,7 @@ public interface Function<T,U> extends GeneralElement {
 	}
 
 	public static<T> void removeVal(Function<T, ? extends Counter> value, T remove) {
+		Object v = remove;
 		Counter c = value.getValueOrNull(remove);
 		if (c != null) {
 			c.setMax(0);

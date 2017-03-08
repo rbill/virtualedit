@@ -46,6 +46,7 @@ public class EcoreFuncUtil {
 			candiate.removeAll(superFeature);
 		}
 		if (ret.isEmpty()) {
+			
 			return null;
 		}
 		if (ret.size()>1) {

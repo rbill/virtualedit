@@ -5,7 +5,7 @@
     updateClasspath="false" rootExtendsClass="org.eclipse.emf.ecore.impl.MinimalEObjectImpl$Container"
     complianceLevel="6.0" copyrightFields="false" runtimeVersion="2.11">
   <genPackages prefix="Simplejava" basePackage="at.ac.tuwien.big" disposableProviderFactory="true"
-      fileExtensions="sjava" ecorePackage="Simplejava.ecore#/">
+      fileExtensions="vjava" ecorePackage="Simplejava.ecore#/">
     <genClasses ecoreClass="Simplejava.ecore#//SimpleJava">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Simplejava.ecore#//SimpleJava/package"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Simplejava.ecore#//SimpleJava/imports"/>
@@ -26,9 +26,15 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Simplejava.ecore#//Parameter/type"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Simplejava.ecore#//Parameter/name"/>
     </genClasses>
+    <genClasses ecoreClass="Simplejava.ecore#//SimpleParameter"/>
+    <genClasses ecoreClass="Simplejava.ecore#//Attribute">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Simplejava.ecore#//Attribute/expression"/>
+    </genClasses>
     <genClasses ecoreClass="Simplejava.ecore#//Type">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Simplejava.ecore#//Type/typeName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Simplejava.ecore#//Type/isVoid"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Simplejava.ecore#//Type/typeRef"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Simplejava.ecore#//Type/isArray"/>
     </genClasses>
     <genClasses ecoreClass="Simplejava.ecore#//Method">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Simplejava.ecore#//Method/static"/>
@@ -81,6 +87,10 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference Simplejava.ecore#//MethodCall/method"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Simplejava.ecore#//MethodCall/methodName"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Simplejava.ecore#//MethodCall/parameter"/>
+    </genClasses>
+    <genClasses ecoreClass="Simplejava.ecore#//ConstructorCall">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Simplejava.ecore#//ConstructorCall/type"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Simplejava.ecore#//ConstructorCall/parameter"/>
     </genClasses>
     <genClasses ecoreClass="Simplejava.ecore#//GenericExpression"/>
     <genClasses ecoreClass="Simplejava.ecore#//ConstantExpression"/>

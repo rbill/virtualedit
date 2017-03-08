@@ -59,6 +59,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.DefaultMarkerAnnotationAccess;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
+import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.eclipse.ui.texteditor.SimpleMarkerAnnotation;
 import org.eclipse.xtext.nodemodel.ICompositeNode;
 import org.eclipse.xtext.nodemodel.ILeafNode;
@@ -123,6 +124,7 @@ public class VMXtextEditor extends XtextEditor {
 	private ViewState resourceViewState;
 	private VEcoreFile ecoreFile;
 	private String basicModelText;
+	private String fullModelText;
 	
 	private ResourceSetInfo curInfo;
 	private ResourceInfo curResourceInfo;
@@ -198,7 +200,7 @@ public class VMXtextEditor extends XtextEditor {
 						//take it
 						toAdd.add(rs.getResource(nrm(ifile.getLocationURI()),true));
 					}
-					if (fn.endsWith(".saspect")) {
+					if (fn.endsWith(".vaspect")) {
 						toAdd.add(rs.getResource(nrm(ifile.getLocationURI()),true));
 					}
 					if (fn.endsWith(".henshin")) {
@@ -354,16 +356,31 @@ public class VMXtextEditor extends XtextEditor {
 			e.printStackTrace();
 		}
 		this.basicModelText = getBasicModelText();
+		this.fullModelText = getFullModelText();
 		super.doSave(monitor);
-		IPath path = getResource().getRawLocation();
-		path = path.addFileExtension("basic");
-		try (FileOutputStream fos = new FileOutputStream(path.toFile())) {
-			fos.write(basicModelText.getBytes());
-			fos.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		{
+			IPath path = getResource().getRawLocation();
+			path = path.addFileExtension("java");
+			try (FileOutputStream fos = new FileOutputStream(path.toFile())) {
+				fos.write(fullModelText.getBytes());
+				fos.flush();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		{
+			IPath path = getResource().getRawLocation();
+			path = path.addFileExtension("basic");
+			try (FileOutputStream fos = new FileOutputStream(path.toFile())) {
+				fos.write(basicModelText.getBytes());
+				fos.flush();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 	public Symbol getReferencedUUID(MarkerAnnotation annotation) {
@@ -433,7 +450,9 @@ public class VMXtextEditor extends XtextEditor {
 
 					MarkerAnnotation ann = (MarkerAnnotation)o;
 					String type = ann.getType();
-					if (ANNOTATION_TYPE_GENERATED.equals(type) || ANNOTATION_TYPE_FULLGENERATED.equals(type) ||  ANNOTATION_TYPE_NONGENERATED.equals(type) || ANNOTATION_TYPE_TARGET.equals(type)) {
+					if (type == null) {continue;}
+					if (type.startsWith(ANNOTATION_TYPE_GENERATED) || type.startsWith(ANNOTATION_TYPE_FULLGENERATED) ||  
+							type.startsWith(ANNOTATION_TYPE_NONGENERATED) || type.startsWith(ANNOTATION_TYPE_TARGET)) {
 						toRemove.add(ann);
 					}
 					if (!ANNOTATION_TYPE_TARGET.equals(type)) {
@@ -618,9 +637,7 @@ public class VMXtextEditor extends XtextEditor {
 	public String getBasicModelText() {
 		if (ignore) {
 			return "";
-		}
-		XtextResource res = getXtextResource();
-		
+		}		
 		Resource fake = getFakeXtextResource();
 		fake.getContents().clear();
 		SimpleModelCorrespondance smi = baseModel.saveResource(fake);
@@ -642,6 +659,60 @@ public class VMXtextEditor extends XtextEditor {
 		return basicModelText;
 	}
 	
+	public String getFullModelText() {
+		if (ignore) {
+			return "";
+		}		
+		Resource fake = getFakeXtextResource();
+		fake.getContents().clear();
+		SimpleModelCorrespondance smi = completeModel.saveResource(fake);
+		
+		Map<Symbol,EObject> symbolToSaved =new HashMap<>();
+		for (Entry<EObject,EObject> entry: smi.getEntriesL2R()) {
+			VMEObject vme = (VMEObject)entry.getKey();
+			symbolToSaved.put(vme.getUUID(), entry.getValue());
+		}
+		//TODO: Add Annotations ...
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		try {
+			fake.save(bos, Collections.emptyMap());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		fullModelText = bos.toString();
+		System.out.println("Converted result string: "+fullModelText);
+		return fullModelText;
+	}
+	
+	
+	public static final int MAX_ANNOTATION_COLORS = 10;
+	
+	Map<Resource,Integer> usedIntegers = new HashMap<>();
+	
+	private int getInteger(Resource myRes) {
+		if (myRes == null) {
+			return -1;
+		}
+		Integer ret = usedIntegers.get(myRes);
+		if (ret != null) {
+			return ret;
+		}
+		boolean[] usedIntegersB = new boolean[MAX_ANNOTATION_COLORS]; 
+		for (Integer val: usedIntegers.values()) {
+			if (val != null && val >= 0 && val < usedIntegersB.length) {
+				usedIntegersB[val] = true;
+			}
+		}
+		for (int i = 0; i < usedIntegersB.length; ++i) {
+			if (!usedIntegersB[i]) {
+				usedIntegers.put(myRes, i);
+				return i;
+			}
+		}
+		usedIntegers.put(myRes, -1);
+		return -1;
+	}
+	
 	public void updateXtext(IXtextDocument doc) {
 		updateModelProvs();
 		try {
@@ -651,7 +722,9 @@ public class VMXtextEditor extends XtextEditor {
 		ParentChildModelCorrespondance original = new ParentChildModelCorrespondance(nullcorr, xtextToViewCorrespondance);
 		ModelCorrespondance inverse = original.inverse();
 		Map<String,EObject> oldObjects = new HashMap<String, EObject>();
+		XtextResource[] lastState = new XtextResource[1];
 		boolean cont = doc.readOnly((state)->{
+			lastState[0] = state;
 			
 			InstanceCreator myEcoreCreater = new MyEcoreUtilInstanceCreator();
 			
@@ -772,6 +845,7 @@ public class VMXtextEditor extends XtextEditor {
 					IMarker marker = res.createMarker(MARKER_TYPE_TARGET);
 					marker.setAttribute(IMarker.MESSAGE, "Target Object: "+uuid);
 					marker.setAttribute("uuid", uuid);
+					marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 					marker.setAttribute(IMarker.CHAR_START, start);
 					marker.setAttribute(IMarker.CHAR_END, end);
 					SimpleMarkerAnnotation annotation = new SimpleMarkerAnnotation(ANNOTATION_TYPE_TARGET, marker);
@@ -783,6 +857,7 @@ public class VMXtextEditor extends XtextEditor {
 					EClass cl = eobj.eClass();
 					List<ModelResource> userModelResources = completeModelProv.getUserEditModels();
 					//How to calculate?
+					
 					
 					for (EStructuralFeature esf: cl.getEAllStructuralFeatures()) {
 						List<INode> inodes = NodeModelUtils.findNodesForFeature(eobj, esf);
@@ -815,7 +890,22 @@ public class VMXtextEditor extends XtextEditor {
 							if (isGenerated) {
 								derivationStatus = ((NoInverse) vfvList).getDerivationStatus(userModelResources);
 							}
-							String markerType = isGenerated?(isFullGenerated?MARKER_TYPE_FULLGENERATED:MARKER_TYPE_GENERATED):MARKER_TYPE_NONGENERATED;									
+							String markerType = isGenerated?(isFullGenerated?MARKER_TYPE_FULLGENERATED:MARKER_TYPE_GENERATED):MARKER_TYPE_NONGENERATED;		
+
+							Resource symbolResource = null;
+							for (DerivationSource ds: fullgenstate.getTransformationProviders()) {
+								Resource symbolResource_ = curInfo.getAspectResource(ds.resource);
+								if (symbolResource != null && symbolResource != symbolResource_) {
+									symbolResource = null;
+									break;
+								} else {
+									symbolResource = symbolResource_;
+								}
+							}
+							int symbolIndex = getInteger(symbolResource);
+							if (symbolIndex != -1 && isGenerated) {
+								markerType = markerType+symbolIndex; 
+							}
 							for (ILeafNode inode: leafNodes) {
 								//TODO: Irgendwie besser: Es sollten nur die Leaf-Nodes verwendet werden, die nicht von unteren erzeugt werden ...
 								ICompositeNode parent = inode.getParent();
@@ -856,13 +946,21 @@ public class VMXtextEditor extends XtextEditor {
 								featureMarker.setAttribute("uuid", uuid);
 								featureMarker.setAttribute("featureName", esf.getName());
 								featureMarker.setAttribute("featureIndex", index);
+								featureMarker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
 								int nstart = inode.getOffset();
 								int nend = inode.getEndOffset();
-								System.out.println("Feature "+esf.getEContainingClass().getName()+"."+esf.getName()+": "+genstate+" from "+nstart+" to "+nend);
-								System.out.println(inode.getStartLine()+" - "+inode.getEndLine());
+							
 								featureMarker.setAttribute(IMarker.CHAR_START, nstart);
 								featureMarker.setAttribute(IMarker.CHAR_END, nend);
+								
 								String annotationType = isGenerated?(isFullGenerated?ANNOTATION_TYPE_FULLGENERATED:ANNOTATION_TYPE_GENERATED):ANNOTATION_TYPE_NONGENERATED;
+
+								System.out.println("Feature "+esf.getEContainingClass().getName()+"."+esf.getName()+": "+genstate+" from "+nstart+" to "+nend+
+										", index: "+symbolIndex);
+								System.out.println(inode.getStartLine()+" - "+inode.getEndLine());
+								if (isGenerated && symbolIndex != -1) {
+									annotationType = annotationType+symbolIndex;
+								}
 								SimpleMarkerAnnotation nannotation = new SimpleMarkerAnnotation(annotationType, marker);
 								newAnnotations.put(nannotation, new Position(nstart, nend-nstart));
 							}								
@@ -1019,6 +1117,10 @@ public class VMXtextEditor extends XtextEditor {
 
 	public IXtextDocument getSuperDocument() {
 		return super.getDocument();
+	}
+
+	public int getImageIndex(Resource aspectResource) {
+		return getInteger(aspectResource);
 	}
 
 }

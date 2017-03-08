@@ -31,7 +31,7 @@ Workflow {
 		}
 		language = StandardLanguage {
 			name = "at.ac.tuwien.big.Simplejava"
-			fileExtensions = "sjava"
+			fileExtensions = "vjava,java"
 
 			serializer = {
 				generateStub = false

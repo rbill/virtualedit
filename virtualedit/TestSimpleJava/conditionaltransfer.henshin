@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<henshin:Module xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:henshin="http://www.eclipse.org/emf/2011/Henshin" xmi:id="_qy7mkPjcEea-9sq8E3vBtA">
+  <imports href="http://www.ac.at/tuwien/big/Simplejava#/"/>
+  <units xsi:type="henshin:Rule" xmi:id="_vYs30PjcEea-9sq8E3vBtA" name="addcondition">
+    <lhs xmi:id="_vZ3VcPjcEea-9sq8E3vBtA" name="Lhs">
+      <nodes xmi:id="_xGa94PjcEea-9sq8E3vBtA" outgoing="_5y4-wPjcEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//Method"/>
+        <attributes xmi:id="_xo1ucPjcEea-9sq8E3vBtA" value="&quot;transfer&quot;">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/name"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_4yeqoPjcEea-9sq8E3vBtA" incoming="_5y4-wPjcEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock"/>
+      </nodes>
+      <nodes xmi:id="_ZsWDoPjdEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//Parameter"/>
+        <attributes xmi:id="_hJ9p8PkYEea9Gq3HzVTzXQ" value="&quot;ownedAmount&quot;">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//Parameter/name"/>
+        </attributes>
+      </nodes>
+      <edges xmi:id="_5y4-wPjcEea-9sq8E3vBtA" source="_xGa94PjcEea-9sq8E3vBtA" target="_4yeqoPjcEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/content"/>
+      </edges>
+    </lhs>
+    <rhs xmi:id="_vZ3VcfjcEea-9sq8E3vBtA" name="Rhs">
+      <nodes xmi:id="_xGa94fjcEea-9sq8E3vBtA" outgoing="_tHKEQPjiEeafhvA1oFWDFQ">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//Method"/>
+        <attributes xmi:id="_xo2VgPjcEea-9sq8E3vBtA" value="&quot;transfer&quot;">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/name"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_2BABgPjcEea-9sq8E3vBtA" incoming="_tgxeIPjiEeafhvA1oFWDFQ" outgoing="_F2iW0PjdEea-9sq8E3vBtA _mfga0PjiEeafhvA1oFWDFQ">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//IfStatement"/>
+      </nodes>
+      <nodes xmi:id="_5PHjUPjcEea-9sq8E3vBtA" incoming="_mfga0PjiEeafhvA1oFWDFQ">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock"/>
+      </nodes>
+      <nodes xmi:id="_FIwDwPjdEea-9sq8E3vBtA" incoming="_F2iW0PjdEea-9sq8E3vBtA" outgoing="_UQzA8PjdEea-9sq8E3vBtA _WsQ90PjdEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//ParanthesisOrBinaryExpression"/>
+        <attributes xmi:id="_MUWHwPjdEea-9sq8E3vBtA" value="&quot;>&quot;">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//ParanthesisOrBinaryExpression/type"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_TDx0MPjdEea-9sq8E3vBtA" incoming="_UQzA8PjdEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//IntegerExpression"/>
+        <attributes xmi:id="_TZJAMPjdEea-9sq8E3vBtA" value="0">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//IntegerExpression/value"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_cDVwMPjdEea-9sq8E3vBtA" incoming="_WsQ90PjdEea-9sq8E3vBtA" outgoing="_bNK9MPjdEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//VariableExpression"/>
+      </nodes>
+      <nodes xmi:id="_cDWXQPjdEea-9sq8E3vBtA" incoming="_bNK9MPjdEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//Parameter"/>
+        <attributes xmi:id="_hJ-RAPkYEea9Gq3HzVTzXQ" value="&quot;ownedAmount&quot;">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//Parameter/name"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_pnSrIPjiEeafhvA1oFWDFQ" incoming="_tHKEQPjiEeafhvA1oFWDFQ" outgoing="_tgxeIPjiEeafhvA1oFWDFQ">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock"/>
+      </nodes>
+      <edges xmi:id="_F2iW0PjdEea-9sq8E3vBtA" source="_2BABgPjcEea-9sq8E3vBtA" target="_FIwDwPjdEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//IfStatement/condition"/>
+      </edges>
+      <edges xmi:id="_UQzA8PjdEea-9sq8E3vBtA" source="_FIwDwPjdEea-9sq8E3vBtA" target="_TDx0MPjdEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//ParanthesisOrBinaryExpression/argument"/>
+      </edges>
+      <edges xmi:id="_WsQ90PjdEea-9sq8E3vBtA" source="_FIwDwPjdEea-9sq8E3vBtA" target="_cDVwMPjdEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//ParanthesisOrBinaryExpression/source"/>
+      </edges>
+      <edges xmi:id="_bNK9MPjdEea-9sq8E3vBtA" source="_cDVwMPjdEea-9sq8E3vBtA" target="_cDWXQPjdEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//VariableExpression/variable"/>
+      </edges>
+      <edges xmi:id="_mfga0PjiEeafhvA1oFWDFQ" source="_2BABgPjcEea-9sq8E3vBtA" target="_5PHjUPjcEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//IfStatement/then"/>
+      </edges>
+      <edges xmi:id="_tHKEQPjiEeafhvA1oFWDFQ" source="_xGa94fjcEea-9sq8E3vBtA" target="_pnSrIPjiEeafhvA1oFWDFQ">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/content"/>
+      </edges>
+      <edges xmi:id="_tgxeIPjiEeafhvA1oFWDFQ" source="_pnSrIPjiEeafhvA1oFWDFQ" target="_2BABgPjcEea-9sq8E3vBtA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock/statements"/>
+      </edges>
+    </rhs>
+    <mappings xmi:id="_xGcMAPjcEea-9sq8E3vBtA" origin="_xGa94PjcEea-9sq8E3vBtA" image="_xGa94fjcEea-9sq8E3vBtA"/>
+    <mappings xmi:id="_5PHjUfjcEea-9sq8E3vBtA" origin="_4yeqoPjcEea-9sq8E3vBtA" image="_5PHjUPjcEea-9sq8E3vBtA"/>
+    <mappings xmi:id="_cDWXQvjdEea-9sq8E3vBtA" origin="_ZsWDoPjdEea-9sq8E3vBtA" image="_cDWXQPjdEea-9sq8E3vBtA"/>
+  </units>
+</henshin:Module>

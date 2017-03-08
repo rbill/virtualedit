@@ -111,10 +111,11 @@ public interface VModelView {
 	public default void printModel(StringBuilder toString) {
 		Map<Symbol,String> eobjNames = new HashMap<>();
 		Map<EClass,Integer> curNames = new HashMap<>();
-		for (Symbol uuid: getInstances()) {
-			EClass cl = getInstances().getClass(uuid);
+		VObjectValues vov = getInstances();
+		for (Symbol uuid: vov) {
+			EClass cl = vov.getClass(uuid);
 			Integer curInd = curNames.getOrDefault(cl, 1);
-			eobjNames.put(uuid, cl.getName()+curInd);
+			eobjNames.put(uuid, (cl==null?"UnknownClass":cl.getName())+curInd);
 			curNames.put(cl, curInd+1);
 		}
 		Set<Symbol> haveInstances = new HashSet<>();
@@ -233,7 +234,12 @@ public interface VModelView {
 		Map<Symbol,EObject> eobj = new HashMap<>();
 		for (Symbol uuid: getInstances()) {
 			EClass cl = getInstances().getClass(uuid);
-			System.out.println(uuid+" has class "+cl.getName());
+			System.out.println(uuid+" has class "+(cl==null?"null":cl.getName()));
+			if (cl == null) {
+				//TODO: This is a bug ...
+				System.err.println("Null class ..."+uuid);
+				continue;
+			}
 			EObject neweobj = creater.create(cl);
 			eobj.put(uuid, neweobj);
 			if (corr != null) {
@@ -508,6 +514,9 @@ public interface VModelView {
 	}
 
 	public default EObject createEObject(Symbol newAttribute, EClass parameter) {
+		if (parameter == null) {
+			System.err.println("Wanting to create NULL class "+newAttribute);
+		}
 		getInstances().add(newAttribute);
 		getInstances().setClass(newAttribute, parameter);
 		return getEObject(newAttribute);

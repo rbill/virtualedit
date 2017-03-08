@@ -5,8 +5,10 @@ package at.ac.tuwien.big.serializer;
 
 import at.ac.tuwien.big.services.SimplejavaGrammarAccess;
 import at.ac.tuwien.big.simplejava.Assignment;
+import at.ac.tuwien.big.simplejava.Attribute;
 import at.ac.tuwien.big.simplejava.BooleanExpression;
 import at.ac.tuwien.big.simplejava.ClassDeclaration;
+import at.ac.tuwien.big.simplejava.ConstructorCall;
 import at.ac.tuwien.big.simplejava.ForInStatement;
 import at.ac.tuwien.big.simplejava.ForStatement;
 import at.ac.tuwien.big.simplejava.IfStatement;
@@ -20,6 +22,7 @@ import at.ac.tuwien.big.simplejava.PackageDeclaration;
 import at.ac.tuwien.big.simplejava.ParanthesisOrBinaryExpression;
 import at.ac.tuwien.big.simplejava.ReturnStatement;
 import at.ac.tuwien.big.simplejava.SimpleJava;
+import at.ac.tuwien.big.simplejava.SimpleParameter;
 import at.ac.tuwien.big.simplejava.SimplejavaPackage;
 import at.ac.tuwien.big.simplejava.StringExpression;
 import at.ac.tuwien.big.simplejava.Type;
@@ -56,11 +59,17 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 			case SimplejavaPackage.ASSIGNMENT:
 				sequence_Assignment(context, (Assignment) semanticObject); 
 				return; 
+			case SimplejavaPackage.ATTRIBUTE:
+				sequence_Attribute(context, (Attribute) semanticObject); 
+				return; 
 			case SimplejavaPackage.BOOLEAN_EXPRESSION:
 				sequence_BooleanExpression(context, (BooleanExpression) semanticObject); 
 				return; 
 			case SimplejavaPackage.CLASS_DECLARATION:
 				sequence_ClassDeclaration(context, (ClassDeclaration) semanticObject); 
+				return; 
+			case SimplejavaPackage.CONSTRUCTOR_CALL:
+				sequence_ConstructorCall(context, (ConstructorCall) semanticObject); 
 				return; 
 			case SimplejavaPackage.FOR_IN_STATEMENT:
 				sequence_ForInStatement(context, (ForInStatement) semanticObject); 
@@ -92,9 +101,6 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 			case SimplejavaPackage.PACKAGE_DECLARATION:
 				sequence_PackageDeclaration(context, (PackageDeclaration) semanticObject); 
 				return; 
-			case SimplejavaPackage.PARAMETER:
-				sequence_Parameter(context, (at.ac.tuwien.big.simplejava.Parameter) semanticObject); 
-				return; 
 			case SimplejavaPackage.PARANTHESIS_OR_BINARY_EXPRESSION:
 				sequence_ParanthesisOrBinaryExpression(context, (ParanthesisOrBinaryExpression) semanticObject); 
 				return; 
@@ -103,6 +109,9 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 				return; 
 			case SimplejavaPackage.SIMPLE_JAVA:
 				sequence_SimpleJava(context, (SimpleJava) semanticObject); 
+				return; 
+			case SimplejavaPackage.SIMPLE_PARAMETER:
+				sequence_SimpleParameter(context, (SimpleParameter) semanticObject); 
 				return; 
 			case SimplejavaPackage.STRING_EXPRESSION:
 				sequence_StringExpression(context, (StringExpression) semanticObject); 
@@ -161,6 +170,31 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 	
 	/**
 	 * Contexts:
+	 *     Parameter returns Attribute
+	 *     Attribute returns Attribute
+	 *
+	 * Constraint:
+	 *     (type=Type name=ID expression=GenericExpression)
+	 */
+	protected void sequence_Attribute(ISerializationContext context, Attribute semanticObject) {
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, SimplejavaPackage.Literals.PARAMETER__TYPE) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SimplejavaPackage.Literals.PARAMETER__TYPE));
+			if (transientValues.isValueTransient(semanticObject, SimplejavaPackage.Literals.PARAMETER__NAME) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SimplejavaPackage.Literals.PARAMETER__NAME));
+			if (transientValues.isValueTransient(semanticObject, SimplejavaPackage.Literals.ATTRIBUTE__EXPRESSION) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SimplejavaPackage.Literals.ATTRIBUTE__EXPRESSION));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getAttributeAccess().getTypeTypeParserRuleCall_0_0(), semanticObject.getType());
+		feeder.accept(grammarAccess.getAttributeAccess().getNameIDTerminalRuleCall_1_0(), semanticObject.getName());
+		feeder.accept(grammarAccess.getAttributeAccess().getExpressionGenericExpressionParserRuleCall_3_0(), semanticObject.getExpression());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Contexts:
 	 *     GenericExpression returns BooleanExpression
 	 *     ConstantExpression returns BooleanExpression
 	 *     BooleanExpression returns BooleanExpression
@@ -178,9 +212,22 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 	 *     ClassDeclaration returns ClassDeclaration
 	 *
 	 * Constraint:
-	 *     (name=ID (attribute+=Parameter | method+=Method)*)
+	 *     (name=ID attribute+=Parameter* method+=Method*)
 	 */
 	protected void sequence_ClassDeclaration(ISerializationContext context, ClassDeclaration semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     ConstructorCall returns ConstructorCall
+	 *     GenericExpression returns ConstructorCall
+	 *
+	 * Constraint:
+	 *     (type=Type (parameter+=ConstantExpression parameter+=ConstantExpression*)?)
+	 */
+	protected void sequence_ConstructorCall(ISerializationContext context, ConstructorCall semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -191,7 +238,7 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 	 *     ForInStatement returns ForInStatement
 	 *
 	 * Constraint:
-	 *     (subparameter=Parameter expression=GenericExpression body=Statement)
+	 *     (subparameter=SimpleParameter expression=GenericExpression body=Statement)
 	 */
 	protected void sequence_ForInStatement(ISerializationContext context, ForInStatement semanticObject) {
 		if (errorAcceptor != null) {
@@ -203,7 +250,7 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SimplejavaPackage.Literals.FOR_IN_STATEMENT__BODY));
 		}
 		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getForInStatementAccess().getSubparameterParameterParserRuleCall_2_0(), semanticObject.getSubparameter());
+		feeder.accept(grammarAccess.getForInStatementAccess().getSubparameterSimpleParameterParserRuleCall_2_0(), semanticObject.getSubparameter());
 		feeder.accept(grammarAccess.getForInStatementAccess().getExpressionGenericExpressionParserRuleCall_4_0(), semanticObject.getExpression());
 		feeder.accept(grammarAccess.getForInStatementAccess().getBodyStatementParserRuleCall_6_0(), semanticObject.getBody());
 		feeder.finish();
@@ -295,8 +342,15 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 	 *
 	 * Constraint:
 	 *     (
+	 *         (object=[Parameter|QualifiedName] | thisObject?='this')? 
 	 *         (
-	 *             ((object=[Parameter|QualifiedName] | thisObject?='this')? (method=[Method|ID] | methodName='equals' | methodName='hashCode')) | 
+	 *             method=[Method|ID] | 
+	 *             methodName='equals' | 
+	 *             methodName='hashCode' | 
+	 *             methodName='add' | 
+	 *             methodName='remove' | 
+	 *             methodName='clear' | 
+	 *             methodName='logp' | 
 	 *             methodName='System.out.println'
 	 *         ) 
 	 *         (parameter+=GenericExpression parameter+=GenericExpression*)?
@@ -312,7 +366,7 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 	 *     Method returns Method
 	 *
 	 * Constraint:
-	 *     (static?='static'? returnType=Type? name=ID (parameter+=Parameter parameter+=Parameter*)? content=MethodBlock)
+	 *     (static?='static'? returnType=Type name=ID? (parameter+=SimpleParameter parameter+=SimpleParameter*)? content=MethodBlock)
 	 */
 	protected void sequence_Method(ISerializationContext context, Method semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -347,27 +401,6 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 		}
 		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
 		feeder.accept(grammarAccess.getPackageDeclarationAccess().getNameIDTerminalRuleCall_1_0(), semanticObject.getName());
-		feeder.finish();
-	}
-	
-	
-	/**
-	 * Contexts:
-	 *     Parameter returns Parameter
-	 *
-	 * Constraint:
-	 *     (type=Type name=ID)
-	 */
-	protected void sequence_Parameter(ISerializationContext context, at.ac.tuwien.big.simplejava.Parameter semanticObject) {
-		if (errorAcceptor != null) {
-			if (transientValues.isValueTransient(semanticObject, SimplejavaPackage.Literals.PARAMETER__TYPE) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SimplejavaPackage.Literals.PARAMETER__TYPE));
-			if (transientValues.isValueTransient(semanticObject, SimplejavaPackage.Literals.PARAMETER__NAME) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SimplejavaPackage.Literals.PARAMETER__NAME));
-		}
-		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getParameterAccess().getTypeTypeParserRuleCall_0_0(), semanticObject.getType());
-		feeder.accept(grammarAccess.getParameterAccess().getNameIDTerminalRuleCall_1_0(), semanticObject.getName());
 		feeder.finish();
 	}
 	
@@ -429,10 +462,32 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 	 *     SimpleJava returns SimpleJava
 	 *
 	 * Constraint:
-	 *     (package=PackageDeclaration imports+=Import* clazz=ClassDeclaration)
+	 *     (package=PackageDeclaration? imports+=Import* clazz=ClassDeclaration)
 	 */
 	protected void sequence_SimpleJava(ISerializationContext context, SimpleJava semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     Parameter returns SimpleParameter
+	 *     SimpleParameter returns SimpleParameter
+	 *
+	 * Constraint:
+	 *     (type=Type name=ID)
+	 */
+	protected void sequence_SimpleParameter(ISerializationContext context, SimpleParameter semanticObject) {
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, SimplejavaPackage.Literals.PARAMETER__TYPE) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SimplejavaPackage.Literals.PARAMETER__TYPE));
+			if (transientValues.isValueTransient(semanticObject, SimplejavaPackage.Literals.PARAMETER__NAME) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SimplejavaPackage.Literals.PARAMETER__NAME));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getSimpleParameterAccess().getTypeTypeParserRuleCall_0_0(), semanticObject.getType());
+		feeder.accept(grammarAccess.getSimpleParameterAccess().getNameIDTerminalRuleCall_1_0(), semanticObject.getName());
+		feeder.finish();
 	}
 	
 	
@@ -442,7 +497,7 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 	 *     SimpleVariableDeclaration returns VariableDeclaration
 	 *
 	 * Constraint:
-	 *     (parameter=Parameter expression=GenericExpression)
+	 *     (parameter=SimpleParameter expression=GenericExpression)
 	 */
 	protected void sequence_SimpleVariableDeclaration(ISerializationContext context, VariableDeclaration semanticObject) {
 		if (errorAcceptor != null) {
@@ -452,7 +507,7 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SimplejavaPackage.Literals.VARIABLE_DECLARATION__EXPRESSION));
 		}
 		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getSimpleVariableDeclarationAccess().getParameterParameterParserRuleCall_1_0(), semanticObject.getParameter());
+		feeder.accept(grammarAccess.getSimpleVariableDeclarationAccess().getParameterSimpleParameterParserRuleCall_1_0(), semanticObject.getParameter());
 		feeder.accept(grammarAccess.getSimpleVariableDeclarationAccess().getExpressionGenericExpressionParserRuleCall_3_0(), semanticObject.getExpression());
 		feeder.finish();
 	}
@@ -483,7 +538,21 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 	 *     Type returns Type
 	 *
 	 * Constraint:
-	 *     (typeName='int' | typeName='double' | typeName='String' | typeName='boolean' | typeRef=[ClassDeclaration|QualifiedName])
+	 *     (
+	 *         (
+	 *             typeName='int' | 
+	 *             typeName='double' | 
+	 *             typeName='String' | 
+	 *             typeName='boolean' | 
+	 *             typeName='Object' | 
+	 *             typeName='List' | 
+	 *             typeName='ArrayList' | 
+	 *             typeName='Logger' | 
+	 *             isVoid?='void' | 
+	 *             typeRef=[ClassDeclaration|QualifiedName]
+	 *         ) 
+	 *         isArray?='[]'?
+	 *     )
 	 */
 	protected void sequence_Type(ISerializationContext context, Type semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
@@ -518,7 +587,7 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 	 *     VariableDeclaration returns VariableDeclaration
 	 *
 	 * Constraint:
-	 *     (parameter=Parameter expression=GenericExpression)
+	 *     (parameter=SimpleParameter expression=GenericExpression)
 	 */
 	protected void sequence_VariableDeclaration(ISerializationContext context, VariableDeclaration semanticObject) {
 		if (errorAcceptor != null) {
@@ -528,7 +597,7 @@ public class SimplejavaSemanticSequencer extends AbstractDelegatingSemanticSeque
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SimplejavaPackage.Literals.VARIABLE_DECLARATION__EXPRESSION));
 		}
 		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getVariableDeclarationAccess().getParameterParameterParserRuleCall_0_0(), semanticObject.getParameter());
+		feeder.accept(grammarAccess.getVariableDeclarationAccess().getParameterSimpleParameterParserRuleCall_0_0(), semanticObject.getParameter());
 		feeder.accept(grammarAccess.getVariableDeclarationAccess().getExpressionGenericExpressionParserRuleCall_2_0(), semanticObject.getExpression());
 		feeder.finish();
 	}

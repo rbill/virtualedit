@@ -1,10 +1,14 @@
 package at.ac.tuwien.big.vmod.ecore.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 
 import at.ac.tuwien.big.vmod.Counter;
@@ -25,6 +29,15 @@ public class VObjectValuesImpl implements VObjectValues {
 	VModelView modelView;
 	
 	public static Map<Symbol,Symbol> contained = new HashMap<>();
+	public static Map<Symbol,Set<Symbol>> containing = new WeakHashMap<>();
+	
+	public Set<Symbol> getContained(Symbol inObj) {
+		Set<Symbol> ret = containing.get(inObj);
+		if (ret == null) {
+			containing.put(inObj, ret = new HashSet<>());
+		}
+		return ret;
+	}
 	
 	public static final Symbol MODEL_ROOT = new SymbolImpl("MODEL_ROOT");
 	
@@ -53,6 +66,7 @@ public class VObjectValuesImpl implements VObjectValues {
 	@Override
 	public void setClass(Symbol objectId, EClass classId) {
 		EcoreFuncUtil.setClass(classFunction.getValue(objectId), classId);
+		System.out.println("Set class of "+objectId+ " to "+classId);
 	}
 
 	@Override
@@ -62,12 +76,16 @@ public class VObjectValuesImpl implements VObjectValues {
 
 	@Override
 	public void add(Symbol objectId) {
-		objectFunction.getValue(objectId).setMin(1);
+		if (objectFunction.getValue(objectId).setMin(1)) {
+			//getContained(objectId).forEach((x)->VObjectValuesImpl.this.add(x)); //Strange bug when doing this recursively ... why?
+		}
 	}
 
 	@Override
 	public void remove(Symbol objectId) {
-		objectFunction.getValue(objectId).setMax(0);
+		if (objectFunction.getValue(objectId).setMax(0)) {
+			//getContained(objectId).forEach((x)->VObjectValuesImpl.this.remove(x));
+		}
 	}
 
 	@Override
@@ -79,7 +97,11 @@ public class VObjectValuesImpl implements VObjectValues {
 	public void makeContainedInRoot(Symbol containedObject) {
 		Function.setToVal(containerFunction.getValue(containedObject), MODEL_ROOT);
 		add(containedObject);
-	}
+		Symbol prevCont = contained.remove(containedObject);
+		if (prevCont != null) {
+			getContained(prevCont).remove(containedObject);
+		}
+	} 
 	
 	@Override
 	public void makeUncontainedInRoot(Symbol containedObject) {
@@ -97,7 +119,11 @@ public class VObjectValuesImpl implements VObjectValues {
 		if (containedObject == curCont) {
 			System.err.println("INverse add?!");
 		}
-		contained.put(containedObject,containingObject);
+		Symbol prevCont = contained.put(containedObject,containingObject);
+		if (prevCont != null) {
+			getContained(prevCont).remove(containedObject);
+		}
+		getContained(containingObject).add(containedObject);
 		add(containedObject);
 	}
 	
@@ -109,6 +135,8 @@ public class VObjectValuesImpl implements VObjectValues {
 	@Override
 	public void informNoContainer(Symbol containedObject, EReference feature, Symbol containingObject) {
 		Function.removeVal(containerFunction.getValue(containedObject), Symbol.buildFrom("Feature",containingObject,EcoreFuncUtil.featureName(feature)));
+		contained.remove(containedObject, containingObject);
+		getContained(containingObject).remove(containedObject);
 		if (Function.isEmpty(containerFunction.getValue(containedObject))) {
 			remove(containedObject);
 		}

@@ -1,11 +1,13 @@
 package at.ac.tuwien.big.vmod.ecore.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Map.Entry;
 
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
@@ -29,8 +31,6 @@ import at.ac.tuwien.big.vmod.ecore.VModelView;
 import at.ac.tuwien.big.vmod.modelview.ModelView;
 import at.ac.tuwien.big.vmod.type.Symbol;
 import at.ac.tuwien.big.vmodel.ecore.impl.FilteredList;
-import at.tuwien.big.virtmod.basic.Converter;
-import at.tuwien.big.virtmod.basic.ProxyList;
 
 public class SimpleVMEObject extends MinimalEObjectImpl implements VMEObject, InternalEObject {
 	private Function<String, ? extends Counter> classFunc;
@@ -38,6 +38,18 @@ public class SimpleVMEObject extends MinimalEObjectImpl implements VMEObject, In
 	private Symbol id;
 	private VModelView model;
 	private EClass myClass;
+	
+	public Object toStringer = new Object(){
+		public String toString() {
+			StringBuilder ret = new StringBuilder();
+			for (Entry<EStructuralFeature,List<?>> feat: myValues.entrySet()) {
+				ret.append(feat.getKey().getName()+": "+feat.getValue());
+				ret.append("\n");
+			}
+			return ret.toString();
+		}
+		
+	};
 	
 	public SimpleVMEObject(VModelView view, Symbol id) {
 		this.id = id;
@@ -49,6 +61,7 @@ public class SimpleVMEObject extends MinimalEObjectImpl implements VMEObject, In
 	@Override
 	public void setEClass(EClass newClass) {
 		model.getInstances().setClass(id, newClass);
+		this.myClass = null;
 	}
 
 	@Override
@@ -71,6 +84,7 @@ public class SimpleVMEObject extends MinimalEObjectImpl implements VMEObject, In
 	private List<?> getValues(EStructuralFeature feat) {
 		List<?> ret = myValues.get(feat);
 		if (ret == null) {
+			EClass cl = eClass();
 			try {
 				ret = model.getFeatureValues(feat.getEContainingClass().getName(), feat.getName()).getEcoreValue(getUUID());
 				

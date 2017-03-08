@@ -1,0 +1,151 @@
+grammar at.ac.tuwien.big.Simplejava with org.eclipse.xtext.common.Terminals
+
+generate simplejava "http://www.ac.at/tuwien/big/Simplejava"
+
+
+SimpleJava:
+	(package = PackageDeclaration)?
+	(imports+=Import)*
+	(clazz=ClassDeclaration
+	)
+;
+
+
+PackageDeclaration:
+	'package' name=ID ';'
+;
+
+Import:
+	'import' imported=QualifiedNameWithWildcard ';'
+;
+
+ClassDeclaration:
+	'public' 'class' name=ID '{'
+		(attribute+= Parameter ';')*
+		(method+= Method)*
+	'}'
+;
+
+Parameter:
+	SimpleParameter | Attribute
+;
+
+SimpleParameter:
+	type=Type name=ID
+;
+
+Attribute:
+	type=Type name=ID '=' expression=GenericExpression
+;
+
+
+Type:
+	typeName=('int'|'double'|'String'|'boolean'|'Object'|'List'|'ArrayList'|'Logger')  | isVoid?='void'  | typeRef=[ClassDeclaration|QualifiedName]
+;
+
+Method:
+	'public' (static?='static')? (returnType=Type) (name=ID)? '(' (parameter+=SimpleParameter (',' parameter+= SimpleParameter)*)? ')' content=MethodBlock
+;
+
+MethodBlock: {MethodBlock}
+	(generated?='pointcutblock')? ( '{'
+		(statements+=Statement)*
+	'}')
+;
+
+SimpleStatement:
+	SimpleVariableDeclaration | Assignment
+;
+
+Statement:
+	MethodBlock | VariableDeclaration | Assignment | IfStatement  | ForStatement | ForInStatement | WhileStatement | ReturnStatement
+	| (MethodCall ';') 
+;
+
+SimpleVariableDeclaration: {VariableDeclaration}
+	parameter = SimpleParameter '=' expression=GenericExpression
+;
+
+VariableDeclaration:
+	parameter = SimpleParameter '=' expression=GenericExpression ';'
+;
+
+Assignment:
+	parameter=[Parameter|QualifiedName] '=' expression=GenericExpression ';'
+;
+
+IfStatement:
+	'if' (condition=ParanthesisOrBinaryExpression) 
+		(then=MethodBlock)
+	('else' (else=MethodBlock))? 
+;
+
+ForStatement:
+	'for' '(' (init=SimpleStatement)? ';' condition=GenericExpression ';' continuation=SimpleStatement ')' body=Statement
+;
+
+ForInStatement:
+	'for' '(' subparameter=SimpleParameter ':' expression=GenericExpression ')' body=Statement
+;
+
+WhileStatement:
+	'while' condition=ParanthesisOrBinaryExpression body=Statement
+;
+
+ReturnStatement:
+	'return' expression=GenericExpression ';'
+;
+
+MethodCall:
+	(((object=[Parameter|QualifiedName]|thisObject?='this') '.')? (method=[Method|ID] | methodName=('equals'|'hashCode'|'add'|'remove'|'clear'|'logp')
+		| (methodName='System.out.println'))
+	) '(' (parameter+=GenericExpression (',' parameter+= GenericExpression)* )? ')'
+;
+
+ConstructorCall:
+	'new' type=Type '(' (parameter+=ConstantExpression (',' parameter+= ConstantExpression)* )?  ')'
+;
+
+
+GenericExpression:
+	VariableExpression | MethodCall | ParanthesisOrBinaryExpression | UnaryExpression | ConstantExpression | ConstructorCall 
+;
+
+ConstantExpression:
+	IntegerExpression | StringExpression | BooleanExpression | NullExpression
+;
+
+NullExpression: {NullExpression} 'null';
+
+
+IntegerExpression:
+	value=INT
+;
+
+BooleanExpression: 
+	{BooleanExpression}
+	((value?='true') |  'false')
+;
+
+StringExpression:
+	value=STRING
+;
+
+UnaryExpression:
+	type=('!') source=GenericExpression
+;
+
+VariableExpression:
+	variable = [Parameter|QualifiedName];
+
+ParanthesisOrBinaryExpression:
+	'(' source=GenericExpression (type=('||'|'&&'|'&'|'+'|'-'|'*'|'/'|'=='|'!='|'<'|'<='|'>'|'>=') argument=GenericExpression)? ')'
+;
+
+QualifiedNameWithWildcard:
+	QualifiedName '.*'?
+;
+
+QualifiedName:
+	ID ('.' ID)*
+;

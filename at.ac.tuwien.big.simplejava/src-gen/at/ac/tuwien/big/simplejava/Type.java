@@ -15,7 +15,9 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  * <ul>
  *   <li>{@link at.ac.tuwien.big.simplejava.Type#getTypeName <em>Type Name</em>}</li>
+ *   <li>{@link at.ac.tuwien.big.simplejava.Type#isIsVoid <em>Is Void</em>}</li>
  *   <li>{@link at.ac.tuwien.big.simplejava.Type#getTypeRef <em>Type Ref</em>}</li>
+ *   <li>{@link at.ac.tuwien.big.simplejava.Type#isIsArray <em>Is Array</em>}</li>
  * </ul>
  *
  * @see at.ac.tuwien.big.simplejava.SimplejavaPackage#getType()
@@ -51,6 +53,32 @@ public interface Type extends EObject
   void setTypeName(String value);
 
   /**
+   * Returns the value of the '<em><b>Is Void</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Is Void</em>' attribute isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Is Void</em>' attribute.
+   * @see #setIsVoid(boolean)
+   * @see at.ac.tuwien.big.simplejava.SimplejavaPackage#getType_IsVoid()
+   * @model
+   * @generated
+   */
+  boolean isIsVoid();
+
+  /**
+   * Sets the value of the '{@link at.ac.tuwien.big.simplejava.Type#isIsVoid <em>Is Void</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Is Void</em>' attribute.
+   * @see #isIsVoid()
+   * @generated
+   */
+  void setIsVoid(boolean value);
+
+  /**
    * Returns the value of the '<em><b>Type Ref</b></em>' reference.
    * <!-- begin-user-doc -->
    * <p>
@@ -75,5 +103,31 @@ public interface Type extends EObject
    * @generated
    */
   void setTypeRef(ClassDeclaration value);
+
+  /**
+   * Returns the value of the '<em><b>Is Array</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <p>
+   * If the meaning of the '<em>Is Array</em>' attribute isn't clear,
+   * there really should be more of a description here...
+   * </p>
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Is Array</em>' attribute.
+   * @see #setIsArray(boolean)
+   * @see at.ac.tuwien.big.simplejava.SimplejavaPackage#getType_IsArray()
+   * @model
+   * @generated
+   */
+  boolean isIsArray();
+
+  /**
+   * Sets the value of the '{@link at.ac.tuwien.big.simplejava.Type#isIsArray <em>Is Array</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Is Array</em>' attribute.
+   * @see #isIsArray()
+   * @generated
+   */
+  void setIsArray(boolean value);
 
 } // Type

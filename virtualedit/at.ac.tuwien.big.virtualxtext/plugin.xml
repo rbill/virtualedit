@@ -1,0 +1,933 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<?eclipse version="3.0"?>
+<plugin  name="VXtextEditor Plugin"
+   id="at.ac.tuwien.big.virtualxtext"
+   version="1.0.0"
+   provider-name="OTI"
+   class="at.ac.tuwien.big.virtualxtext.ResourceListPlugin">
+   <requires>
+	<import plugin="org.eclipse.core.boot"/>
+	<import plugin="org.eclipse.core.runtime"/>
+	<import plugin="org.eclipse.core.resources"/>
+	<import plugin="org.eclipse.swt"/>
+	<import plugin="org.eclipse.ui"/>
+</requires>
+
+<extension point="org.eclipse.ui.views">
+	<category id="at.ac.tuwien.big.virtualxtext.resource" name="Applied Aspects">
+	</category>
+	<view id="at.ac.tuwien.big.virtualxtext.resview"
+		name="VirtualEdit view"
+		icon="icons\view.gif"
+		class="at.ac.tuwien.big.virtualxtext.ResourceList"/>
+</extension>
+
+	<extension
+		point="org.eclipse.ui.editors">
+		<editor
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+			default="true"
+			extensions="sjava"
+			id="at.ac.tuwien.big.Simplejava"
+			name="Simplejava Editor">
+		</editor>
+	</extension>
+	
+	<!-- marker definitions for at.ac.tuwien.big.Simplejava -->
+	<extension
+			id="simplejava.check.fast"
+			name="Simplejava Problem"
+			point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.xtext.ui.check.fast"/>
+		<persistent value="true"/>
+	</extension>
+	<extension
+			id="simplejava.check.normal"
+			name="Simplejava Problem"
+			point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.xtext.ui.check.normal"/>
+		<persistent value="true"/>
+	</extension>
+	<extension
+			id="simplejava.check.expensive"
+			name="Simplejava Problem"
+			point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.xtext.ui.check.expensive"/>
+		<persistent value="true"/>
+	</extension>
+	<extension point="org.eclipse.xtext.builder.participant">
+		<participant
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
+			fileExtensions="sjava"/>
+	</extension>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page
+			category="at.ac.tuwien.big.Simplejava"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="at.ac.tuwien.big.Simplejava.compiler.preferencePage"
+			name="Compiler">
+			<keywordReference id="at.ac.tuwien.big.ui.keyword_Simplejava"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.propertyPages">
+		<page
+			category="at.ac.tuwien.big.Simplejava"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="at.ac.tuwien.big.Simplejava.compiler.propertyPage"
+			name="Compiler">
+			<keywordReference id="at.ac.tuwien.big.ui.keyword_Simplejava"/>
+			<enabledWhen>
+				<adapt type="org.eclipse.core.resources.IProject"/>
+			</enabledWhen>
+			<filter name="projectNature" value="org.eclipse.xtext.ui.shared.xtextNature"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution locationURI="popup:#TextEditorContext?after=xtext.ui.openDeclaration">
+			<command
+				commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand"
+				id="at.ac.tuwien.big.Simplejava.OpenGeneratedCode"
+				style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="at.ac.tuwien.big.Simplejava.Editor.opened" />
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
+			commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand">
+			<activeWhen>
+				<reference definitionId="at.ac.tuwien.big.Simplejava.Editor.opened" />
+			</activeWhen>
+		</handler>
+	</extension>
+	<!-- Quick Outline -->
+	<extension
+		point="org.eclipse.ui.handlers">
+		<handler 
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
+			commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline">
+			<activeWhen>
+				<reference
+					definitionId="at.ac.tuwien.big.Simplejava.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension
+		point="org.eclipse.ui.commands">
+		<command
+			description="Open the quick outline."
+			id="org.eclipse.xtext.ui.editor.outline.QuickOutline"
+			name="Quick Outline">
+		</command>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.open">
+			<command commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline"
+				style="push"
+				tooltip="Open Quick Outline">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="at.ac.tuwien.big.Simplejava.Editor.opened"/>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<!-- quickfix marker resolution generator for at.ac.tuwien.big.Simplejava -->
+	<extension
+			point="org.eclipse.ui.ide.markerResolution">
+		<markerResolutionGenerator
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="at.ac.tuwien.big.simplejava.ui.simplejava.check.fast">
+			<attribute
+				name="FIXABLE_KEY"
+				value="true">
+			</attribute>
+		</markerResolutionGenerator>
+		<markerResolutionGenerator
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="at.ac.tuwien.big.simplejava.ui.simplejava.check.normal">
+			<attribute
+				name="FIXABLE_KEY"
+				value="true">
+			</attribute>
+		</markerResolutionGenerator>
+		<markerResolutionGenerator
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="at.ac.tuwien.big.simplejava.ui.simplejava.check.expensive">
+			<attribute
+				name="FIXABLE_KEY"
+				value="true">
+			</attribute>
+		</markerResolutionGenerator>
+	</extension>
+	<!-- Rename Refactoring -->
+	<extension point="org.eclipse.ui.handlers">
+		<handler 
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
+			commandId="org.eclipse.xtext.ui.refactoring.RenameElement">
+			<activeWhen>
+				<reference
+					definitionId="at.ac.tuwien.big.Simplejava.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.edit">
+			<command commandId="org.eclipse.xtext.ui.refactoring.RenameElement"
+				style="push">
+				<visibleWhen checkEnabled="false">
+					<reference
+						definitionId="at.ac.tuwien.big.Simplejava.Editor.opened">
+					</reference>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page
+			category="at.ac.tuwien.big.Simplejava"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
+			id="at.ac.tuwien.big.Simplejava.refactoring"
+			name="Refactoring">
+			<keywordReference id="at.ac.tuwien.big.ui.keyword_Simplejava"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.compare.contentViewers">
+		<viewer id="at.ac.tuwien.big.Simplejava.compare.contentViewers"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="sjava">
+		</viewer>
+	</extension>
+	<extension point="org.eclipse.compare.contentMergeViewers">
+		<viewer id="at.ac.tuwien.big.Simplejava.compare.contentMergeViewers"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="sjava" label="Simplejava Compare">
+		</viewer>
+	</extension>
+	<extension point="org.eclipse.ui.editors.documentProviders">
+		<provider id="at.ac.tuwien.big.Simplejava.editors.documentProviders"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
+			extensions="sjava">
+		</provider>
+	</extension>
+	<extension point="org.eclipse.team.core.fileTypes">
+		<fileTypes
+			extension="sjava"
+			type="text">
+		</fileTypes>
+	</extension>
+	
+	<extension  id="simplejava.isgenerated.generated" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.generated0" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated0" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.generated1" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated1" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.generated2" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated2" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.generated3" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated3" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.generated4" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated4" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.generated5" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated5" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.generated6" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated6" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.generated7" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated7" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.generated8" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated8" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.generated9" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension id="simplejava.isgenerated.fullgenerated9" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.nongenerated" name="Is not generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.target" name="Is target" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension id="simplejava.isgenerated.annotationtypes"
+         point="org.eclipse.ui.editors.annotationTypes">
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED"
+             markerType="simplejava.isgenerated.generated">
+         </type>
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED0"
+             markerType="simplejava.isgenerated.generated0">
+         </type>
+         
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED1"
+             markerType="simplejava.isgenerated.generated1">
+         </type>
+         
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED2"
+             markerType="simplejava.isgenerated.generated2">
+         </type>
+         
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED3"
+             markerType="simplejava.isgenerated.generated3">
+         </type>
+         
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED4"
+             markerType="simplejava.isgenerated.generated4">
+         </type>
+         
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED5"
+             markerType="simplejava.isgenerated.generated5">
+         </type>
+         
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED6"
+             markerType="simplejava.isgenerated.generated6">
+         </type>
+         
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED7"
+             markerType="simplejava.isgenerated.generated7">
+         </type>
+         
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED8"
+             markerType="simplejava.isgenerated.generated8">
+         </type>
+         
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED9"
+             markerType="simplejava.isgenerated.generated9">
+         </type>
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED"
+             markerType="simplejava.isgenerated.fullgenerated">
+         </type>
+         
+                  
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED0"
+             markerType="simplejava.isgenerated.fullgenerated0">
+         </type>
+         
+                  
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED1"
+             markerType="simplejava.isgenerated.fullgenerated1">
+         </type>
+         
+                  
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED2"
+             markerType="simplejava.isgenerated.fullgenerated2">
+         </type>
+         
+                  
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED3"
+             markerType="simplejava.isgenerated.fullgenerated3">
+         </type>
+         
+                  
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED4"
+             markerType="simplejava.isgenerated.fullgenerated4">
+         </type>
+         
+                  
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED5"
+             markerType="simplejava.isgenerated.fullgenerated5">
+         </type>
+         
+                  
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED6"
+             markerType="simplejava.isgenerated.fullgenerated6">
+         </type>
+         
+                  
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED7"
+             markerType="simplejava.isgenerated.fullgenerated7">
+         </type>
+         
+                  
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED8"
+             markerType="simplejava.isgenerated.fullgenerated8">
+         </type>
+         
+                  
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED9"
+             markerType="simplejava.isgenerated.fullgenerated9">
+         </type>
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_NONGENERATED"
+             markerType="simplejava.isgenerated.nongenerated">
+         </type>
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_TARGET"
+             markerType="simplejava.isgenerated.target">
+         </type>
+   </extension>
+	<extension id="simplejava.isgenerated.annotations"
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+         <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="240,240,240"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED0"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg0"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="255,251,185"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+                <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED1"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg1"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="255,185,243"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+        
+       <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED2"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg2"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="185,234,255"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+        
+                <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED3"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg3"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="193,255,185"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+        
+                <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED4"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg4"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="217,205,255"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+        
+                <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED5"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg5"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="226,255,185"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+        
+                <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED6"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg6"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="185,255,210"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+        
+                <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED7"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg7"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="185,202,255"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+        
+                <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED8"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg8"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="241,205,255"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED9"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorg9"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="185,255,243"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style">
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColorf"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            colorPreferenceValue="200,200,200"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED0"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotationf0"
+            colorPreferenceKey="myMarkerAnnotationColorf0"
+            highlightPreferenceKey="myMarkerAnnotationBackground0"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            colorPreferenceValue="255,249,145"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.stylef0" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED1"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotationf1"
+            colorPreferenceKey="myMarkerAnnotationColorf1"
+            highlightPreferenceKey="myMarkerAnnotationBackgroundf1"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            colorPreferenceValue="255,145,236"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.stylef1" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED2"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotationf2"
+            colorPreferenceKey="myMarkerAnnotationColorf2"
+            highlightPreferenceKey="myMarkerAnnotationBackgroundf2"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="145,222,255"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.stylef2" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED3"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotationf3"
+            colorPreferenceKey="myMarkerAnnotationColorf3"
+            highlightPreferenceKey="myMarkerAnnotationBackgroundf3"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="158,255,145"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.stylef3" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED4"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotationf4"
+            colorPreferenceKey="myMarkerAnnotationColorf4"
+            highlightPreferenceKey="myMarkerAnnotationBackgroundf4"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="187,165,255"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.stylef4" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED5"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotationf5"
+            colorPreferenceKey="myMarkerAnnotationColorf5"
+            highlightPreferenceKey="myMarkerAnnotationBackgroundf5"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="209,255,145"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED6"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotationf6"
+            colorPreferenceKey="myMarkerAnnotationColorf6"
+            highlightPreferenceKey="myMarkerAnnotationBackgroundf6"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="145,255,184"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED7"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotationf7"
+            colorPreferenceKey="myMarkerAnnotationColorf7"
+            highlightPreferenceKey="myMarkerAnnotationBackgroundf7"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="145,171,255"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED8"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotationf8"
+            colorPreferenceKey="myMarkerAnnotationColorf8"
+            highlightPreferenceKey="myMarkerAnnotationBackgroundf8"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="229,165,255"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED9"
+            verticalRulerPreferenceKey="highlight.rulers.vertical.disabled"
+            verticalRulerPreferenceValue="false"
+            textPreferenceKey="myMarkerAnnotationf9"
+            colorPreferenceKey="myMarkerAnnotationColorf9"
+            highlightPreferenceKey="myMarkerAnnotationBackgroundf9"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="145,255,236"
+           	highlightPreferenceValue="true"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style" >
+        </specification >
+        <!--colorPreferenceValue="145,255,236"-->
+        
+         <!--specification
+            annotationType="GENERATED_MODEL_ANNOTATION_TARGET"> 
+        </specification >
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION">
+        </specification-->
+    </extension>
+    
+	<!--extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+        
+    </extension>
+    
+	<extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+         
+    </extension>-->
+</plugin>

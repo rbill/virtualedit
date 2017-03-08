@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<?eclipse version="3.0"?>
+<plugin  name="VXtextEditor Plugin"
+   id="at.ac.tuwien.big.virtualxtext"
+   version="1.0.0"
+   provider-name="OTI"
+   class="at.ac.tuwien.big.virtualxtext.ResourceListPlugin">
+   <requires>
+	<import plugin="org.eclipse.core.boot"/>
+	<import plugin="org.eclipse.core.runtime"/>
+	<import plugin="org.eclipse.core.resources"/>
+	<import plugin="org.eclipse.swt"/>
+	<import plugin="org.eclipse.ui"/>
+</requires>
+
+<extension point="org.eclipse.ui.views">
+	<category id="at.ac.tuwien.big.virtualxtext.resource" name="Applied Aspects">
+	</category>
+	<view id="at.ac.tuwien.big.virtualxtext.resview"
+		name="Aspects view"
+		icon="icons\view.gif"
+		class="at.ac.tuwien.big.virtualxtext.ResourceList"/>
+</extension>
+
+	<extension
+		point="org.eclipse.ui.editors">
+		<editor
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
+			default="true"
+			extensions="sjava"
+			id="at.ac.tuwien.big.Simplejava"
+			name="Simplejava Editor">
+		</editor>
+	</extension>
+	
+	<!-- marker definitions for at.ac.tuwien.big.Simplejava -->
+	<extension
+			id="simplejava.check.fast"
+			name="Simplejava Problem"
+			point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.xtext.ui.check.fast"/>
+		<persistent value="true"/>
+	</extension>
+	<extension
+			id="simplejava.check.normal"
+			name="Simplejava Problem"
+			point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.xtext.ui.check.normal"/>
+		<persistent value="true"/>
+	</extension>
+	<extension
+			id="simplejava.check.expensive"
+			name="Simplejava Problem"
+			point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.xtext.ui.check.expensive"/>
+		<persistent value="true"/>
+	</extension>
+	<extension point="org.eclipse.xtext.builder.participant">
+		<participant
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
+			fileExtensions="sjava"/>
+	</extension>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page
+			category="at.ac.tuwien.big.Simplejava"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="at.ac.tuwien.big.Simplejava.compiler.preferencePage"
+			name="Compiler">
+			<keywordReference id="at.ac.tuwien.big.ui.keyword_Simplejava"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.propertyPages">
+		<page
+			category="at.ac.tuwien.big.Simplejava"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="at.ac.tuwien.big.Simplejava.compiler.propertyPage"
+			name="Compiler">
+			<keywordReference id="at.ac.tuwien.big.ui.keyword_Simplejava"/>
+			<enabledWhen>
+				<adapt type="org.eclipse.core.resources.IProject"/>
+			</enabledWhen>
+			<filter name="projectNature" value="org.eclipse.xtext.ui.shared.xtextNature"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution locationURI="popup:#TextEditorContext?after=xtext.ui.openDeclaration">
+			<command
+				commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand"
+				id="at.ac.tuwien.big.Simplejava.OpenGeneratedCode"
+				style="push">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="at.ac.tuwien.big.Simplejava.Editor.opened" />
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.handlers">
+		<handler
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
+			commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand">
+			<activeWhen>
+				<reference definitionId="at.ac.tuwien.big.Simplejava.Editor.opened" />
+			</activeWhen>
+		</handler>
+	</extension>
+	<!-- Quick Outline -->
+	<extension
+		point="org.eclipse.ui.handlers">
+		<handler 
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
+			commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline">
+			<activeWhen>
+				<reference
+					definitionId="at.ac.tuwien.big.Simplejava.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension
+		point="org.eclipse.ui.commands">
+		<command
+			description="Open the quick outline."
+			id="org.eclipse.xtext.ui.editor.outline.QuickOutline"
+			name="Quick Outline">
+		</command>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.open">
+			<command commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline"
+				style="push"
+				tooltip="Open Quick Outline">
+				<visibleWhen checkEnabled="false">
+					<reference definitionId="at.ac.tuwien.big.Simplejava.Editor.opened"/>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<!-- quickfix marker resolution generator for at.ac.tuwien.big.Simplejava -->
+	<extension
+			point="org.eclipse.ui.ide.markerResolution">
+		<markerResolutionGenerator
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="at.ac.tuwien.big.simplejava.ui.simplejava.check.fast">
+			<attribute
+				name="FIXABLE_KEY"
+				value="true">
+			</attribute>
+		</markerResolutionGenerator>
+		<markerResolutionGenerator
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="at.ac.tuwien.big.simplejava.ui.simplejava.check.normal">
+			<attribute
+				name="FIXABLE_KEY"
+				value="true">
+			</attribute>
+		</markerResolutionGenerator>
+		<markerResolutionGenerator
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="at.ac.tuwien.big.simplejava.ui.simplejava.check.expensive">
+			<attribute
+				name="FIXABLE_KEY"
+				value="true">
+			</attribute>
+		</markerResolutionGenerator>
+	</extension>
+	<!-- Rename Refactoring -->
+	<extension point="org.eclipse.ui.handlers">
+		<handler 
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
+			commandId="org.eclipse.xtext.ui.refactoring.RenameElement">
+			<activeWhen>
+				<reference
+					definitionId="at.ac.tuwien.big.Simplejava.Editor.opened">
+				</reference>
+			</activeWhen>
+		</handler>
+	</extension>
+	<extension point="org.eclipse.ui.menus">
+		<menuContribution
+			locationURI="popup:#TextEditorContext?after=group.edit">
+			<command commandId="org.eclipse.xtext.ui.refactoring.RenameElement"
+				style="push">
+				<visibleWhen checkEnabled="false">
+					<reference
+						definitionId="at.ac.tuwien.big.Simplejava.Editor.opened">
+					</reference>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+	</extension>
+	<extension point="org.eclipse.ui.preferencePages">
+		<page
+			category="at.ac.tuwien.big.Simplejava"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
+			id="at.ac.tuwien.big.Simplejava.refactoring"
+			name="Refactoring">
+			<keywordReference id="at.ac.tuwien.big.ui.keyword_Simplejava"/>
+		</page>
+	</extension>
+	<extension point="org.eclipse.compare.contentViewers">
+		<viewer id="at.ac.tuwien.big.Simplejava.compare.contentViewers"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="sjava">
+		</viewer>
+	</extension>
+	<extension point="org.eclipse.compare.contentMergeViewers">
+		<viewer id="at.ac.tuwien.big.Simplejava.compare.contentMergeViewers"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="sjava" label="Simplejava Compare">
+		</viewer>
+	</extension>
+	<extension point="org.eclipse.ui.editors.documentProviders">
+		<provider id="at.ac.tuwien.big.Simplejava.editors.documentProviders"
+			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
+			extensions="sjava">
+		</provider>
+	</extension>
+	<extension point="org.eclipse.team.core.fileTypes">
+		<fileTypes
+			extension="sjava"
+			type="text">
+		</fileTypes>
+	</extension>
+	
+	<extension  id="simplejava.isgenerated.generated" name="Is generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	
+	<extension  id="simplejava.isgenerated.fullgenerated" name="Is fully generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.nongenerated" name="Is not generated Text" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension  id="simplejava.isgenerated.target" name="Is target" point="org.eclipse.core.resources.markers">
+		<super type="org.eclipse.core.resources.textmarker" />
+		<persistent value="true" />
+		
+	</extension>
+	<extension id="simplejava.isgenerated.annotationtypes"
+         point="org.eclipse.ui.editors.annotationTypes">
+         <type
+             name="GENERATED_MODEL_ANNOTATION_GENERATED"
+             super="org.eclipse.ui.workbench.texteditor.info"
+             markerType="simplejava.isgenerated.generated">
+         </type>
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_FULLGENERATED"
+             super="org.eclipse.ui.workbench.texteditor.info"
+             markerType="simplejava.isgenerated.fullgenerated">
+         </type>
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_NONGENERATED"
+             super="org.eclipse.ui.workbench.texteditor.info"
+             markerType="simplejava.isgenerated.nongenerated">
+         </type>
+         
+         <type
+             name="GENERATED_MODEL_ANNOTATION_TARGET"
+             super="org.eclipse.ui.workbench.texteditor.info"
+             markerType="simplejava.isgenerated.target">
+         </type>
+   </extension>
+	<extension id="simplejava.isgenerated.annotations"
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+         <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_GENERATED"
+            verticalRulerPreferenceKey="highlight.rulers.vertical"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColor"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="240,240,240"
+           	highlightPreferenceValue="true"
+            verticalRulerPreferenceValue="false"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style" >
+        </specification >
+        
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED"
+            verticalRulerPreferenceKey="highlight.rulers.vertical"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColor"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="200,200,200"
+           	highlightPreferenceValue="true"
+            verticalRulerPreferenceValue="false"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style" >
+        </specification >
+                <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED0"
+            verticalRulerPreferenceKey="highlight.rulers.vertical"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColor"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="200,200,200"
+           	highlightPreferenceValue="true"
+            verticalRulerPreferenceValue="false"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style" >
+        </specification >
+                <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_FULLGENERATED1"
+            verticalRulerPreferenceKey="highlight.rulers.vertical"
+            textPreferenceKey="myMarkerAnnotation"
+            colorPreferenceKey="myMarkerAnnotationColor"
+            highlightPreferenceKey="myMarkerAnnotationBackground"
+            textPreferenceValue="true"
+            textStylePreferenceValue="BOX"
+            overviewRulerPreferenceKey="highlight.rulers.overview"
+            presentationLayer="4"
+            label="Something is generated"
+            symbolicIcon="warning"
+            colorPreferenceValue="200,200,200"
+           	highlightPreferenceValue="true"
+            verticalRulerPreferenceValue="false"
+            overviewRulerPreferenceValue="false"
+            textStylePreferenceKey="highlight.text.style" >
+        </specification >
+         <!--specification
+            annotationType="GENERATED_MODEL_ANNOTATION_TARGET"> 
+        </specification -->
+        <specification
+            annotationType="GENERATED_MODEL_ANNOTATION_TARGET"
+            textStylePreferenceKey="highlight.text.style"
+            textStylePreferenceValue="NONE"
+            textPreferenceKey="myTargetMarkerAnnotation"
+            colorPreferenceKey="myTargetMarkerAnnotationColor"
+            highlightPreferenceKey="myTargetMarkerAnnotationBackground"
+           	highlightPreferenceValue="false"
+            colorPreferenceValue="255,255,255"
+            textPreferenceValue="false"
+            >
+        </specification>
+    </extension>
+    
+	<!--extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+        
+    </extension>
+    
+	<extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+         
+    </extension>-->
+</plugin>

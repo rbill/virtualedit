@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import javax.tools.FileObject;
@@ -16,14 +17,17 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.w3c.dom.EntityReference;
 
 import at.ac.tuwien.big.simpleaspect.simpleAspect.Advice;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.Aspect;
+import at.ac.tuwien.big.simpleaspect.simpleAspect.AspectExpression;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.Assignment;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.BinaryPointcutCondition;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.BooleanExpression;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.ConstantExpression;
+import at.ac.tuwien.big.simpleaspect.simpleAspect.ConstructorCall;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.ForInStatement;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.ForStatement;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.ForeignAttribute;
@@ -34,6 +38,7 @@ import at.ac.tuwien.big.simpleaspect.simpleAspect.Method;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.MethodBlock;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.MethodCall;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.NullExpression;
+import at.ac.tuwien.big.simpleaspect.simpleAspect.Parameter;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.ParanthesisOrBinaryExpression;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.Pointcut;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.PointcutCondition;
@@ -50,6 +55,7 @@ import at.ac.tuwien.big.simpleaspect.simpleAspect.UnaryPointcutCondition;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.VariableDeclaration;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.VariableExpression;
 import at.ac.tuwien.big.simpleaspect.simpleAspect.WhileStatement;
+import at.ac.tuwien.big.simplejava.SimpleParameter;
 import at.ac.tuwien.big.simplejava.SimplejavaPackage;
 import at.ac.tuwien.big.virtmod.ecore.VEObject;
 import at.ac.tuwien.big.virtmod.ecore.impl.ESFFeatureValueList;
@@ -57,6 +63,7 @@ import at.ac.tuwien.big.vmod.ecore.VFeatureValues;
 import at.ac.tuwien.big.vmod.ecore.VMEObject;
 import at.ac.tuwien.big.vmod.ecore.VModelView;
 import at.ac.tuwien.big.vmod.ecore.VObjectValues;
+import at.ac.tuwien.big.vmod.ecore.impl.SimpleVMEObject;
 import at.ac.tuwien.big.vmod.provider.impl.TransformationModelProviderImpl.MultiTransformationExecutor;
 import at.ac.tuwien.big.vmod.provider.impl.TransformationModelProviderImpl.TransformationExecutor;
 import at.ac.tuwien.big.vmod.type.Symbol;
@@ -112,7 +119,11 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 			}
 			
 			public String getName(EObject eobj) {
-				return String.valueOf(eobj.eGet(eobj.eClass().getEStructuralFeature("name")));
+				Object ret = eobj.eGet(eobj.eClass().getEStructuralFeature("name"));
+				if (ret == null)  {
+					return null;
+				}
+				return String.valueOf(ret);
 			}
 			
 			public void getMatches(VModelView view, PointcutCondition cond, List<EObject> candidates, List<EObject> matches) {
@@ -158,7 +169,12 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 								if (!SimplejavaPackage.eINSTANCE.getMethod().isSuperTypeOf(o.eClass())) {
 									continue;
 								}
-								if (!mc.isAnyMethod() && !Objects.equals(methodName,getName(o))) {
+								String candName = getName(o);
+								if (candName == null) {
+									continue;
+								}
+								System.out.println("Have name: "+candName);
+								if (!mc.isAnyMethod() && !Objects.equals(methodName,candName)) {
 									continue;
 								}
 								EObject cd = o.eContainer();
@@ -209,11 +225,14 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 					matches.addAll(toAdd);
 				}
 			}
-
+			
+			Map<String,Map<String,EObject>> addedParameters = new HashMap<>();
+			Map<String,Symbol> classnameToSymbol;
+			
 			@Override
 			public void executeOn(VModelView view) {
 				VObjectValues vals = view.getInstances();
-				Map<String,Symbol> classnameToSymbol = new HashMap<>();
+				classnameToSymbol = new HashMap<>();
 				Iterable<Symbol> cdinst = vals.getInstances("ClassDeclaration");
 				VFeatureValues namevals = view.getFeatureValues("ClassDeclaration", "name");
 				for (Symbol sym: cdinst) {
@@ -225,26 +244,72 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 				VFeatureValues parameterName = view.getFeatureValues("Parameter", "name");
 				VFeatureValues typeName = view.getFeatureValues("Type","typeName");
 				VFeatureValues typeRef = view.getFeatureValues("Type","typeRef");
+				Map<Symbol,InstanceCreator> creationMap = new HashMap<>();
+				ModelCorrespondance corr = ModelCorrespondance.IDENTITY;
+				SimpleModelCorrespondance subCorr = new SimpleModelCorrespondance();
+				
 				for (ForeignAttribute attr: foreignAttributes) {
 					//Add this attribute
 					//Das ist vermutlich ein Xtext-Zeugs, kein Virtual-zeugs ...
 					//TODO: Das ist nicht qualifiziert ...
-					Symbol sym = classnameToSymbol.get(attr.getInType());
-					if (sym != null) {
+					Collection<Symbol> syms = new ArrayList<>();
+					if (attr.getInType() != null) {
+						Symbol sym = classnameToSymbol.get(attr.getInType());
+						if (sym != null) {
+							syms.add(sym);
+						}
+					} else {
+						syms.addAll(classnameToSymbol.values());
+					}
+					
+					for (Symbol sym: syms) {
+						String name = null;
+						for (Entry<String,Symbol> entr: classnameToSymbol.entrySet()) {
+							if (entr.getValue().equals(sym)) {
+								name = entr.getKey();
+								break;
+							}
+						}
+						Map<String,EObject> nameToAttr = this.addedParameters.get(name);
+						if (nameToAttr == null) {
+							this.addedParameters.put(name, nameToAttr = new HashMap<>());
+						}
+						
 						EObject eobj = view.getEObject(sym);
 						Collection c = (Collection)view.getEObject(sym).eGet(SimplejavaPackage.eINSTANCE.getClassDeclaration_Attribute());
 						
 						//Create attribute, derived from aspect
-						Symbol newAttribute = Symbol.buildFrom(view.getMainProvider().getSymbolName(), "attr", sym, attr.getName());
-												
-						EObject parameter = view.createEObject(newAttribute,SimplejavaPackage.eINSTANCE.getParameter());
+						Symbol newAttribute = Symbol.buildFrom("addAttr", sym, attr.getName());
+						EClass pecl = SimplejavaPackage.eINSTANCE.getSimpleParameter();
+						if (attr.getExpression() != null) { //unfinished
+							pecl = SimplejavaPackage.eINSTANCE.getAttribute();
+						}
+						EObject parameter = view.createEObject(newAttribute,pecl);
 						c.add(parameter);
-						String curTypeName = attr.getType().getTypeName();
-						String curTypeRef = attr.getType().getTypeRef();
+						Type typeAttr = attr.getType();
+						String curTypeName = null;
+						String curTypeRef = null; 
+						if (typeAttr != null) {
+							curTypeName = typeAttr.getTypeName();
+							curTypeRef = typeAttr.getTypeRef();
+						}
+						nameToAttr.put(attr.getName(), parameter);
 						Symbol newAttributeType = Symbol.buildFrom(view.getMainProvider().getSymbolName(), "attrType", sym, attr.getName());
 						EObject type = view.createEObject(newAttributeType, SimplejavaPackage.eINSTANCE.getType());
 						parameterType.setSingleValue(newAttribute,newAttributeType);
 						parameterName.setSingleValue(newAttribute, attr.getName());
+						if (attr.getExpression() != null) { //Unfinished
+							
+							Symbol prefix = Symbol.buildFrom(view.getMainProvider().getSymbolName(),
+									sym,"foreignAttribute",attr.getName());
+							InstanceCreator tc = creationMap.get(prefix);
+							if (tc == null) {
+								creationMap.put(prefix, tc = view.getTransformationCreater(prefix, corr, subCorr));
+							}
+							EObject expr = convertExpression(null, attr.getExpression(), 
+									parameter, null, tc);
+							parameter.eSet(SimplejavaPackage.eINSTANCE.getAttribute_Expression(), expr);
+						}
 						Symbol typeRefSym = classnameToSymbol.get(curTypeRef);
 						if (typeRefSym != null) {
 							typeRef.setSingleValue(newAttributeType, typeRefSym);
@@ -266,6 +331,7 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 					EObject pcRefOrPc = advice.getPointcut();
 					if (pcRefOrPc instanceof Pointcut) {
 						Pointcut pc = (Pointcut)pcRefOrPc;
+						
 						pointcutList.add(pc);
 						advicesPerPointcut.put(pc, Arrays.asList(new ParametizedAdvice(advice)));
 					} else {
@@ -275,15 +341,12 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 				}
 				
 				List<EObject> candidates = new ArrayList<>();
-				//ClassDeclaration or Method for now
+				//ClassDeclaration or Method for now 
 				for (Symbol sym: cdinst) {
 					candidates.add(view.getEObject(sym));
 				}
 				List<EObject> methods = view.allInstances(SimplejavaPackage.eINSTANCE.getMethod());
 				candidates.addAll(methods);
-				
-				ModelCorrespondance corr = ModelCorrespondance.IDENTITY;
-				SimpleModelCorrespondance subCorr = new SimpleModelCorrespondance();
 				
 				//evaluiere jeden pointcut ... - ignoriere Parameter im Moment
 				for (Pointcut pointcut: pointcutList) {
@@ -292,6 +355,7 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 					getMatches(view,cond,candidates,matches);
 					List<ParametizedAdvice> advices = advicesPerPointcut.get(pointcut);
 					for (EObject match: matches) {
+						int adviceId = 0;
 						for (ParametizedAdvice padv: advices) {
 							Advice advice = padv.advice;
 							String type = advice.getType();
@@ -301,19 +365,26 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 							EObject originalBlock = (EObject)match.eGet(SimplejavaPackage.eINSTANCE.getMethod_Content());
 							VMEObject vmeo = (VMEObject)match;
 							Symbol prefix = Symbol.buildFrom(view.getMainProvider().getSymbolName(),
-									vmeo.getUUID(), a.getName(), String.valueOf(pointcut.getName()));
-							EObject toSimpleJavaBlock = convertBlock(code,match,originalBlock,view.getTransformationCreater(prefix, corr, subCorr));
+									vmeo.getUUID(), a.getName(), String.valueOf(pointcut.getName()),adviceId);
+							InstanceCreator tc = creationMap.get(prefix);
+							if (tc == null) {
+								creationMap.put(prefix, tc = view.getTransformationCreater(prefix, corr, subCorr));
+							}
+							try {
+							EObject toSimpleJavaBlock = convertBlock(match,code,match,originalBlock,tc);
 							switch(type) {
 							case "before":
 								 {
 									 List l = (List) originalBlock.eGet(SimplejavaPackage.eINSTANCE.getMethodBlock_Statements());
 									 l.add(0,toSimpleJavaBlock);
+									 System.out.println("List after before:" + l);
 								 }
 								 break;
 							case "after":
 							{
 								List l = (List) originalBlock.eGet(SimplejavaPackage.eINSTANCE.getMethodBlock_Statements());
 								l.add(toSimpleJavaBlock);
+								System.out.println("List after after:" + l);
 							}
 								 break;
 							case "around":
@@ -322,6 +393,10 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 								break;
 							}
 							}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							++adviceId;
 						}
 					}
 				}
@@ -329,48 +404,50 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 				
 			}
 			
-			private EObject convertIf(IfStatement statement, EObject match, EObject originalBlock, InstanceCreator transformationCreater) {
+			private EObject convertIf(EObject originalMatch, IfStatement statement, EObject match, EObject originalBlock, InstanceCreator transformationCreater) {
 				EObject ret = transformationCreater.createInstance(match, SimplejavaPackage.eINSTANCE.getIfStatement());
-				ret.eSet(SimplejavaPackage.eINSTANCE.getIfStatement_Then(), convertBlock(statement.getThen(), match, originalBlock, transformationCreater));
+				ret.eSet(SimplejavaPackage.eINSTANCE.getIfStatement_Then(), convertBlock(originalMatch, statement.getThen(), match, originalBlock, transformationCreater));
 				if (statement.getElse() != null) {
-					ret.eSet(SimplejavaPackage.eINSTANCE.getIfStatement_Else(), convertBlock(statement.getElse(), match, originalBlock, transformationCreater));	
+					ret.eSet(SimplejavaPackage.eINSTANCE.getIfStatement_Else(), convertBlock(originalMatch, statement.getElse(), match, originalBlock, transformationCreater));	
 				}
-				ret.eSet(SimplejavaPackage.eINSTANCE.getIfStatement_Condition(), convertIfCond(statement.getCondition(),ret,originalBlock,transformationCreater));
+				ret.eSet(SimplejavaPackage.eINSTANCE.getIfStatement_Condition(), convertIfCond(originalMatch, statement.getCondition(),ret,originalBlock,transformationCreater));
 				return ret;
 			}
 			
-			private EObject convertIfCond(ParanthesisOrBinaryExpression expr, EObject match, EObject originalBlock, InstanceCreator transformationCreater) {
+			private EObject convertIfCond(EObject originalMatch, ParanthesisOrBinaryExpression expr, EObject match, EObject originalBlock, InstanceCreator transformationCreater) {
 				GenericExpression source = expr.getSource();
 				GenericExpression argument = expr.getArgument();
 				String type = expr.getType();
 				EObject ret = transformationCreater.createInstance(match, SimplejavaPackage.eINSTANCE.getParanthesisOrBinaryExpression());
 				if (source != null) {
-					ret.eSet(SimplejavaPackage.eINSTANCE.getParanthesisOrBinaryExpression_Source(), convertExpression(source,ret,originalBlock,transformationCreater));
+					ret.eSet(SimplejavaPackage.eINSTANCE.getParanthesisOrBinaryExpression_Source(), convertExpression(originalMatch, source,ret,originalBlock,transformationCreater));
 				}
 				if (argument != null) {
-					ret.eSet(SimplejavaPackage.eINSTANCE.getParanthesisOrBinaryExpression_Argument(), convertExpression(argument,ret,originalBlock,transformationCreater));
+					ret.eSet(SimplejavaPackage.eINSTANCE.getParanthesisOrBinaryExpression_Argument(), convertExpression(originalMatch, argument,ret,originalBlock,transformationCreater));
 				}
 				ret.eSet(SimplejavaPackage.eINSTANCE.getParanthesisOrBinaryExpression_Type(), type);
 				return ret;
 			}
 			
-			private EObject convertExpression(GenericExpression source, EObject match, EObject originalBlock, InstanceCreator transformationCreater) {
+			private EObject convertExpression(EObject originalMatch, GenericExpression source, EObject match, EObject originalBlock, InstanceCreator transformationCreater) {
 				if (source instanceof ConstantExpression) {
-					return convertConstantExpression((ConstantExpression)source, match, originalBlock, transformationCreater);
+					return convertConstantExpression(originalMatch,(ConstantExpression)source, match, originalBlock, transformationCreater);
 				} else if (source instanceof MethodCall) {
-					throw new UnsupportedOperationException();					
+					return convertMethodCall(originalMatch,(MethodCall)source,match,originalBlock,transformationCreater);					
 				} else if (source instanceof ParanthesisOrBinaryExpression) {
-					return convertIfCond((ParanthesisOrBinaryExpression)source, match, originalBlock, transformationCreater);
+					return convertIfCond(originalMatch,(ParanthesisOrBinaryExpression)source, match, originalBlock, transformationCreater);
 				} else if (source instanceof UnaryExpression) {
 					throw new UnsupportedOperationException();
 				} else if (source instanceof VariableExpression) {
-					return convertVariableExpression((VariableExpression)source, match, originalBlock, transformationCreater);
-				}
+					return convertVariableExpression(originalMatch,(VariableExpression)source, match, originalBlock, transformationCreater);
+				} else if (source instanceof ConstructorCall) {
+					return convertConstructorCall(originalMatch,(ConstructorCall)source,match,originalBlock,transformationCreater);					
+				} 
 				throw new UnsupportedOperationException();
 			}
 			
 			
-			private EObject convertVariableExpression(VariableExpression source, EObject match,
+			private EObject convertVariableExpression(EObject originalMatch, VariableExpression source, EObject match,
 					EObject originalBlock, InstanceCreator transformationCreater) {
 				EObject ret = transformationCreater.createInstance(match, SimplejavaPackage.eINSTANCE.getVariableExpression());
 				at.ac.tuwien.big.simpleaspect.simpleAspect.Parameter par = source.getVariable();
@@ -380,7 +457,7 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 				return null;
 			}
 
-			private EObject convertConstantExpression(ConstantExpression source, EObject match, EObject originalBlock,
+			private EObject convertConstantExpression(EObject originalMatch, ConstantExpression source, EObject match, EObject originalBlock,
 					InstanceCreator transformationCreater) {
 				EObject ret = null;
 				if (source instanceof BooleanExpression) {
@@ -394,6 +471,23 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 				} else if (source instanceof StringExpression) {
 					ret = transformationCreater.createInstance(match, SimplejavaPackage.eINSTANCE.getStringExpression());
 					ret.eSet(SimplejavaPackage.eINSTANCE.getStringExpression_Value(), ((StringExpression)source).getValue());
+				} else if (source instanceof AspectExpression) {
+					AspectExpression expr = (AspectExpression)source;
+					ret = transformationCreater.createInstance(match, SimplejavaPackage.eINSTANCE.getStringExpression());
+					String val;
+					if ("METHOD_NAME".equals(expr.getValue())) {
+						val = (String)originalMatch.eGet(originalMatch.eClass().getEStructuralFeature("name"));
+					} else if ("CLASS_NAME".equals(expr.getValue())) {
+						val = (String)originalMatch.eContainer().eGet(originalMatch.eContainer().eClass().getEStructuralFeature("name"));
+					} else {
+						throw new UnsupportedOperationException("Not supported: " + expr.getValue());
+					}
+					if (val == null) {
+						ret.eSet(SimplejavaPackage.eINSTANCE.getStringExpression_Value(), "????");
+					} else {
+						ret.eSet(SimplejavaPackage.eINSTANCE.getStringExpression_Value(), val);
+					}
+					
 				}
 				if (ret == null) {
 					throw new UnsupportedOperationException();
@@ -401,15 +495,15 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 				return ret;
 			}
 
-			private EObject convertStatement(Statement statement, EObject match, EObject originalBlock, InstanceCreator transformationCreater) {
+			private EObject convertStatement(EObject originalMatch, Statement statement, EObject match, EObject originalBlock, InstanceCreator transformationCreater) {
 				if (statement instanceof MethodBlock) {
-					return convertBlock((MethodBlock)statement, match, originalBlock, transformationCreater);
+					return convertBlock(originalMatch,(MethodBlock)statement, match, originalBlock, transformationCreater);
 				} else if (statement instanceof VariableDeclaration) {
 					throw new UnsupportedOperationException();
 				} else if (statement instanceof Assignment ) {
 					throw new UnsupportedOperationException();
 				} else if (statement instanceof IfStatement) {
-					return convertIf((IfStatement)statement, match, originalBlock, transformationCreater);
+					return convertIf(originalMatch,(IfStatement)statement, match, originalBlock, transformationCreater);
 				} else if (statement instanceof ForStatement) {
 					throw new UnsupportedOperationException();
 				} else if (statement instanceof ForInStatement) {
@@ -419,24 +513,48 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 				} else if (statement instanceof ReturnStatement) {
 					throw new UnsupportedOperationException();
 				} else if (statement instanceof MethodCall) {
-					return convertMethodCall((MethodCall)statement,match,originalBlock,transformationCreater);
+					return convertMethodCall(originalMatch,(MethodCall)statement,match,originalBlock,transformationCreater);
+				} else if (statement instanceof ConstructorCall) {
+					return convertConstructorCall(originalMatch,(ConstructorCall)statement,match,originalBlock,transformationCreater);
 				}
 				throw new UnsupportedOperationException();
 				
 			}
 
-			private EObject convertMethodCall(MethodCall statement, EObject match, EObject originalBlock,
+			private EObject convertParameter(EObject originalMatch, Parameter par, EObject match, EObject originalBlock,
+					InstanceCreator transformationCreater) {
+				EObject ret = transformationCreater.createInstance(match, SimplejavaPackage.eINSTANCE.getParameter());
+				throw new UnsupportedOperationException();
+			}
+			
+						
+			private EObject convertMethodCall(EObject originalMatch, MethodCall statement, EObject match, EObject originalBlock,
 					InstanceCreator transformationCreater) {
 				EObject ret = transformationCreater.createInstance(match, SimplejavaPackage.eINSTANCE.getMethodCall());
 				ret.eSet(SimplejavaPackage.eINSTANCE.getMethodCall_MethodName(), statement.getMethodName());
 				List parameters = new ArrayList<>();
 				for (GenericExpression expr: statement.getParameter()) {
-					parameters.add(convertExpression(expr, ret, originalBlock, transformationCreater));
+					parameters.add(convertExpression(originalMatch,expr, ret, originalBlock, transformationCreater));
 				}
 				((Collection)ret.eGet(SimplejavaPackage.eINSTANCE.getMethodCall_Parameter())).addAll(parameters);
 				//TODO: Implement the rest of the method
-				if (statement.getObject() != null) {
+				
+				Object obj = statement.getObject();
+				if (obj instanceof Parameter) {
+					ret.eSet(SimplejavaPackage.eINSTANCE.getMethodCall_Object(),convertParameter(originalMatch,(Parameter)statement,match,originalBlock,transformationCreater));
 					throw new UnsupportedOperationException();
+				} else if (obj instanceof ForeignAttribute) {
+					ForeignAttribute fa = (ForeignAttribute)obj;
+					String inType = fa.getInType();
+					if (inType == null) {
+						inType = (String)originalMatch.eContainer().eGet(originalMatch.eContainer().eClass().getEStructuralFeature("name"));						
+					}
+					String attr = fa.getName();
+					EObject targetPar = addedParameters.getOrDefault(inType,Collections.emptyMap()).get(attr);
+					if (targetPar != null) {
+						
+						ret.eSet(SimplejavaPackage.eINSTANCE.getMethodCall_Object(),targetPar);
+					}
 				}
 				/* 
 				(((object=[Parameter|QualifiedName]|thisObject?='this') '.')? (method=[Method|ID] | methodName=('equals'|'hashCode'))
@@ -446,8 +564,49 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 				;*/
 				return ret;
 			}
+			
 
-			private EObject convertBlock(MethodBlock code, EObject match, EObject originalBlock,
+			private EObject convertType(EObject originalMatch, Type type, EObject match, EObject originalBlock,
+					InstanceCreator transformationCreater) {
+				EObject ret = transformationCreater.create(match, SimplejavaPackage.eINSTANCE.getType());
+				ret.eSet(SimplejavaPackage.eINSTANCE.getType_IsVoid(), type.isIsVoid());
+				ret.eSet(SimplejavaPackage.eINSTANCE.getType_TypeName(), type.getTypeName());
+				if (type.getTypeRef() != null) {
+					Symbol symbol = classnameToSymbol.get(type.getTypeRef());
+					if (symbol != null) {
+						SimpleVMEObject vme = (SimpleVMEObject)ret;
+						VModelView vmv = vme.getModel();
+						EObject vmer = vmv.getEObject(symbol);
+						if (vmer.eClass() == null) {
+							System.err.println("Got null class!!");
+						}
+						ret.eSet(SimplejavaPackage.eINSTANCE.getType_TypeRef(), vmer);
+					}
+				}
+				return ret;
+			}
+			
+			private EObject convertConstructorCall(EObject originalMatch, ConstructorCall statement, EObject match, EObject originalBlock,
+					InstanceCreator transformationCreater) {
+				EObject ret = transformationCreater.createInstance(match, SimplejavaPackage.eINSTANCE.getConstructorCall());
+				//ret.eSet(SimplejavaPackage.eINSTANCE.getMethodCall_MethodName(), statement.getMethodName());
+				List parameters = new ArrayList<>();
+				for (GenericExpression expr: statement.getParameter()) {
+					parameters.add(convertExpression(originalMatch,expr, ret, originalBlock, transformationCreater));
+				}
+				((Collection)ret.eGet(SimplejavaPackage.eINSTANCE.getConstructorCall_Parameter())).addAll(parameters);
+				ret.eSet(SimplejavaPackage.eINSTANCE.getConstructorCall_Type(), convertType(originalMatch,statement.getType(),ret,originalBlock,transformationCreater));
+				//TODO: Implement the rest of the method
+				/* 
+				(((object=[Parameter|QualifiedName]|thisObject?='this') '.')? (method=[Method|ID] | methodName=('equals'|'hashCode'))
+						| (methodName='System.out.println')
+					)
+						 '(' (parameter+=GenericExpression (',' parameter+= GenericExpression)* )? ')' ';'
+				;*/
+				return ret;
+			}
+
+			private EObject convertBlock(EObject originalMatch, MethodBlock code, EObject match, EObject originalBlock,
 					InstanceCreator transformationCreater) {
 				if (code.isGenerated()) {
 					return originalBlock;
@@ -455,7 +614,7 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 				EObject ret = transformationCreater.createInstance(match, SimplejavaPackage.eINSTANCE.getMethodBlock());
 				List toAdd = new ArrayList<>();
 				for (Statement statement: code.getStatements()) {
-					toAdd.add(convertStatement(statement,ret,originalBlock,transformationCreater));
+					toAdd.add(convertStatement(originalMatch,statement,ret,originalBlock,transformationCreater));
 				}
 				List l = (List)ret.eGet(SimplejavaPackage.eINSTANCE.getMethodBlock_Statements());
 				l.addAll(toAdd);

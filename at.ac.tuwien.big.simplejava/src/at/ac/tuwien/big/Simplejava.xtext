@@ -4,7 +4,7 @@ generate simplejava "http://www.ac.at/tuwien/big/Simplejava"
 
 
 SimpleJava:
-	package = PackageDeclaration
+	(package = PackageDeclaration)?
 	(imports+=Import)*
 	(clazz=ClassDeclaration
 	)
@@ -21,21 +21,32 @@ Import:
 
 ClassDeclaration:
 	'public' 'class' name=ID '{'
-		((attribute+= Parameter ';')| method+= Method)*
+		(attribute+= Parameter ';')*
+		(method+= Method)*
 	'}'
 ;
 
 Parameter:
+	SimpleParameter | Attribute
+;
+
+SimpleParameter:
 	type=Type name=ID
+;
+
+Attribute:
+	type=Type name=ID '=' expression=GenericExpression
 ;
 
 
 Type:
-	typeName=('int'|'double'|'String'|'boolean') | typeRef=[ClassDeclaration|QualifiedName] 
+	(typeName=('int'|'double'|'String'|'boolean'|'Object'|'List'|'ArrayList'|'Logger')  | isVoid?='void'  | typeRef=[ClassDeclaration|QualifiedName])
+	(isArray?='[]')?
+	
 ;
 
 Method:
-	'public' (static?='static')? ('void'|returnType=Type) name=ID '(' (parameter+=Parameter (',' parameter+= Parameter)*)? ')' content=MethodBlock
+	'public' (static?='static')? (returnType=Type) (name=ID)? '(' (parameter+=SimpleParameter (',' parameter+= SimpleParameter)*)? ')' content=MethodBlock
 ;
 
 MethodBlock: {MethodBlock}
@@ -50,15 +61,15 @@ SimpleStatement:
 
 Statement:
 	MethodBlock | VariableDeclaration | Assignment | IfStatement  | ForStatement | ForInStatement | WhileStatement | ReturnStatement
-	| MethodCall
+	| (MethodCall ';') 
 ;
 
 SimpleVariableDeclaration: {VariableDeclaration}
-	parameter = Parameter '=' expression=GenericExpression
+	parameter = SimpleParameter '=' expression=GenericExpression
 ;
 
 VariableDeclaration:
-	parameter = Parameter '=' expression=GenericExpression ';'
+	parameter = SimpleParameter '=' expression=GenericExpression ';'
 ;
 
 Assignment:
@@ -76,7 +87,7 @@ ForStatement:
 ;
 
 ForInStatement:
-	'for' '(' subparameter=Parameter ':' expression=GenericExpression ')' body=Statement
+	'for' '(' subparameter=SimpleParameter ':' expression=GenericExpression ')' body=Statement
 ;
 
 WhileStatement:
@@ -88,16 +99,18 @@ ReturnStatement:
 ;
 
 MethodCall:
-	(((object=[Parameter|QualifiedName]|thisObject?='this') '.')? (method=[Method|ID] | methodName=('equals'|'hashCode'))
-		| (methodName='System.out.println')
-	)
-		 '(' (parameter+=GenericExpression (',' parameter+= GenericExpression)* )? ')' ';'
+	(((object=[Parameter|QualifiedName]|thisObject?='this') '.')? (method=[Method|ID] | methodName=('equals'|'hashCode'|'add'|'remove'|'clear'|'logp')
+		| (methodName='System.out.println'))
+	) '(' (parameter+=GenericExpression (',' parameter+= GenericExpression)* )? ')'
+;
+
+ConstructorCall:
+	'new' type=Type '(' (parameter+=ConstantExpression (',' parameter+= ConstantExpression)* )?  ')'
 ;
 
 
-
 GenericExpression:
-	VariableExpression | MethodCall | ParanthesisOrBinaryExpression | UnaryExpression | ConstantExpression
+	VariableExpression | MethodCall | ParanthesisOrBinaryExpression | UnaryExpression | ConstantExpression | ConstructorCall 
 ;
 
 ConstantExpression:

@@ -243,6 +243,89 @@ public interface SimplejavaPackage extends EPackage
   int PARAMETER_FEATURE_COUNT = 2;
 
   /**
+   * The meta object id for the '{@link at.ac.tuwien.big.simplejava.impl.SimpleParameterImpl <em>Simple Parameter</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see at.ac.tuwien.big.simplejava.impl.SimpleParameterImpl
+   * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getSimpleParameter()
+   * @generated
+   */
+  int SIMPLE_PARAMETER = 5;
+
+  /**
+   * The feature id for the '<em><b>Type</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SIMPLE_PARAMETER__TYPE = PARAMETER__TYPE;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SIMPLE_PARAMETER__NAME = PARAMETER__NAME;
+
+  /**
+   * The number of structural features of the '<em>Simple Parameter</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SIMPLE_PARAMETER_FEATURE_COUNT = PARAMETER_FEATURE_COUNT + 0;
+
+  /**
+   * The meta object id for the '{@link at.ac.tuwien.big.simplejava.impl.AttributeImpl <em>Attribute</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see at.ac.tuwien.big.simplejava.impl.AttributeImpl
+   * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getAttribute()
+   * @generated
+   */
+  int ATTRIBUTE = 6;
+
+  /**
+   * The feature id for the '<em><b>Type</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ATTRIBUTE__TYPE = PARAMETER__TYPE;
+
+  /**
+   * The feature id for the '<em><b>Name</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ATTRIBUTE__NAME = PARAMETER__NAME;
+
+  /**
+   * The feature id for the '<em><b>Expression</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ATTRIBUTE__EXPRESSION = PARAMETER_FEATURE_COUNT + 0;
+
+  /**
+   * The number of structural features of the '<em>Attribute</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ATTRIBUTE_FEATURE_COUNT = PARAMETER_FEATURE_COUNT + 1;
+
+  /**
    * The meta object id for the '{@link at.ac.tuwien.big.simplejava.impl.TypeImpl <em>Type</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -250,7 +333,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getType()
    * @generated
    */
-  int TYPE = 5;
+  int TYPE = 7;
 
   /**
    * The feature id for the '<em><b>Type Name</b></em>' attribute.
@@ -262,13 +345,31 @@ public interface SimplejavaPackage extends EPackage
   int TYPE__TYPE_NAME = 0;
 
   /**
+   * The feature id for the '<em><b>Is Void</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TYPE__IS_VOID = 1;
+
+  /**
    * The feature id for the '<em><b>Type Ref</b></em>' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int TYPE__TYPE_REF = 1;
+  int TYPE__TYPE_REF = 2;
+
+  /**
+   * The feature id for the '<em><b>Is Array</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int TYPE__IS_ARRAY = 3;
 
   /**
    * The number of structural features of the '<em>Type</em>' class.
@@ -277,7 +378,7 @@ public interface SimplejavaPackage extends EPackage
    * @generated
    * @ordered
    */
-  int TYPE_FEATURE_COUNT = 2;
+  int TYPE_FEATURE_COUNT = 4;
 
   /**
    * The meta object id for the '{@link at.ac.tuwien.big.simplejava.impl.MethodImpl <em>Method</em>}' class.
@@ -287,7 +388,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getMethod()
    * @generated
    */
-  int METHOD = 6;
+  int METHOD = 8;
 
   /**
    * The feature id for the '<em><b>Static</b></em>' attribute.
@@ -351,7 +452,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getStatement()
    * @generated
    */
-  int STATEMENT = 9;
+  int STATEMENT = 11;
 
   /**
    * The number of structural features of the '<em>Statement</em>' class.
@@ -370,7 +471,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getMethodBlock()
    * @generated
    */
-  int METHOD_BLOCK = 7;
+  int METHOD_BLOCK = 9;
 
   /**
    * The feature id for the '<em><b>Generated</b></em>' attribute.
@@ -407,7 +508,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getSimpleStatement()
    * @generated
    */
-  int SIMPLE_STATEMENT = 8;
+  int SIMPLE_STATEMENT = 10;
 
   /**
    * The number of structural features of the '<em>Simple Statement</em>' class.
@@ -426,7 +527,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getSimpleVariableDeclaration()
    * @generated
    */
-  int SIMPLE_VARIABLE_DECLARATION = 10;
+  int SIMPLE_VARIABLE_DECLARATION = 12;
 
   /**
    * The number of structural features of the '<em>Simple Variable Declaration</em>' class.
@@ -445,7 +546,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getVariableDeclaration()
    * @generated
    */
-  int VARIABLE_DECLARATION = 11;
+  int VARIABLE_DECLARATION = 13;
 
   /**
    * The feature id for the '<em><b>Parameter</b></em>' containment reference.
@@ -482,7 +583,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getAssignment()
    * @generated
    */
-  int ASSIGNMENT = 12;
+  int ASSIGNMENT = 14;
 
   /**
    * The feature id for the '<em><b>Parameter</b></em>' reference.
@@ -519,7 +620,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getIfStatement()
    * @generated
    */
-  int IF_STATEMENT = 13;
+  int IF_STATEMENT = 15;
 
   /**
    * The feature id for the '<em><b>Condition</b></em>' containment reference.
@@ -565,7 +666,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getForStatement()
    * @generated
    */
-  int FOR_STATEMENT = 14;
+  int FOR_STATEMENT = 16;
 
   /**
    * The feature id for the '<em><b>Init</b></em>' containment reference.
@@ -620,7 +721,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getForInStatement()
    * @generated
    */
-  int FOR_IN_STATEMENT = 15;
+  int FOR_IN_STATEMENT = 17;
 
   /**
    * The feature id for the '<em><b>Subparameter</b></em>' containment reference.
@@ -666,7 +767,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getWhileStatement()
    * @generated
    */
-  int WHILE_STATEMENT = 16;
+  int WHILE_STATEMENT = 18;
 
   /**
    * The feature id for the '<em><b>Condition</b></em>' containment reference.
@@ -703,7 +804,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getReturnStatement()
    * @generated
    */
-  int RETURN_STATEMENT = 17;
+  int RETURN_STATEMENT = 19;
 
   /**
    * The feature id for the '<em><b>Expression</b></em>' containment reference.
@@ -731,7 +832,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getMethodCall()
    * @generated
    */
-  int METHOD_CALL = 18;
+  int METHOD_CALL = 20;
 
   /**
    * The feature id for the '<em><b>Object</b></em>' reference.
@@ -795,7 +896,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getGenericExpression()
    * @generated
    */
-  int GENERIC_EXPRESSION = 19;
+  int GENERIC_EXPRESSION = 22;
 
   /**
    * The number of structural features of the '<em>Generic Expression</em>' class.
@@ -807,6 +908,43 @@ public interface SimplejavaPackage extends EPackage
   int GENERIC_EXPRESSION_FEATURE_COUNT = 0;
 
   /**
+   * The meta object id for the '{@link at.ac.tuwien.big.simplejava.impl.ConstructorCallImpl <em>Constructor Call</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see at.ac.tuwien.big.simplejava.impl.ConstructorCallImpl
+   * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getConstructorCall()
+   * @generated
+   */
+  int CONSTRUCTOR_CALL = 21;
+
+  /**
+   * The feature id for the '<em><b>Type</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CONSTRUCTOR_CALL__TYPE = GENERIC_EXPRESSION_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Parameter</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CONSTRUCTOR_CALL__PARAMETER = GENERIC_EXPRESSION_FEATURE_COUNT + 1;
+
+  /**
+   * The number of structural features of the '<em>Constructor Call</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int CONSTRUCTOR_CALL_FEATURE_COUNT = GENERIC_EXPRESSION_FEATURE_COUNT + 2;
+
+  /**
    * The meta object id for the '{@link at.ac.tuwien.big.simplejava.impl.ConstantExpressionImpl <em>Constant Expression</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -814,7 +952,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getConstantExpression()
    * @generated
    */
-  int CONSTANT_EXPRESSION = 20;
+  int CONSTANT_EXPRESSION = 23;
 
   /**
    * The number of structural features of the '<em>Constant Expression</em>' class.
@@ -833,7 +971,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getNullExpression()
    * @generated
    */
-  int NULL_EXPRESSION = 21;
+  int NULL_EXPRESSION = 24;
 
   /**
    * The number of structural features of the '<em>Null Expression</em>' class.
@@ -852,7 +990,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getIntegerExpression()
    * @generated
    */
-  int INTEGER_EXPRESSION = 22;
+  int INTEGER_EXPRESSION = 25;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -880,7 +1018,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getBooleanExpression()
    * @generated
    */
-  int BOOLEAN_EXPRESSION = 23;
+  int BOOLEAN_EXPRESSION = 26;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -908,7 +1046,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getStringExpression()
    * @generated
    */
-  int STRING_EXPRESSION = 24;
+  int STRING_EXPRESSION = 27;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -936,7 +1074,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getUnaryExpression()
    * @generated
    */
-  int UNARY_EXPRESSION = 25;
+  int UNARY_EXPRESSION = 28;
 
   /**
    * The feature id for the '<em><b>Type</b></em>' attribute.
@@ -973,7 +1111,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getVariableExpression()
    * @generated
    */
-  int VARIABLE_EXPRESSION = 26;
+  int VARIABLE_EXPRESSION = 29;
 
   /**
    * The feature id for the '<em><b>Variable</b></em>' reference.
@@ -1001,7 +1139,7 @@ public interface SimplejavaPackage extends EPackage
    * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getParanthesisOrBinaryExpression()
    * @generated
    */
-  int PARANTHESIS_OR_BINARY_EXPRESSION = 27;
+  int PARANTHESIS_OR_BINARY_EXPRESSION = 30;
 
   /**
    * The feature id for the '<em><b>Source</b></em>' containment reference.
@@ -1201,6 +1339,37 @@ public interface SimplejavaPackage extends EPackage
   EAttribute getParameter_Name();
 
   /**
+   * Returns the meta object for class '{@link at.ac.tuwien.big.simplejava.SimpleParameter <em>Simple Parameter</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Simple Parameter</em>'.
+   * @see at.ac.tuwien.big.simplejava.SimpleParameter
+   * @generated
+   */
+  EClass getSimpleParameter();
+
+  /**
+   * Returns the meta object for class '{@link at.ac.tuwien.big.simplejava.Attribute <em>Attribute</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Attribute</em>'.
+   * @see at.ac.tuwien.big.simplejava.Attribute
+   * @generated
+   */
+  EClass getAttribute();
+
+  /**
+   * Returns the meta object for the containment reference '{@link at.ac.tuwien.big.simplejava.Attribute#getExpression <em>Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Expression</em>'.
+   * @see at.ac.tuwien.big.simplejava.Attribute#getExpression()
+   * @see #getAttribute()
+   * @generated
+   */
+  EReference getAttribute_Expression();
+
+  /**
    * Returns the meta object for class '{@link at.ac.tuwien.big.simplejava.Type <em>Type</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1222,6 +1391,17 @@ public interface SimplejavaPackage extends EPackage
   EAttribute getType_TypeName();
 
   /**
+   * Returns the meta object for the attribute '{@link at.ac.tuwien.big.simplejava.Type#isIsVoid <em>Is Void</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Is Void</em>'.
+   * @see at.ac.tuwien.big.simplejava.Type#isIsVoid()
+   * @see #getType()
+   * @generated
+   */
+  EAttribute getType_IsVoid();
+
+  /**
    * Returns the meta object for the reference '{@link at.ac.tuwien.big.simplejava.Type#getTypeRef <em>Type Ref</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1231,6 +1411,17 @@ public interface SimplejavaPackage extends EPackage
    * @generated
    */
   EReference getType_TypeRef();
+
+  /**
+   * Returns the meta object for the attribute '{@link at.ac.tuwien.big.simplejava.Type#isIsArray <em>Is Array</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Is Array</em>'.
+   * @see at.ac.tuwien.big.simplejava.Type#isIsArray()
+   * @see #getType()
+   * @generated
+   */
+  EAttribute getType_IsArray();
 
   /**
    * Returns the meta object for class '{@link at.ac.tuwien.big.simplejava.Method <em>Method</em>}'.
@@ -1682,6 +1873,38 @@ public interface SimplejavaPackage extends EPackage
   EReference getMethodCall_Parameter();
 
   /**
+   * Returns the meta object for class '{@link at.ac.tuwien.big.simplejava.ConstructorCall <em>Constructor Call</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Constructor Call</em>'.
+   * @see at.ac.tuwien.big.simplejava.ConstructorCall
+   * @generated
+   */
+  EClass getConstructorCall();
+
+  /**
+   * Returns the meta object for the containment reference '{@link at.ac.tuwien.big.simplejava.ConstructorCall#getType <em>Type</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Type</em>'.
+   * @see at.ac.tuwien.big.simplejava.ConstructorCall#getType()
+   * @see #getConstructorCall()
+   * @generated
+   */
+  EReference getConstructorCall_Type();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link at.ac.tuwien.big.simplejava.ConstructorCall#getParameter <em>Parameter</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Parameter</em>'.
+   * @see at.ac.tuwien.big.simplejava.ConstructorCall#getParameter()
+   * @see #getConstructorCall()
+   * @generated
+   */
+  EReference getConstructorCall_Parameter();
+
+  /**
    * Returns the meta object for class '{@link at.ac.tuwien.big.simplejava.GenericExpression <em>Generic Expression</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -2024,6 +2247,34 @@ public interface SimplejavaPackage extends EPackage
     EAttribute PARAMETER__NAME = eINSTANCE.getParameter_Name();
 
     /**
+     * The meta object literal for the '{@link at.ac.tuwien.big.simplejava.impl.SimpleParameterImpl <em>Simple Parameter</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see at.ac.tuwien.big.simplejava.impl.SimpleParameterImpl
+     * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getSimpleParameter()
+     * @generated
+     */
+    EClass SIMPLE_PARAMETER = eINSTANCE.getSimpleParameter();
+
+    /**
+     * The meta object literal for the '{@link at.ac.tuwien.big.simplejava.impl.AttributeImpl <em>Attribute</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see at.ac.tuwien.big.simplejava.impl.AttributeImpl
+     * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getAttribute()
+     * @generated
+     */
+    EClass ATTRIBUTE = eINSTANCE.getAttribute();
+
+    /**
+     * The meta object literal for the '<em><b>Expression</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ATTRIBUTE__EXPRESSION = eINSTANCE.getAttribute_Expression();
+
+    /**
      * The meta object literal for the '{@link at.ac.tuwien.big.simplejava.impl.TypeImpl <em>Type</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -2042,12 +2293,28 @@ public interface SimplejavaPackage extends EPackage
     EAttribute TYPE__TYPE_NAME = eINSTANCE.getType_TypeName();
 
     /**
+     * The meta object literal for the '<em><b>Is Void</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute TYPE__IS_VOID = eINSTANCE.getType_IsVoid();
+
+    /**
      * The meta object literal for the '<em><b>Type Ref</b></em>' reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     EReference TYPE__TYPE_REF = eINSTANCE.getType_TypeRef();
+
+    /**
+     * The meta object literal for the '<em><b>Is Array</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute TYPE__IS_ARRAY = eINSTANCE.getType_IsArray();
 
     /**
      * The meta object literal for the '{@link at.ac.tuwien.big.simplejava.impl.MethodImpl <em>Method</em>}' class.
@@ -2410,6 +2677,32 @@ public interface SimplejavaPackage extends EPackage
      * @generated
      */
     EReference METHOD_CALL__PARAMETER = eINSTANCE.getMethodCall_Parameter();
+
+    /**
+     * The meta object literal for the '{@link at.ac.tuwien.big.simplejava.impl.ConstructorCallImpl <em>Constructor Call</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see at.ac.tuwien.big.simplejava.impl.ConstructorCallImpl
+     * @see at.ac.tuwien.big.simplejava.impl.SimplejavaPackageImpl#getConstructorCall()
+     * @generated
+     */
+    EClass CONSTRUCTOR_CALL = eINSTANCE.getConstructorCall();
+
+    /**
+     * The meta object literal for the '<em><b>Type</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference CONSTRUCTOR_CALL__TYPE = eINSTANCE.getConstructorCall_Type();
+
+    /**
+     * The meta object literal for the '<em><b>Parameter</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference CONSTRUCTOR_CALL__PARAMETER = eINSTANCE.getConstructorCall_Parameter();
 
     /**
      * The meta object literal for the '{@link at.ac.tuwien.big.simplejava.impl.GenericExpressionImpl <em>Generic Expression</em>}' class.
