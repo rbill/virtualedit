@@ -64,9 +64,6 @@ public interface Function<T,U> extends GeneralElement {
 				Object v = key;
 				if (!val.equals(key)) {
 					//Es sollte da sein
-					if ("ReturnStatement".equals(v)) {
-						System.err.println("DeleteMe");
-					}
 					c.setMax(0);
 				}
 			}
