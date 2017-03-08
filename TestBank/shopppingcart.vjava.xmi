@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ASCII"?>
+<simplejava:SimpleJava xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:simplejava="http://www.ac.at/tuwien/big/Simplejava">
+  <package name="shoppingcart"/>
+  <imports imported="java.util.*"/>
+  <clazz name="ShoppingCart">
+    <attribute xsi:type="simplejava:Attribute" name="_items">
+      <type typeName="List"/>
+      <expression xsi:type="simplejava:ConstructorCall">
+        <type typeName="ArrayList"/>
+      </expression>
+    </attribute>
+    <attribute xsi:type="simplejava:SimpleParameter" name="_logger">
+      <type typeName="Logger"/>
+    </attribute>
+    <method name="empty">
+      <returnType isVoid="true"/>
+      <content>
+        <statements xsi:type="simplejava:MethodBlock">
+          <statements xsi:type="simplejava:MethodCall" object="//@clazz/@attribute.1" methodName="logp">
+            <parameter xsi:type="simplejava:ParanthesisOrBinaryExpression" type="+">
+              <source xsi:type="simplejava:ParanthesisOrBinaryExpression" type="+">
+                <source xsi:type="simplejava:StringExpression" value="Entering method "/>
+                <argument xsi:type="simplejava:StringExpression" value="empty"/>
+              </source>
+              <argument xsi:type="simplejava:ParanthesisOrBinaryExpression" type="+">
+                <source xsi:type="simplejava:StringExpression" value=" in "/>
+                <argument xsi:type="simplejava:StringExpression" value="ShoppingCart"/>
+              </argument>
+            </parameter>
+          </statements>
+        </statements>
+        <statements xsi:type="simplejava:MethodCall" object="//@clazz/@attribute.0" methodName="clear"/>
+      </content>
+    </method>
+    <method name="totalValue">
+      <returnType typeName="double"/>
+      <content>
+        <statements xsi:type="simplejava:MethodBlock">
+          <statements xsi:type="simplejava:MethodCall" object="//@clazz/@attribute.1" methodName="logp">
+            <parameter xsi:type="simplejava:ParanthesisOrBinaryExpression" type="+">
+              <source xsi:type="simplejava:ParanthesisOrBinaryExpression" type="+">
+                <source xsi:type="simplejava:StringExpression" value="Entering method "/>
+                <argument xsi:type="simplejava:StringExpression" value="totalValue"/>
+              </source>
+              <argument xsi:type="simplejava:ParanthesisOrBinaryExpression" type="+">
+                <source xsi:type="simplejava:StringExpression" value=" in "/>
+                <argument xsi:type="simplejava:StringExpression" value="ShoppingCart"/>
+              </argument>
+            </parameter>
+          </statements>
+        </statements>
+        <statements xsi:type="simplejava:ReturnStatement">
+          <expression xsi:type="simplejava:IntegerExpression"/>
+        </statements>
+      </content>
+    </method>
+  </clazz>
+</simplejava:SimpleJava>

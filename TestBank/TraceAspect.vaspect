@@ -1,0 +1,7 @@
+aspect TraceAspect {	
+	private Logger _logger = new Logger();
+	pointcut traceMethods(): execution(* * *(..));	
+	before() traceMethods() {
+		_logger.logp((CLASS_NAME+("."+METHOD_NAME)));
+	}
+}

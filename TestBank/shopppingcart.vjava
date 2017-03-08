@@ -1,0 +1,31 @@
+package shoppingcart;
+
+import java.util.*;
+public class ShoppingCart {
+
+	List _items = new ArrayList();
+	Logger _logger
+	;
+	
+	/*public void addItem(Item item) {
+		_items.add(item);
+	}
+	
+	public void removeItem(Item item) {
+		_items.remove(item);
+	}*/
+	
+	public void empty() {
+		{
+			_logger.logp(( ( "Entering method " + "empty" ) + ( " in " + "ShoppingCart" ) ));
+		} _items.clear();
+	}
+	
+	public double totalValue() {
+		{
+			_logger.logp(( ( "Entering method " + "totalValue" ) + ( " in " + "ShoppingCart" ) ));
+		}
+		// unimplemented... free!
+		return 0;
+	}
+}

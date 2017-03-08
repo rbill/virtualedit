@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ASCII"?>
+<simplejava:SimpleJava xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:simplejava="http://www.ac.at/tuwien/big/Simplejava">
+  <clazz name="ShoppingCartOperator">
+    <method static="true" name="addShoppingCartItem">
+      <returnType isVoid="true"/>
+      <parameter name="sc">
+        <type>
+          <typeRef href="shopppingcart.vjava#//@clazz"/>
+        </type>
+      </parameter>
+      <parameter name="inventory">
+        <type>
+          <typeRef href="Inventory.vjava#//@clazz"/>
+        </type>
+      </parameter>
+      <parameter name="item">
+        <type>
+          <typeRef href="Item.vjava#//@clazz"/>
+        </type>
+      </parameter>
+      <content>
+        <statements xsi:type="simplejava:MethodCall" object="//@clazz/@method.0/@parameter.1">
+          <method href="ShoppingCartOperator.vjava#|4"/>
+          <parameter xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.0/@parameter.2"/>
+        </statements>
+        <statements xsi:type="simplejava:MethodCall" object="//@clazz/@method.0/@parameter.0">
+          <method href="ShoppingCartOperator.vjava#|7"/>
+          <parameter xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.0/@parameter.2"/>
+        </statements>
+      </content>
+    </method>
+    <method static="true" name="removeShoppingCartItem">
+      <returnType isVoid="true"/>
+      <parameter name="sc">
+        <type>
+          <typeRef href="shopppingcart.vjava#//@clazz"/>
+        </type>
+      </parameter>
+      <parameter name="inventory">
+        <type>
+          <typeRef href="Inventory.vjava#//@clazz"/>
+        </type>
+      </parameter>
+      <parameter name="item">
+        <type>
+          <typeRef href="Item.vjava#//@clazz"/>
+        </type>
+      </parameter>
+      <content>
+        <statements xsi:type="simplejava:MethodCall" object="//@clazz/@method.1/@parameter.0">
+          <method href="ShoppingCartOperator.vjava#|13"/>
+          <parameter xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.1/@parameter.2"/>
+        </statements>
+        <statements xsi:type="simplejava:MethodCall" object="//@clazz/@method.1/@parameter.1">
+          <method href="ShoppingCartOperator.vjava#|16"/>
+          <parameter xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.1/@parameter.2"/>
+        </statements>
+      </content>
+    </method>
+  </clazz>
+</simplejava:SimpleJava>

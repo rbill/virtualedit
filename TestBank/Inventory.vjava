@@ -1,0 +1,13 @@
+package shoppingcart;
+
+public class Inventory {
+	List _items = new ArrayList();
+	 
+	public void addItem(Item item) {
+		_items.add(item);
+	}
+	
+	public void removeItem(Item item) {
+		_items.remove(item);
+	}
+}

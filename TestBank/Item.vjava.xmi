@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="ASCII"?>
+<simplejava:SimpleJava xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:simplejava="http://www.ac.at/tuwien/big/Simplejava">
+  <package name="shoppingcart"/>
+  <clazz name="Item">
+    <attribute xsi:type="simplejava:SimpleParameter" name="_id">
+      <type typeName="String"/>
+    </attribute>
+    <attribute xsi:type="simplejava:SimpleParameter" name="_price">
+      <type typeName="double"/>
+    </attribute>
+    <method>
+      <returnType typeRef="//@clazz"/>
+      <parameter name="id">
+        <type typeName="String"/>
+      </parameter>
+      <parameter name="price">
+        <type typeName="double"/>
+      </parameter>
+      <content>
+        <statements xsi:type="simplejava:Assignment" parameter="//@clazz/@attribute.0">
+          <expression xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.0/@parameter.0"/>
+        </statements>
+        <statements xsi:type="simplejava:Assignment" parameter="//@clazz/@attribute.1">
+          <expression xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.0/@parameter.1"/>
+        </statements>
+      </content>
+    </method>
+    <method name="getID">
+      <returnType typeName="String"/>
+      <content>
+        <statements xsi:type="simplejava:ReturnStatement">
+          <expression xsi:type="simplejava:VariableExpression" variable="//@clazz/@attribute.0"/>
+        </statements>
+      </content>
+    </method>
+    <method name="getPrice">
+      <returnType typeName="double"/>
+      <content>
+        <statements xsi:type="simplejava:ReturnStatement">
+          <expression xsi:type="simplejava:VariableExpression" variable="//@clazz/@attribute.1"/>
+        </statements>
+      </content>
+    </method>
+    <method name="toString">
+      <returnType typeName="String"/>
+      <content>
+        <statements xsi:type="simplejava:ReturnStatement">
+          <expression xsi:type="simplejava:ParanthesisOrBinaryExpression" type="+">
+            <source xsi:type="simplejava:StringExpression" value="Item: "/>
+            <argument xsi:type="simplejava:VariableExpression" variable="//@clazz/@attribute.0"/>
+          </expression>
+        </statements>
+      </content>
+    </method>
+    <method static="true" name="main">
+      <returnType isVoid="true"/>
+      <parameter name="args">
+        <type typeName="String" isArray="true"/>
+      </parameter>
+      <content>
+        <statements xsi:type="simplejava:VariableDeclaration">
+          <parameter name="item">
+            <type typeRef="//@clazz"/>
+          </parameter>
+          <expression xsi:type="simplejava:ConstructorCall">
+            <type typeRef="//@clazz"/>
+            <parameter xsi:type="simplejava:StringExpression" value="Item"/>
+            <parameter xsi:type="simplejava:IntegerExpression" value="5"/>
+          </expression>
+        </statements>
+        <statements xsi:type="simplejava:MethodCall" methodName="System.out.println">
+          <parameter xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.4/@content/@statements.0/@parameter"/>
+        </statements>
+      </content>
+    </method>
+  </clazz>
+</simplejava:SimpleJava>

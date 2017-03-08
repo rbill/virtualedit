@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ASCII"?>
+<simplejava:SimpleJava xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:simplejava="http://www.ac.at/tuwien/big/Simplejava">
+  <package name="shoppingcart"/>
+  <clazz name="Inventory">
+    <attribute xsi:type="simplejava:Attribute" name="_items">
+      <type typeName="List"/>
+      <expression xsi:type="simplejava:ConstructorCall">
+        <type typeName="ArrayList"/>
+      </expression>
+    </attribute>
+    <method name="addItem">
+      <returnType isVoid="true"/>
+      <parameter name="item">
+        <type>
+          <typeRef href="Item.vjava#//@clazz"/>
+        </type>
+      </parameter>
+      <content>
+        <statements xsi:type="simplejava:MethodCall" object="//@clazz/@attribute.0" methodName="add">
+          <parameter xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.0/@parameter.0"/>
+        </statements>
+      </content>
+    </method>
+    <method name="removeItem">
+      <returnType isVoid="true"/>
+      <parameter name="item">
+        <type>
+          <typeRef href="Item.vjava#//@clazz"/>
+        </type>
+      </parameter>
+      <content>
+        <statements xsi:type="simplejava:MethodCall" object="//@clazz/@attribute.0" methodName="remove">
+          <parameter xsi:type="simplejava:VariableExpression" variable="//@clazz/@method.1/@parameter.0"/>
+        </statements>
+      </content>
+    </method>
+  </clazz>
+</simplejava:SimpleJava>
