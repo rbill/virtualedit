@@ -20,6 +20,7 @@ import at.ac.tuwien.big.vmod.provider.ModelProvider;
 import at.ac.tuwien.big.vmod.provider.SimpleModelProvider;
 import at.ac.tuwien.big.vmod.registry.SymbolRegistry;
 import at.ac.tuwien.big.vmod.type.ModelProviderType;
+import at.ac.tuwien.big.vmod.type.Symbol;
 import at.ac.tuwien.big.vmod.type.impl.ModelProviderTypeImpl;
 import at.ac.tuwien.big.xtext.util.MyEcoreUtil;
 
@@ -37,8 +38,12 @@ public class SimpleEcoreModelProviderImpl extends SimpleGeneralElement<ModelProv
 	}
 
 	public SimpleEcoreModelProviderImpl(ModelProviderType type, String symbol, Resource ecore) {
+		this(type,Symbol.from(symbol),ecore);
+	}
+	
+	public SimpleEcoreModelProviderImpl(ModelProviderType type, Symbol symbol, Resource ecore) {
 		super(type);
-		this.symbol = symbol;
+		this.mainSymbol = symbol;
 		URI myUri = URI.createFileURI(symbol+".vmod");
 		Generator generator = new SimpleGenerator<>();
 		this.realResource = new EcoreModelResource(this, ecore, myUri, generator);
@@ -47,6 +52,10 @@ public class SimpleEcoreModelProviderImpl extends SimpleGeneralElement<ModelProv
 	private static WeakHashMap<Resource, ModelProviderType> resourceToModelProvider = new WeakHashMap<>();
 	
 	public static SimpleEcoreModelProviderImpl createModelProvider(String symbol, Resource ecore) {
+		return createModelProvider(Symbol.from(symbol), ecore);
+	}
+	
+	public static SimpleEcoreModelProviderImpl createModelProvider(Symbol symbol, Resource ecore) {
 		ModelProviderType type = resourceToModelProvider.get(ecore);
 		if (type == null) {
 			type = new ModelProviderTypeImpl();
@@ -55,8 +64,9 @@ public class SimpleEcoreModelProviderImpl extends SimpleGeneralElement<ModelProv
 		return new SimpleEcoreModelProviderImpl(type, symbol, ecore);
 	}
 	
+	
 	private EcoreModelResource realResource;
-	private String symbol;
+	private Symbol mainSymbol;
 
 	@Override
 	public ModelResource getResultModel() {
@@ -74,8 +84,8 @@ public class SimpleEcoreModelProviderImpl extends SimpleGeneralElement<ModelProv
 	}
 
 	@Override
-	public String getSymbolName() {
-		return symbol;
+	public Symbol getMainSymbol() {
+		return mainSymbol;
 	}
 
 	@Override

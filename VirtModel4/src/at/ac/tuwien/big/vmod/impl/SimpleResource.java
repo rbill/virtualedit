@@ -93,5 +93,7 @@ public abstract class SimpleResource extends SimpleGeneralElement<ModelResourceT
 		}                
 		return ret;
 	}
+	
+	
 
 }

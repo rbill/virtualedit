@@ -10,7 +10,7 @@
       <!-- @generated Simplejava -->
       <factory
             uri="http://www.ac.at/tuwien/big/Simplejava"
-            class="simplejava.provider.SimplejavaItemProviderAdapterFactory"
+            class="at.ac.tuwien.big.simplejava.provider.SimplejavaItemProviderAdapterFactory"
             supportedTypes=
               "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
                org.eclipse.emf.edit.provider.IStructuredItemContentProvider

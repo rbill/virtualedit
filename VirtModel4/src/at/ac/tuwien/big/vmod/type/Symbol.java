@@ -43,16 +43,23 @@ public interface Symbol {
 		return ret;
 	}
 
-	public static Symbol buildFrom(String name, Object... contained) {
+	public static Symbol buildFrom(Symbol base, Object... contained) {
 		SymbolImpl ret = new SymbolImpl();
-		ret.setName(name);
+		ret.setName(base.getName());
+		ret.subObjects().addAll(base.subObjects());
 		for (Object o: contained) {
 			ret.subObjects().add(o);
 		}
 		return ret;
 	}
+	
+	public static Symbol buildFrom(String name, Object... contained) {
+		return buildFrom(Symbol.from(name),contained);
+	}
 
 	public static Symbol fromFull(String key) {
 		return new SymbolImpl(key);
 	}
+
+	public Symbol shallowClone();
 }

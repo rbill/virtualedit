@@ -38,7 +38,7 @@ public class DelegateFunction<T,U,V> extends SimpleDelegateGeneralElement<Functi
 		if (baseIter instanceof TreeposIterablePosition) {
 			return new DelegateTreeposIterablePosition(this,getType().getIterableTypeOrNull(), (TreeposIterablePosition)baseIter, isUserEdit()); 
 		}
-		return new DelegateIterablePosition(getType().getIterableTypeOrNull(), baseIter, isUserEdit());
+		return new DelegateIterablePosition(this,getType().getIterableTypeOrNull(), baseIter, isUserEdit());
 	}
 
 }

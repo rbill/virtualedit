@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterdesc:Container
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:parameterdesc="http://big.tuwien.ac.at/parameterdesc"
+    xsi:schemaLocation="http://big.tuwien.ac.at/parameterdesc ../../at.ac.tuwien.big.parameterdesc/model/parameterdesc.ecore">
+  <parameters
+      name="version"/>
+  <parameters
+      name="variant"/>
+</parameterdesc:Container>

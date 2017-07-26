@@ -4,10 +4,18 @@
 package at.ac.tuwien.big.simpleaspect.ui
 
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import org.eclipse.xtext.ui.editor.XtextEditor
+import at.ac.tuwien.big.virtualxtext.MultiXtextEditor
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
- */
+ */ 
 @FinalFieldsConstructor
 class SimpleAspectUiModule extends AbstractSimpleAspectUiModule {
+	
+	 def Class<? extends XtextEditor> bindXtextEditor() {
+  		return MultiXtextEditor;
+		//return VMXtextEditor;
+	 } 
+	
 }

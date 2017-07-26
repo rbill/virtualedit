@@ -20,7 +20,7 @@ public interface VFeatureValues<T> {
 
 	public void clear();
 
-	public Function<Symbol, Function<Treepos, Function<T, ? extends Counter>>> getFunction();
+	public Function<Symbol, ? extends Function<Treepos, ? extends Function<T, ? extends Counter>>> getFunction();
 
 	public List<?> getValueValue(Symbol myId);
 

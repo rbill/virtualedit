@@ -38,10 +38,10 @@ import at.ac.tuwien.big.xtext.util.IteratorUtils.Filter;
 
 public class VFakeEList<T> extends FakeInternalEList<T> implements EList<T>, NoInverse<VFakeEList<T>> {
 	
-	private Function<Treepos, ? extends Function<T, ? extends Counter>> mainFunction;
+	protected Function<Treepos, ? extends Function<T, ? extends Counter>> mainFunction;
 	private boolean isContainment;
 	private EStructuralFeature thisRef;
-	private Function<Symbol, Function<Treepos, ? extends Function<T, ? extends Counter>>> inverseFunction;
+	protected Function<Symbol, Function<Treepos, ? extends Function<T, ? extends Counter>>> inverseFunction;
 	private VModelView model;
 	private Symbol myValue;
 	
@@ -58,9 +58,9 @@ public class VFakeEList<T> extends FakeInternalEList<T> implements EList<T>, NoI
 	
 	
 	
-	private VFakeEList<T> basicList;
+	protected VFakeEList<T> basicList;
 	
-	private VFakeEList(VFakeEList<T> copy, boolean useInverse) {
+	protected VFakeEList(VFakeEList<T> copy, boolean useInverse) {
 		this.mainFunction = copy.mainFunction;
 		this.instanceFilter = copy.instanceFilter;
 		this.startPos = copy.startPos;
@@ -105,6 +105,10 @@ public class VFakeEList<T> extends FakeInternalEList<T> implements EList<T>, NoI
 	private class FilteredTreeposIterablePosition implements TreeposIterablePosition {
 		
 		private TreeposIterablePosition oriPos;
+		
+		public String toString() {
+			return String.valueOf(oriPos);
+		}
 		
 		public FilteredTreeposIterablePosition(TreeposIterablePosition oriPos) {
 			this.oriPos = oriPos;
@@ -176,7 +180,10 @@ public class VFakeEList<T> extends FakeInternalEList<T> implements EList<T>, NoI
 		@Override
 		public TreeposIterablePosition getNextOrNull() {
 			TreeposIterablePosition next = oriPos.getNextOrNull();
-			while (next != null && !next.isEnd() &&  !hasAnyValue(mainFunction.getValue(next.getObject()))) {
+			while (next != null && !next.isEnd() && (!next.hasElement() || !hasAnyValue(mainFunction.getValue(next.getObject())))) {
+				if (next != null && !next.isEnd()) {
+					hasAnyValue(mainFunction.getValue(next.getObject()));
+				}
 				next = next.getNextOrNull();
 			}
 			return next==null?null:from(next);
@@ -195,7 +202,7 @@ public class VFakeEList<T> extends FakeInternalEList<T> implements EList<T>, NoI
 		@Override
 		public TreeposIterablePosition getPreviousOrNull() {
 			TreeposIterablePosition previous = oriPos.getPreviousOrNull();
-			while (previous != null && !previous.isStart() && !hasAnyValue(mainFunction.getValue(previous.getObject()))) {
+			while (previous != null && !previous.isStart() && (!previous.hasElement() ||  !hasAnyValue(mainFunction.getValue(previous.getObject())))) {
 				previous = previous.getPreviousOrNull();
 			}
 			return previous==null?null:from(previous);

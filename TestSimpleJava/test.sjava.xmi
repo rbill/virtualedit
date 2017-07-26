@@ -2,10 +2,11 @@
 <simplejava:SimpleJava xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:simplejava="http://www.ac.at/tuwien/big/Simplejava">
   <package name="bank"/>
   <clazz name="Account">
-    <attribute name="ownedAmount">
+    <attribute xsi:type="simplejava:SimpleParameter" name="ownedAmount">
       <type typeName="int"/>
     </attribute>
     <method name="addAmount">
+      <returnType isVoid="true"/>
       <parameter name="amount">
         <type typeName="int"/>
       </parameter>
@@ -19,6 +20,7 @@
       </content>
     </method>
     <method name="transfer">
+      <returnType isVoid="true"/>
       <parameter name="toAccount">
         <type typeRef="//@clazz"/>
       </parameter>

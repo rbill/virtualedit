@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Generated;
 
@@ -194,10 +195,17 @@ public interface GeneralElement  {
 		}
 
 		public void getDerivationStatus(Collection<ModelResource> userModelResources, ExactDerivationStatus status){}
+
+		@Override
+		public boolean setValue(GeneralElement e) {
+			return this==e;
+		}
 	};
 
 	public void getDerivationStatus(Collection<ModelResource> userModelResources, ExactDerivationStatus status);
 	
+	/**Return: successful?*/
+	public boolean setValue(GeneralElement e);
 
 
 }

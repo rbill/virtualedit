@@ -55,7 +55,7 @@ public class UnionFunction<T,U,V,W> extends SimpleUnionGeneralElement<FunctionTy
 			return new UnionTreeposIterablePosition(this,(IterableType)getType().getIterableTypeOrNull(), null,
 					baseIterT, null, null, editIterT, null, isUserEdit());
 		}
-		return new UnionIterablePosition(getType().getIterableTypeOrNull(), baseIter, editIter, isUserEdit());
+		return new UnionIterablePosition(this,getType().getIterableTypeOrNull(), baseIter, editIter, isUserEdit());
 	}
 
 }

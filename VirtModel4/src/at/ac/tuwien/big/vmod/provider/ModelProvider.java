@@ -2,8 +2,11 @@ package at.ac.tuwien.big.vmod.provider;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,6 +31,14 @@ public interface ModelProvider extends GeneralElement {
 	public ModelResource getUserEditModel();
 	
 	public List<ModelProvider> getPrevious();
+	
+	@Override
+	public default boolean setValue(GeneralElement other) {
+		if (other instanceof ModelProvider) {
+			return getResultModel().setValue(((ModelProvider) other).getResultModel());
+		}
+		return false;
+	}
 	
 	public default List<ModelResource> getUserEditModels() {
 		List<ModelResource> ret = new ArrayList<>();
@@ -55,12 +66,29 @@ public interface ModelProvider extends GeneralElement {
 	/**This function does also change the output resource! Only "Simple" inputs stay the same*/
 	public ModelProvider withRedirectedInput(List<ModelProvider> newInputs);
 	
-	public static int[] index = new int[1];
+	public static Map<String, Integer> indexes = new HashMap<>();
 	
 	public default Symbol newSymbol() {
+		return newSymbol("Object");
+	}
+	
+	public default Symbol newSymbol(String baseName) {
+		if (baseName == null) {
+			baseName = "Object";
+		}
+		Integer curIndex = null;
+		synchronized(indexes) {
+			curIndex = indexes.get(baseName);
+			if (curIndex == null) {
+				curIndex = 1; 
+			}
+			indexes.put(baseName, curIndex+1);
+		}
 		SymbolImpl ret = new SymbolImpl();
-		ret.setName(getSymbolName());
-		ret.subObjects().add(Symbol.from("Object"+(++index[0])));
+		Symbol main = getMainSymbol();
+		ret.setName(main.getName());
+		ret.subObjects().addAll(main.subObjects());
+		ret.subObjects().add(Symbol.from(baseName+(curIndex)));
 		return ret;
 	}
 	
@@ -121,7 +149,7 @@ public interface ModelProvider extends GeneralElement {
 	
 	
 	 
-	public String getSymbolName();
+	public Symbol getMainSymbol();
 	
 	public SymbolRegistry getParent();
 	

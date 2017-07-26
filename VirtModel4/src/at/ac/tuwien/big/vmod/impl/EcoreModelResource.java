@@ -35,5 +35,11 @@ public class EcoreModelResource extends SimpleResource implements ModelResource 
 	private void parseEcore(Resource ecoreResource) {
 		this.type = EcoreModelResourceUtil.getModelResource(ecoreResource);
 	}
+	
+	public String toString() {
+		return super.toString() + (ecoreFile==null?ecoreFile.getURI():"");
+	}
+
+
 
 }

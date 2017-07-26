@@ -13,9 +13,11 @@ Require-Bundle: org.eclipse.core.runtime,
  org.junit;bundle-version="4.7.0";visibility:=reexport,
  org.eclipse.xtext.junit4,
  org.eclipse.xtext.xbase.junit,
- org.eclipse.xtext.xbase.lib
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtext.testing,
+ org.eclipse.xtext.xbase.testing
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: at.ac.tuwien.big.tests,
+Export-Package: at.ac.tuwien.big.tests;x-internal=true,
  simplejava.tests
 Import-Package: org.hamcrest.core,
  org.junit;version="4.5.0",

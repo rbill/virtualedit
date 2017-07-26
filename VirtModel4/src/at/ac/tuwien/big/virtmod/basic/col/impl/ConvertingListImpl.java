@@ -30,6 +30,8 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 	private List<F> delegate;
 	private List<E> basicList;
 	
+	
+	
 	public ConvertingListImpl(List<F> delegate, Converter<E,F> toDelegate, Converter<F,E> fromDelegate) {
 		this.toDelegate = toDelegate;
 		this.fromDelegate = fromDelegate;
@@ -88,6 +90,27 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 	}
 
 
+	@Override 
+	public Iterator<E> iterator() {
+		Iterator<F> sub = delegate.iterator();
+		return new Iterator<E>() {
+
+			@Override
+			public boolean hasNext() {
+				return sub.hasNext();
+			}
+
+			@Override
+			public E next() {
+				return convertF(sub.next());
+			}
+			
+			@Override
+			public void remove() {
+				sub.remove();
+			}
+		};
+	}
 	
 	@Override
 	public ListIterator<E> listIterator() {

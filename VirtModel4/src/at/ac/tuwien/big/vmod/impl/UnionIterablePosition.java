@@ -1,13 +1,18 @@
 package at.ac.tuwien.big.vmod.impl;
 
+import at.ac.tuwien.big.vmod.GeneralElement;
 import at.ac.tuwien.big.vmod.IterablePosition;
+import at.ac.tuwien.big.vmod.ParentLocation;
 import at.ac.tuwien.big.vmod.type.IterableType;
 
 public class UnionIterablePosition<Type extends IterableType,T> extends SimpleUnionGeneralElement<Type, IterablePosition<T>, IterablePosition<T>> implements IterablePosition<T>{
 
-	public UnionIterablePosition(Type type, IterablePosition<T> base, IterablePosition<T> edit, boolean isUserEdit) {
+	public UnionIterablePosition(GeneralElement parent, Type type, IterablePosition<T> base, IterablePosition<T> edit, boolean isUserEdit) {
 		super(type, base, edit, isUserEdit);
+		setParent(parent);
 	}
+	
+	
 
 	@Override
 	public T getObject() {
@@ -38,10 +43,10 @@ public class UnionIterablePosition<Type extends IterableType,T> extends SimpleUn
 			if (next == null) {
 				return null;
 			}
-			return new UnionIterablePosition(getType(), getBase(), next, isUserEdit());
+			return new UnionIterablePosition(getParent(),getType(), getBase(), next, isUserEdit());
 		} 
 		IterablePosition<T> next = getBase().getNext();
-		return new UnionIterablePosition(getType(), next, getEdit(), isUserEdit());
+		return new UnionIterablePosition(getParent(),getType(), next, getEdit(), isUserEdit());
 	}
 
 
@@ -52,10 +57,10 @@ public class UnionIterablePosition<Type extends IterableType,T> extends SimpleUn
 			if (previous == null) {
 				return null;
 			}
-			return new UnionIterablePosition(getType(), previous, getEdit(), isUserEdit());
+			return new UnionIterablePosition(getParent(),getType(), previous, getEdit(), isUserEdit());
 		} 
 		IterablePosition<T> previous = getEdit().getPrevious();
-		return new UnionIterablePosition(getType(), getBase(), previous, isUserEdit());
+		return new UnionIterablePosition(getParent(),getType(), getBase(), previous, isUserEdit());
 	}
 
 	@Override

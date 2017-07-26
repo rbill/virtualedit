@@ -294,13 +294,13 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 							curTypeRef = typeAttr.getTypeRef();
 						}
 						nameToAttr.put(attr.getName(), parameter);
-						Symbol newAttributeType = Symbol.buildFrom(view.getMainProvider().getSymbolName(), "attrType", sym, attr.getName());
+						Symbol newAttributeType = Symbol.buildFrom(view.getMainProvider().getMainSymbol(), "attrType", sym, attr.getName());
 						EObject type = view.createEObject(newAttributeType, SimplejavaPackage.eINSTANCE.getType());
 						parameterType.setSingleValue(newAttribute,newAttributeType);
 						parameterName.setSingleValue(newAttribute, attr.getName());
 						if (attr.getExpression() != null) { //Unfinished
 							
-							Symbol prefix = Symbol.buildFrom(view.getMainProvider().getSymbolName(),
+							Symbol prefix = Symbol.buildFrom(view.getMainProvider().getMainSymbol(),
 									sym,"foreignAttribute",attr.getName());
 							InstanceCreator tc = creationMap.get(prefix);
 							if (tc == null) {
@@ -364,7 +364,7 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 							//Ignore parameters for now ...
 							EObject originalBlock = (EObject)match.eGet(SimplejavaPackage.eINSTANCE.getMethod_Content());
 							VMEObject vmeo = (VMEObject)match;
-							Symbol prefix = Symbol.buildFrom(view.getMainProvider().getSymbolName(),
+							Symbol prefix = Symbol.buildFrom(view.getMainProvider().getMainSymbol(),
 									vmeo.getUUID(), a.getName(), String.valueOf(pointcut.getName()),adviceId);
 							InstanceCreator tc = creationMap.get(prefix);
 							if (tc == null) {

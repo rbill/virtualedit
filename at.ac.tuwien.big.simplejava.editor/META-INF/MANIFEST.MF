@@ -8,7 +8,7 @@ Bundle-Activator: simplejava.presentation.SimplejavaEditorPlugin$Implementation
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: simplejava.presentation
+Export-Package: at.ac.tuwien.big.simplejava.presentation
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;visibility:=reexport,
  at.ac.tuwien.big.simplejava.edit;visibility:=reexport,

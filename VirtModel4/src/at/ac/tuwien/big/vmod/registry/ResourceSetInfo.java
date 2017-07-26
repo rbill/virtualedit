@@ -61,7 +61,7 @@ public class ResourceSetInfo {
 	private boolean changeDone = true;
 	private SymbolRegistry symbolRegistry;
 	private VEcoreFile ecoreFile;
-	private Map<String, Resource> symbolNameToResource = new HashMap<>(); //TODO: Memory leak ...
+	private Map<Symbol, Resource> symbolNameToResource = new HashMap<>(); //TODO: Memory leak ...
 	
 	
 	
@@ -100,6 +100,18 @@ public class ResourceSetInfo {
 		}
 		public final ModelResource resource;
 		public final GeneralElement value;
+		
+		public int hashCode() {
+			return (resource==null?0:resource.hashCode())*127+(value==null?0:value.hashCode());
+		}
+		
+		public boolean equals(Object o) {
+			if (!(o instanceof DerivationSource)) {
+				return false;
+			}
+			DerivationSource d = (DerivationSource)o;
+			return Objects.equals(resource, d.resource) && Objects.equals(value, d.value);
+		}
 	}
 	
 	public static class ExactDerivationStatus {
@@ -257,7 +269,9 @@ public class ResourceSetInfo {
 				Resource dr = deltaResources.get(i);
 				boolean include = !excludeAspects.contains(dr);
 				if (include) {
-				curProvider = new SimpleDeltaModelProviderImpl(baseProvider.getSymbolName()+"_delta"+(i+1),
+					SymbolImpl newSymbol = new SymbolImpl(baseProvider.getMainSymbol().getName()+"_delta"+(i+1));
+					newSymbol.subObjects().addAll(baseProvider.getMainSymbol().subObjects());
+				curProvider = new SimpleDeltaModelProviderImpl(newSymbol,
 						deltaResources.get(i),curProvider,deltaResourceProviders.get(i).getResultModel());
 				}
 			}
@@ -290,18 +304,22 @@ public class ResourceSetInfo {
 				Resource dr = deltaResources.get(i);
 				boolean include = !state.disabledViews().contains(dr);
 				if (include) {
-				curProvider = new SimpleDeltaModelProviderImpl(baseProvider.getSymbolName()+"_delta"+(i+1),
+					SymbolImpl newSymbol = new SymbolImpl(baseProvider.getMainSymbol().getName()+"_delta"+(i+1));
+					newSymbol.subObjects().addAll(baseProvider.getMainSymbol().subObjects());
+				curProvider = new SimpleDeltaModelProviderImpl(newSymbol,
 						deltaResources.get(i),curProvider,deltaResourceProviders.get(i).getResultModel());
-				symbolNameToResource.put(curProvider.getSymbolName(), dr);
+						symbolNameToResource.put(curProvider.getMainSymbol(), dr);
 				} else {
 					needRecalc = true;
 				}
 			}
 			for (TransformationExecutionInfo tei: transformationExecutors) {
 				ModelResource res = transformationUserDelta.get(tei.getResource());
+				SymbolImpl newSymbol = new SymbolImpl(baseProvider.getMainSymbol().getName()+"_"+tei.getSymbol());
+				newSymbol.subObjects().addAll(baseProvider.getMainSymbol().subObjects());
 				TransformationModelProviderImpl tmpi = new TransformationModelProviderImpl(baseProvider.getType(),
-						baseProvider.getSymbolName()+"_"+tei.getSymbol(), ecore, curProvider, tei.getExecutor(), res);
-				symbolNameToResource.put(tmpi.getSymbolName(), tei.getResource());
+						newSymbol, ecore, curProvider, tei.getExecutor(), res);
+				symbolNameToResource.put(tmpi.getMainSymbol(), tei.getResource());
 				tpis.add(tmpi);
 				symbolRegistry.addProvider(tmpi);;
 				transformationUserDelta.put(tei.getResource(), res = tmpi.getUserEditModel());
@@ -462,7 +480,9 @@ public class ResourceSetInfo {
 					executorInfo.getSymbol(), ecore, base, executorInfo.getExecutor());
 			base = tpi;
 		}
-		return new SimpleDeltaModelProviderImpl("userDeltafor_"+base.getSymbolName(), ecore, base);
+		SymbolImpl newSymbol = new SymbolImpl("userDeltafor_"+base.getMainSymbol().getName());
+		newSymbol.subObjects().addAll(base.getMainSymbol().subObjects());
+		return new SimpleDeltaModelProviderImpl(newSymbol, ecore, base);
 	}
 	
 	public ResourceSetInfo(ResourceSet rs) {
@@ -780,8 +800,8 @@ public class ResourceSetInfo {
 
 
 	public Resource getAspectResource(ModelResource resource) {
-		String symbolName = resource.getProvider().getSymbolName();
-		return symbolNameToResource.get(symbolName);
+		Symbol symbol = resource.getProvider().getMainSymbol();
+		return symbolNameToResource.get(symbol);
 	}
 
 	

@@ -1,3 +1,8 @@
 /.TestDSLQuickfixProvider.java._trace
 /.TestDSLQuickfixProvider.xtendbin
 /TestDSLQuickfixProvider.java
+/.gitignore
+/TestDSLQuickfixProvider.xtend
+/at/
+/org/
+/TestDSLQuickfixProvider.class

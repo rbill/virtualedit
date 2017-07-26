@@ -3,9 +3,12 @@ package at.ac.tuwien.big.vmod.registry;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.URIConverter;
 
 public interface ViewState {
 	
@@ -55,6 +58,36 @@ public interface ViewState {
 		enabled.removeAll(curEnabled);
 		enabled.retainAll(changeModels);
 		enabledViews().addAll(enabled);
+	}
+
+	public default boolean resourceUriEnabled(String uri) {
+		if (uri == null) {
+			for (Resource disabled: disabledViews()) {
+				if (disabled.getURI() == null) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			URI uuri = URIConverter.INSTANCE.normalize(URI.createURI(uri));
+			for (Resource disabled: disabledViews()) {
+				if (uuri.equals(disabled.getURI())) {
+					return false;
+				}
+			}
+			return true;
+		}
+		 
+	}
+
+	public default void setShownViews(List<Resource> res) {
+		Set<Resource> curDisabled = disabledViews();
+		Set<Resource> curEnabled = enabledViews();
+		Set<Resource> all = new HashSet<Resource>(curDisabled);
+		all.addAll(curEnabled);
+		all.removeAll(res);
+		addToView(res);
+		deleteFromView(all);
 	}
 
 }

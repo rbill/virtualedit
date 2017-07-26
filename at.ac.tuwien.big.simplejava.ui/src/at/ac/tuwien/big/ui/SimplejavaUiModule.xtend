@@ -6,6 +6,7 @@ package at.ac.tuwien.big.ui
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 import at.ac.tuwien.big.virtualxtext.VMXtextEditor
 import org.eclipse.xtext.ui.editor.XtextEditor
+import at.ac.tuwien.big.virtualxtext.MultiXtextEditor
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -15,8 +16,9 @@ class SimplejavaUiModule extends AbstractSimplejavaUiModule {
 	
 	
 	def Class<? extends XtextEditor> bindXtextEditor() {
-		return VMXtextEditor;
-	}
+		return MultiXtextEditor;
+		//return VMXtextEditor;
+	} 
 
 }
  

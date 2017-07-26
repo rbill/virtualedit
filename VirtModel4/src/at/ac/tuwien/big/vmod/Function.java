@@ -6,11 +6,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import at.ac.tuwien.big.virtmod.basic.Treepos;
+import at.ac.tuwien.big.vmod.impl.SimpleCounter;
+import at.ac.tuwien.big.vmod.impl.SimpleFunction;
 import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.DerivationStatus;
 import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.ExactDerivationStatus;
 import at.ac.tuwien.big.vmod.type.FunctionType;
@@ -19,12 +22,11 @@ import at.ac.tuwien.big.vmod.type.ValueType;
 import at.ac.tuwien.big.vmodel.general.impl.FakeEntry;
 import at.ac.tuwien.big.xtext.util.IteratorUtils;
 
-public interface Function<T,U> extends GeneralElement {
+public interface Function<T,U> extends GeneralElement, FunctionMap<T,U> {
 	
 	@Override
 	public FunctionType getType();
 	
-	public U getValue(T key);
 	
 	public U getValueOrNull(T o);
 	
@@ -112,11 +114,16 @@ public interface Function<T,U> extends GeneralElement {
 		return new Iterator<T>() {
 			
 			IterablePosition<T> lastObject = pos.getNext();
+			{
+				while (lastObject != null && !lastObject.hasElement()) {
+					lastObject = lastObject.getNextOrNull();
+				}
+			}
 			IterablePosition<T> lastRet = null;
 
 			@Override
 			public boolean hasNext() {
-				return lastObject.hasElement();
+				return lastObject != null;
 			}
 
 			@Override
@@ -126,7 +133,10 @@ public interface Function<T,U> extends GeneralElement {
 					return ret;
 				} finally {
 					lastRet = lastObject;
-					lastObject = lastObject.getNext();
+					lastObject = lastObject.getNextOrNull();
+					while (lastObject != null && !lastObject.hasElement()) {
+						lastObject = lastObject.getNextOrNull();
+					}
 				}
 			}
 			
@@ -207,13 +217,50 @@ public interface Function<T,U> extends GeneralElement {
 		}
 	}
 
-	public static boolean isEmpty(Function<Symbol, ? extends Counter> value) {
+	public static boolean isEmpty(Function<?, ? extends Counter> value) {
 		for (Counter c: value.valueIterable()) {
 			if (c.exists()) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	public static<T> boolean hasValue(Function<T,? extends Counter> func, T value) {
+		Counter bla = func.getValueOrNull(value);
+		return bla != null && bla.exists();
+	}
+	
+
+	@Override
+	public default boolean setValue(GeneralElement e) {
+		if (e == this) {return true;}
+		if (e instanceof Function) {
+			try {
+				boolean ret = true;
+				Function<?,?> f = (Function)e;
+				IterablePosition<T> pos = getIterableOrNull();
+				for (Entry<?,?> entr: f.entryIterable()) {
+					Object key = entr.getKey();
+					Object value = entr.getValue();
+					if (value instanceof GeneralElement) {
+						Object r = getValue((T)key);
+						if (!(r instanceof GeneralElement)) {
+							return ret = false;
+						}
+						GeneralElement gv = (GeneralElement)r;
+						gv.setValue((GeneralElement)value);
+						if (pos != null && !pos.has((T)key)) {
+							pos.add((T)key);
+						}
+					}
+				}
+				return ret;
+			} catch (Exception ex) {
+				return false;
+			}
+		}
+		return false;
 	}
 
 

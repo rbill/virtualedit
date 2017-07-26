@@ -55,6 +55,7 @@ import at.ac.tuwien.big.xtext.equalizer.Creater;
 import at.ac.tuwien.big.xtext.equalizer.InstanceCreator;
 import at.ac.tuwien.big.xtext.equalizer.ModelCorrespondance;
 import at.ac.tuwien.big.xtext.equalizer.impl.SimpleModelCorrespondance;
+import at.ac.tuwien.big.xtext.equalizer.impl.SimpleModelEqualizer;
 import at.ac.tuwien.big.xtext.util.MyEcoreUtil;
 
 public interface VModelView {
@@ -108,6 +109,21 @@ public interface VModelView {
 	}
 	
 
+	public default String toContentString() {
+		StringBuilder ret = new StringBuilder();
+		for (EObject eobj: getAllEObjects()) {
+			if (eobj.eContainer() != null) {continue;}
+			if (eobj instanceof VMEObject) {
+				VMEObject vme = (VMEObject)eobj;
+				if (ret.length()>0) {ret.append("\n");}
+				ret.append(vme.fullString());
+			} else {
+				System.err.println("Wrong type!");
+			}
+		}
+		return ret.toString();
+	}
+	
 	public default void printModel(StringBuilder toString) {
 		Map<Symbol,String> eobjNames = new HashMap<>();
 		Map<EClass,Integer> curNames = new HashMap<>();
@@ -356,13 +372,88 @@ public interface VModelView {
 		return ret;
 	}
 	
+	public default List<EObject> getResourceEObjects() {
+		Iterable<Symbol> symbols = getInstances().getRootObjects();
+		List<EObject> ret = new ArrayList<>();
+		for (Symbol sym: symbols) {
+			ret.add(getEObject(sym));
+		}
+		return ret;
+	}
 	
+	//Before you call synchronizeWithResource, then you change the xmiResource with that
+	public default void changeResource(Resource xmiResource, SimpleModelCorrespondance correspondance) {
+		List<EObject> sourceEObjects = getResourceEObjects();
+		//TODO: just to check things
+		//TODO: Own file for the things ... then you don't have this mixture problem
+		correspondance.removeResourceLess();
+		SimpleModelCorrespondance otherCorr = new SimpleModelCorrespondance();
+		//Works here, so the correspondance is wrong
+		SimpleModelEqualizer eq = new SimpleModelEqualizer(sourceEObjects, xmiResource.getContents(),
+				correspondance, otherCorr, 
+				InstanceCreator.DEFAULT);
+		eq.equalize();
+	}
+	
+	public default SimpleModelCorrespondance synchronizeWithResource(Resource xmiResource, SimpleModelCorrespondance correspondance) {
+		List<EObject> targetEObjects = getResourceEObjects();
+		List<EObject> oldEObjects = new ArrayList<>(targetEObjects);
+		VObjectValues instances = getInstances();
+		Map<EObject,Symbol> reuseSymbol = new HashMap<EObject, Symbol>();
+		Map<EObject,VMEObject> oldObj = new HashMap<EObject, VMEObject>();
+		for (EObject eobj: (Iterable<EObject>)()->xmiResource.getAllContents()) {
+			VMEObject oldObject = (VMEObject)correspondance.getLeftObject(eobj);
+			//Jetzt bräuchte ich aber
+			if (oldObject != null) {
+				//Es gab das objekt schon früher, benutzte die ID nocheinmal
+				oldObj.put(eobj, oldObject);
+				reuseSymbol.put(eobj, oldObject.getUUID());
+			} else {
+				oldObject = (VMEObject)createEObject(eobj.eClass());
+				oldObj.put(eobj, oldObject);
+				correspondance.putCorrespondence(oldObject, eobj);
+			}
+			//newCorr.putCorrespondence(thingWhichChange, thingWhichShouldBeSynchronized);
+		}
+		SimpleModelCorrespondance empty = new SimpleModelCorrespondance();
+		//Es ist so ähnlich: Ich muss equalizen ...
+		SimpleModelEqualizer eq = new SimpleModelEqualizer(xmiResource.getContents(), targetEObjects, correspondance.inverse(), 
+				empty, (cont,cl)->{					
+					throw new RuntimeException("Objects should have been created!");
+				});
+		eq.equalize();
+		Set<EObject> noMoreRoot = new HashSet<>(oldEObjects);
+		Set<EObject> newRoot = new HashSet<>(targetEObjects);
+		noMoreRoot.removeAll(targetEObjects);
+		newRoot.removeAll(oldEObjects);
+		for (EObject eobj: noMoreRoot) {
+			if (eobj instanceof VMEObject) {
+				getInstances().makeUncontainedInRoot(((VMEObject) eobj).getUUID());
+			} else {
+				throw new RuntimeException();
+			}
+		}
+		for (EObject eobj: newRoot) {
+			if (eobj instanceof VMEObject) {
+				getInstances().makeContainedInRoot(((VMEObject) eobj).getUUID());
+			} else {
+				throw new RuntimeException();
+			}
+		}
+		//retCorr is the inverse of newCorr
+		for (Entry<EObject,EObject> entry: empty.getEntriesR2L()) {
+			correspondance.putCorrespondence(entry.getKey(), entry.getValue());
+		}
+		return correspondance;
+	}
+	
+	/**Loads the resource. Correspondance: Real Object --> Virtual Object*/
 	public default SimpleModelCorrespondance loadResource(Resource xmiResource) {
 		Map<EObject, Symbol> assignedIds = new HashMap<>();
 		VObjectValues instances = getInstances();
 		SimpleModelCorrespondance ret = new SimpleModelCorrespondance();
 		for (EObject eobj: (Iterable<EObject>)()->xmiResource.getAllContents()) {
-			Symbol myId = getMainProvider().newSymbol();
+			Symbol myId = getMainProvider().newSymbol((eobj==null || eobj.eClass() == null)?null:eobj.eClass().getName());
 			assignedIds.put(eobj, myId);
 			instances.add(myId);
 			instances.setClass(myId, eobj.eClass());
@@ -493,7 +584,7 @@ public interface VModelView {
 				} else {
 					postfix = Symbol.buildFrom("post", symbol, cl.getName(), curInt); 
 				}
-				return Symbol.buildFrom(getMainProvider().getSymbolName(), prefix,postfix);
+				return Symbol.buildFrom(getMainProvider().getMainSymbol(), prefix,postfix);
 			}
 			
 			@Override
@@ -522,5 +613,14 @@ public interface VModelView {
 		return getEObject(newAttribute);
 	}
 
+	public default EObject createEObject(EClass parameter) {
+		if (parameter == null) {
+			System.err.println("Wanting to create NULL class!");
+		}
+		Symbol newAttribute = getMainProvider().newSymbol(parameter==null?null:parameter.getName());
+		getInstances().add(newAttribute);
+		getInstances().setClass(newAttribute, parameter);
+		return getEObject(newAttribute);
+	}
 
 }

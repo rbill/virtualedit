@@ -4,6 +4,9 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 
+import at.ac.tuwien.big.verocl.parameterdesc.MultiModelPoint;
+import at.ac.tuwien.big.verocl.parameterdesc.MultiPoint;
+import at.ac.tuwien.big.verocl.parameterdesc.SinglePoint;
 import at.ac.tuwien.big.virtmod.basic.Treepos;
 import at.ac.tuwien.big.vmod.Counter;
 import at.ac.tuwien.big.vmod.Function;
@@ -50,20 +53,51 @@ public class EcoreModelResourceUtil {
 	}
 	
 
+	public static<T> ParametizedFunction<Symbol, ParametizedFunction<Treepos, ParametizedFunction<Object, ? extends ParametizedCounter<MultiPoint,SinglePoint>, MultiPoint, SinglePoint>, MultiPoint, SinglePoint>, MultiPoint, SinglePoint> getProjectedFeatureValueFunc(
+			ParametizedModelResource<? extends MultiPoint,? extends SinglePoint> resource, String feature) {
+		ParametizedFunction cfung = ((ParametizedFunction)resource.getElement("associations"));
+		return (ParametizedFunction)cfung.get(feature);
+	}
 
 	public static Function<Symbol, ? extends Counter> getObjectFunc(ModelResource resource) {
 		return (Function)((Function)resource.getElement("instances"));
+	}
+	
+
+
+	public static ParametizedFunction<Symbol, ? extends ParametizedCounter<MultiPoint,SinglePoint>,MultiPoint,SinglePoint	> getProjectedObjectFunc(
+			ParametizedModelResource<? extends MultiPoint, ? extends  SinglePoint> resource) {
+		ParametizedFunction cfung = ((ParametizedFunction)resource.getElement("instances"));
+		return cfung;
 	}
 
 
 	public static Function<Symbol, Function<String, ? extends Counter>> getClassFunc(ModelResource resource) {
 		return (Function)((Function)resource.getElement("classes"));
 	}
+	
+
+
+	public static<T> ParametizedFunction<Symbol, ParametizedFunction<String, ? extends ParametizedCounter<MultiPoint,SinglePoint>, MultiPoint, SinglePoint>, MultiPoint, SinglePoint> getProjectedClassFunc(
+			ParametizedModelResource<MultiPoint,SinglePoint> resource) {
+		ParametizedFunction cfung = ((ParametizedFunction)resource.getElement("classes"));
+		return cfung;
+	}
+
 
 
 	public static Function<Symbol, Function<Symbol, ? extends Counter>> getContainerFunc(ModelResource resource) {
 		return (Function)((Function)resource.getElement("containments"));
 	}
+	
+
+
+	public static<T> ParametizedFunction<Symbol, ParametizedFunction<Symbol, ? extends ParametizedCounter<MultiPoint,SinglePoint>,MultiPoint,SinglePoint>, MultiPoint,SinglePoint> getProjectedContainerFunc(
+			ParametizedModelResource<MultiPoint,SinglePoint> resource) {
+		ParametizedFunction cfung = ((ParametizedFunction)resource.getElement("containments"));
+		return cfung;
+	}
+
 	
 	public static ModelResourceType getModelResource(Resource forEcore) {
 		ModelResourceTypeImpl type = new ModelResourceTypeImpl();
@@ -119,6 +153,7 @@ public class EcoreModelResourceUtil {
 		return type;
 		
 	}
+
 
 
 }

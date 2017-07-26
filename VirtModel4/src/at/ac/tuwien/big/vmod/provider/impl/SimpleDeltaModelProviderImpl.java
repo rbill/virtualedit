@@ -23,6 +23,7 @@ import at.ac.tuwien.big.vmod.provider.SimpleModelProvider;
 import at.ac.tuwien.big.vmod.registry.SymbolRegistry;
 import at.ac.tuwien.big.vmod.type.ModelProviderType;
 import at.ac.tuwien.big.vmod.type.ModelResourceType;
+import at.ac.tuwien.big.vmod.type.Symbol;
 
 public class SimpleDeltaModelProviderImpl extends SimpleGeneralElement<ModelProviderType> implements SimpleModelProvider {
 	
@@ -37,6 +38,10 @@ private int index;
 	}
 	
 	public SimpleDeltaModelProviderImpl(String symbol, Resource ecore, ModelProvider inputProvider) {
+		this(Symbol.from(symbol),ecore,inputProvider);
+	}
+	
+	public SimpleDeltaModelProviderImpl(Symbol symbol, Resource ecore, ModelProvider inputProvider) {
 		super(inputProvider.getType());
 		this.symbol = symbol;
 		this.inputProvider = inputProvider;
@@ -52,7 +57,7 @@ private int index;
 	
 	
 	
-	public SimpleDeltaModelProviderImpl(String symbol, Resource ecore, ModelProvider inputProvider,
+	public SimpleDeltaModelProviderImpl(Symbol symbol, Resource ecore, ModelProvider inputProvider,
 			ModelResource transformationDelta) {
 		super(inputProvider.getType());
 		this.symbol = symbol;
@@ -65,6 +70,7 @@ private int index;
 		UnionGenerator generator = new GenericUnionGenerator();
 		this.completeResult = new UnionModelResource(this,wholeResultURI, restype, input, userDelta, generator, false);
 	}
+	
 	
 	public SimpleDeltaModelProviderImpl(SimpleDeltaModelProviderImpl This, List<ModelProvider> newInputs) {
 		super(This.type);
@@ -96,7 +102,8 @@ private int index;
 	private ModelResource userDelta;
 	private ModelResource input;
 	private ModelProvider inputProvider;
-	private String symbol;
+	private Symbol symbol;
+	
 
 	@Override
 	public ModelResource getResultModel() {
@@ -114,7 +121,7 @@ private int index;
 	}
 
 	@Override
-	public String getSymbolName() {
+	public Symbol getMainSymbol() {
 		return symbol;
 	}
 	

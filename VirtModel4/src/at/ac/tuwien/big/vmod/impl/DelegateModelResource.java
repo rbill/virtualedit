@@ -61,6 +61,7 @@ public class DelegateModelResource extends SimpleDelegateGeneralElement<ModelRes
 			throw new RuntimeException("Can't add an element which is not a delta built to a union resource!");
 		}
 	}
+	
 
 	@Override
 	public URI getURI() {

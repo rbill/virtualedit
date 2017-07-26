@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import at.ac.tuwien.big.vmod.GeneralElement;
 import at.ac.tuwien.big.vmod.ParentLocation;
 import at.ac.tuwien.big.vmod.impl.ParentLocationImpl;
 import at.ac.tuwien.big.vmod.impl.SimpleGeneralElement;
 import at.ac.tuwien.big.vmod.provider.ModelProvider;
 import at.ac.tuwien.big.vmod.type.GeneralType;
 import at.ac.tuwien.big.vmod.type.Symbol;
+import at.ac.tuwien.big.vmod.type.SymbolImpl;
 import at.ac.tuwien.big.vmod.type.SymbolRegistryType;
 
 public class SymbolRegistryImpl extends SimpleGeneralElement<SymbolRegistryType> implements SymbolRegistry {
@@ -20,7 +22,7 @@ public class SymbolRegistryImpl extends SimpleGeneralElement<SymbolRegistryType>
 		super(type);
 	}
 	
-	private Map<String,ModelProvider> modelProviders = new HashMap<>();
+	private Map<Symbol,ModelProvider> modelProviders = new HashMap<>();
 	private List<ModelProvider> provider = new ArrayList<ModelProvider>();
 
 	@Override
@@ -33,25 +35,39 @@ public class SymbolRegistryImpl extends SimpleGeneralElement<SymbolRegistryType>
 	public void removeProviders(Iterable<? extends ModelProvider> providers) {
 		for (ModelProvider prov: providers) {
 			provider.remove(prov);
-			modelProviders.remove(prov.getSymbolName(), prov);
+			modelProviders.remove(prov.getMainSymbol(), prov);
 		}
 	}
 
 	@Override
 	public ModelProvider getProvider(Symbol forSymbol) {
-		String key = forSymbol.getName();
-		return modelProviders.get(key);
+		//TODO: Irgendwie muss ich das mit dem Main-symbol anders lösen ...
+		SymbolImpl fakeSymbol = new SymbolImpl();
+		fakeSymbol.setName(forSymbol.getName());
+		fakeSymbol.subObjects().addAll(forSymbol.subObjects());
+		ModelProvider ret = modelProviders.get(forSymbol);
+		if (ret != null) {
+			return ret;
+		}
+		for (int j = fakeSymbol.subObjects().size()-1; j >= 0; --j) {
+			fakeSymbol.subObjects().remove(j);
+			ret = modelProviders.get(forSymbol);
+			if (ret != null) {
+				return ret;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public void addProvider(ModelProvider res) {
 		
-		ModelProvider untilNow = modelProviders.put(res.getSymbolName(), res);
+		ModelProvider untilNow = modelProviders.put(res.getMainSymbol(), res);
 		if (untilNow != res) {
 			provider.remove(res);
 			provider.add(res);
 		}
-		res.setParentLoc(new ParentLocationImpl(this, res.getSymbolName(), res));
+		res.setParentLoc(new ParentLocationImpl(this, res.getMainSymbol(), res));
 	}
 
 	@Override
@@ -62,6 +78,12 @@ public class SymbolRegistryImpl extends SimpleGeneralElement<SymbolRegistryType>
 			ret = this.provider.size(); //Assume provider will be added next
 		}
 		return ret;
+	}
+
+	@Override
+	public boolean setValue(GeneralElement e) {
+		System.err.println("Cant't set value of Symbol Registry");
+		return false;
 	}
 	
 	

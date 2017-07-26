@@ -72,6 +72,7 @@ public interface ConvertingList<E, F> extends ConvertingCollection<E, F>, EList<
 		return ConvertingCollection.super.retainAll(c);
 	}
 	
+	
 	public static class MyListIterator<E> implements ListIterator<E>{
 		private int index;
 		private ConvertingList<E,?> This;

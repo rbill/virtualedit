@@ -1,10 +1,12 @@
 package at.ac.tuwien.big.vmod.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import at.ac.tuwien.big.vmod.Counter;
 import at.ac.tuwien.big.vmod.DelegateBuilt;
 import at.ac.tuwien.big.vmod.DeltaBuilt;
+import at.ac.tuwien.big.vmod.GeneralElement;
 import at.ac.tuwien.big.vmod.ModelResource;
 import at.ac.tuwien.big.vmod.ParentLocation;
 import at.ac.tuwien.big.vmod.provider.ModelProvider;
@@ -35,5 +37,6 @@ public class DelegateCounter extends SimpleDelegateGeneralElement<CountType, Cou
 	public void priv_getNonnullResources(List<ModelResource> prov) {
 		getBase().priv_getNonnullResources(prov);
 	}
+
 
 }

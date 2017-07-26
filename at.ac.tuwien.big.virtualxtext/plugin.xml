@@ -22,6 +22,16 @@
 		class="at.ac.tuwien.big.virtualxtext.ResourceList"/>
 </extension>
 
+
+<extension point="org.eclipse.ui.views">
+	<category id="at.ac.tuwien.big.virtualxtext.resource" name="Merged Models">
+	</category>
+	<view id="at.ac.tuwien.big.virtualxtext.mmview"
+		name="VirtualEdit Multi-view"
+		icon="icons\view.gif"
+		class="at.ac.tuwien.big.virtualxtext.ResourceListMulti"/>
+</extension>
+
 	<extension
 		point="org.eclipse.ui.editors">
 		<editor

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ASCII"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="modelref" nsURI="testmodel/modelref.xmi" nsPrefix="modelref">
+  <eClassifiers xsi:type="ecore:EClass" name="ModelRef">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="next" upperBound="-1" eType="//ModelRef" eOpposite="//ModelRef/previous"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="previous" upperBound="-1" eType="//ModelRef"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="uri" lowerBound="1">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parameter" lowerBound="1" eType="//ParameterDesc" eOpposite="//ParameterDesc/model"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ParameterDesc">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="model" lowerBound="1" eType="//ModelRef"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="version" lowerBound="1">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="variant" lowerBound="1">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EBigInteger"/>
+    </eStructuralFeatures>
+  </eClassifiers>
+</ecore:EPackage>

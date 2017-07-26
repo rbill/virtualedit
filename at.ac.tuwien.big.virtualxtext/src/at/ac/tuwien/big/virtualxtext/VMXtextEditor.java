@@ -578,7 +578,7 @@ public class VMXtextEditor extends XtextEditor {
 						prov = alternative;
 					}
 				}
-				Symbol newSymbol = prov.newSymbol(); //Alles was erzeugt wird landed hier TODO: ändern, so dass es passt ... wie ist das?
+				Symbol newSymbol = prov.newSymbol(cl!=null?cl.getName():null); //Alles was erzeugt wird landed hier TODO: ändern, so dass es passt ... wie ist das?
 				VObjectValues val = viewModel.getInstances();
 				val.add(newSymbol);
 				val.setClass(newSymbol, cl);
@@ -928,7 +928,7 @@ public class VMXtextEditor extends XtextEditor {
 								IMarker featureMarker = res.createMarker(markerType);
 								String postfix = "";
 								if (!fullgenstate.getTransformationProviders().isEmpty()) {
-									postfix = "by "+IteratorUtils.concat(fullgenstate.getTransformationProviders(),(x)->x.resource.getProvider().getSymbolName());
+									postfix = "by "+IteratorUtils.concat(fullgenstate.getTransformationProviders(),(x)->x.resource.getProvider().getMainSymbol());
 								}
 								String fn = "A feature ";
 								if (esf != null) {

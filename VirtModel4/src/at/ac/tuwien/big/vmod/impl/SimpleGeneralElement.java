@@ -34,6 +34,10 @@ public abstract class SimpleGeneralElement<Type extends GeneralType> implements 
 	public void setParentLoc(ParentLocation parent) {
 		this.parentLoc = parent;
 	}
+
+	public void copyFrom(SimpleGeneralElement<Type> from) {
+		this.type = from.type;
+	}
 	
 
 }

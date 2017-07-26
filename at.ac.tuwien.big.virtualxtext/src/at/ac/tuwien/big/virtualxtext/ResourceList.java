@@ -398,7 +398,8 @@ public class ResourceList extends ViewPart implements ISelectionListener, IPartL
 			IEditorReference eref = (IEditorReference)ref;
 			IEditorPart edpart = eref.getEditor(false);
 			if (edpart instanceof VMXtextEditor) {
-				setEditor(editor);
+				//TODO: Vorher war das setEditor(editor)
+				setEditor((VMXtextEditor)edpart);
 			}
 		}
 	}

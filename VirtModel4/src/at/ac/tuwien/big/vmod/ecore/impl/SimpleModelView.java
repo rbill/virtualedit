@@ -37,6 +37,8 @@ public class SimpleModelView implements VModelView {
 	private Map<String,VFeatureValues> featureValuesCache = new HashMap<>();
 	private Map<Symbol,VMEObject> containedObjects = new HashMap<>();
 	
+
+	
 	@Override
 	public void selfClear() {
 		Set<Symbol> allInstances = new HashSet<>();

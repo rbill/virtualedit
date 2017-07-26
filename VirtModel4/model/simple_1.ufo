@@ -1,0 +1,12 @@
+aircraft craft_drop_firebird
+{
+	param {
+	 speed 9   
+	 middlespeed 7
+	 maxspeed 10
+	}
+	name		"_Firebird-class Dropship2"
+	lowspeed2 54
+	size		22
+	 slowthing	24
+}

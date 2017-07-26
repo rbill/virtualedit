@@ -78,4 +78,11 @@ public class SymbolImpl implements Symbol {
 	public String toString() {
 		return Parser.SYMBOL_PARSER.marshal(this);
 	}
+	
+	public SymbolImpl shallowClone() {
+		SymbolImpl ret = new SymbolImpl();
+		ret.setName(getName());
+		ret.subObjects().addAll(subObjects());
+		return ret;
+	}
 }

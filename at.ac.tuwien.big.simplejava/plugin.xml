@@ -7,12 +7,4 @@
 			class = "at.ac.tuwien.big.simplejava.SimplejavaPackage"
 			genModel = "model/generated/Simplejava.genmodel" />
 	</extension>
-   <extension point="org.eclipse.emf.ecore.generated_package">
-      <!-- @generated Simplejava -->
-      <package
-            uri="http://www.ac.at/tuwien/big/Simplejava"
-            class="simplejava.SimplejavaPackage"
-            genModel="model/generated/Simplejava.genmodel"/>
-   </extension>
-
 </plugin>

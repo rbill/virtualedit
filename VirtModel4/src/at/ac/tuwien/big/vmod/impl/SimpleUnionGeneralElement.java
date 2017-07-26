@@ -7,7 +7,9 @@ import at.ac.tuwien.big.vmod.DelegateBuilt;
 import at.ac.tuwien.big.vmod.DeltaBuilt;
 import at.ac.tuwien.big.vmod.FakeDeltaBuilt;
 import at.ac.tuwien.big.vmod.GeneralElement;
+import at.ac.tuwien.big.vmod.IterablePosition;
 import at.ac.tuwien.big.vmod.ModelResource;
+import at.ac.tuwien.big.vmod.ParentLocation;
 import at.ac.tuwien.big.vmod.provider.ModelProvider;
 import at.ac.tuwien.big.vmod.type.GeneralType;
 
@@ -17,6 +19,30 @@ public abstract class SimpleUnionGeneralElement<Type extends GeneralType, Base, 
 	private Edit edit;
 	private boolean isUserEdit = false;
 	
+	private static Object getParentValue(Object o) {
+		if (o instanceof GeneralElement) {
+			ParentLocation pl = ((GeneralElement) o).getParentLoc();
+			if (pl != null) {
+				Object ret = pl.getValue();
+				if (ret != null) {
+					return ret;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public Object getParentValue() {
+		Object baseO = getParentValue(base);
+		if (baseO != null) {
+			return baseO;
+		}
+		return getParentValue(edit);
+	}
+	
+	public void setParent(GeneralElement par) {
+		setParentLoc(new ParentLocationImpl(par, getParentValue(), this));
+	}
 
 	public SimpleUnionGeneralElement(Type type, Base base, Edit edit, boolean isUserEdit) {
 		super(type);

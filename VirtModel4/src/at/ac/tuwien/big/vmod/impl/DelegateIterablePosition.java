@@ -1,12 +1,22 @@
 package at.ac.tuwien.big.vmod.impl;
 
+import at.ac.tuwien.big.vmod.GeneralElement;
 import at.ac.tuwien.big.vmod.IterablePosition;
 import at.ac.tuwien.big.vmod.type.IterableType;
 
 public class DelegateIterablePosition<Type extends IterableType,T> extends SimpleDelegateGeneralElement<Type, IterablePosition<T>> implements IterablePosition<T>{
 
-	public DelegateIterablePosition(Type type, IterablePosition<T> base, boolean isUserEdit) {
+	public DelegateIterablePosition(GeneralElement parent, Type type, IterablePosition<T> base, boolean isUserEdit) {
 		super(type, base, isUserEdit);
+		if (hasElement()) {
+			setParentLoc(new ParentLocationImpl(parent,getObject(), this));
+		} else {
+			if (isStart()) {
+				setParentLoc(new ParentLocationImpl(parent,"start", this));
+			} else {
+				setParentLoc(new ParentLocationImpl(parent,"end", this));
+			}
+		}
 	}
 
 	@Override
@@ -31,10 +41,10 @@ public class DelegateIterablePosition<Type extends IterableType,T> extends Simpl
 	@Override
 	public IterablePosition<T> getNextOrNull() {
 		if (getBase().isEnd()) {
-			return new DelegateIterablePosition(getType(), getBase(), isUserEdit());
+			return null;// new DelegateIterablePosition(getParent(),getType(), getBase(), isUserEdit());
 		} 
 		IterablePosition<T> next = getBase().getNext();
-		return new DelegateIterablePosition(getType(), next, isUserEdit());
+		return new DelegateIterablePosition(getParent(), getType(), next, isUserEdit());
 	}
 
 
@@ -44,7 +54,7 @@ public class DelegateIterablePosition<Type extends IterableType,T> extends Simpl
 		if (previous == null) {
 			return null;
 		}
-		return new DelegateIterablePosition(getType(), previous, isUserEdit());
+		return new DelegateIterablePosition(getParent(), getType(), previous, isUserEdit());
 	}
 
 	@Override

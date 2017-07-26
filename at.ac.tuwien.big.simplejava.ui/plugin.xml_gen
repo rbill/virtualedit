@@ -7,7 +7,7 @@
 			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
 			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
 			default="true"
-			extensions="vjava"
+			extensions="sijava"
 			id="at.ac.tuwien.big.Simplejava"
 			name="Simplejava Editor">
 		</editor>
@@ -58,20 +58,20 @@
 			<and>
 				<reference definitionId="isActiveEditorAnInstanceOfXtextEditor"/>
 				<with variable="activeEditor">
-					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName" 
-						value="at.ac.tuwien.big.Simplejava" 
+					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName"
+						value="at.ac.tuwien.big.Simplejava"
 						forcePluginActivation="true"/>
-				</with>		
+				</with>
 			</and>
 		</definition>
 		<definition id="at.ac.tuwien.big.Simplejava.XtextEditor.opened">
 			<and>
 				<reference definitionId="isXtextEditorActive"/>
 				<with variable="activeEditor">
-					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName" 
-						value="at.ac.tuwien.big.Simplejava" 
+					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName"
+						value="at.ac.tuwien.big.Simplejava"
 						forcePluginActivation="true"/>
-				</with>		
+				</with>
 			</and>
 		</definition>
 	</extension>
@@ -154,7 +154,7 @@
 		</menuContribution>
 		<!-- copy qualified name -->
 		<menuContribution locationURI="popup:#TextEditorContext?after=copy">
-			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName" 
+			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
 					<reference definitionId="at.ac.tuwien.big.Simplejava.Editor.opened" />
@@ -170,7 +170,7 @@
 			</command>
 		</menuContribution>
 		<menuContribution locationURI="popup:org.eclipse.xtext.ui.outline?after=additions">
-			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedName" 
+			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedName"
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
 					<and>
@@ -209,13 +209,13 @@
 		point="org.eclipse.emf.ecore.extension_parser">
 		<parser
 			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
-			type="vjava">
+			type="sijava">
 		</parser>
 	</extension>
 	<extension point="org.eclipse.xtext.extension_resourceServiceProvider">
 		<resourceServiceProvider
 			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
-			uriExtension="vjava">
+			uriExtension="sijava">
 		</resourceServiceProvider>
 	</extension>
 	<!-- marker definitions for at.ac.tuwien.big.Simplejava -->
@@ -243,7 +243,7 @@
 	<extension point="org.eclipse.xtext.builder.participant">
 		<participant
 			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
-			fileExtensions="vjava"/>
+			fileExtensions="sijava"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
@@ -386,24 +386,24 @@
 	<extension point="org.eclipse.compare.contentViewers">
 		<viewer id="at.ac.tuwien.big.Simplejava.compare.contentViewers"
 			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="vjava">
+			extensions="sijava">
 		</viewer>
 	</extension>
 	<extension point="org.eclipse.compare.contentMergeViewers">
 		<viewer id="at.ac.tuwien.big.Simplejava.compare.contentMergeViewers"
 			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="vjava" label="Simplejava Compare">
+			extensions="sijava" label="Simplejava Compare">
 		</viewer>
 	</extension>
 	<extension point="org.eclipse.ui.editors.documentProviders">
 		<provider id="at.ac.tuwien.big.Simplejava.editors.documentProviders"
 			class="at.ac.tuwien.big.ui.SimplejavaExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
-			extensions="vjava">
+			extensions="sijava">
 		</provider>
 	</extension>
 	<extension point="org.eclipse.team.core.fileTypes">
 		<fileTypes
-			extension="vjava"
+			extension="sijava"
 			type="text">
 		</fileTypes>
 	</extension>

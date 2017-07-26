@@ -95,11 +95,11 @@ public class UnionCounter extends SimpleUnionGeneralElement<CountType, Counter, 
 				}
 				ModelProvider prov = getUserEditProvider(toAdd);
 				Counter editO = (Counter)getObjectInProvider(prov);
-				System.out.println("Adding "+value+" in " + getParentLoc().getValue()+" to counter "+getPath()+" in editProvider "+editO.getProvider().getSymbolName());
+				System.out.println("Adding "+value+" in " + getParentLoc().getValue()+" to counter "+getPath()+" in editProvider "+editO.getProvider().getMainSymbol());
 				editO.editAdd(value);
 			} else {
 				Counter editO = getEditObject();
-				System.out.println("Adding "+value+" in " + getParentLoc().getValue()+" to counter "+getPath()+" in editProvider "+editO.getProvider().getSymbolName());
+				System.out.println("Adding "+value+" in " + getParentLoc().getValue()+" to counter "+getPath()+" in editProvider "+editO.getProvider().getMainSymbol());
 				editO.editAdd(value);
 			}
 		}

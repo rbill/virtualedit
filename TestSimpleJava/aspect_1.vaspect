@@ -1,0 +1,1 @@
+aspect SimpleLogger { private boolean Account / logenabled ; private boolean Account / logenabledbla ; pointcut transfer ( ) : execution ( * * transfer ( .. ) ) ; before ( ) transfer ( ) { System.out.println ( "Transfer start" ) ; } after ( ) transfer ( ) { System.out.println ( "Transfer completed" ) ; } }

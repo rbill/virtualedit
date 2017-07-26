@@ -3,7 +3,9 @@ package at.ac.tuwien.big.vmod;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
+import at.ac.tuwien.big.vmod.impl.SimpleCounter;
 import at.ac.tuwien.big.vmod.provider.ModelProvider;
 import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.DerivationStatus;
 import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.ExactDerivationStatus;
@@ -82,5 +84,23 @@ public interface Counter extends GeneralElement {
 	public void priv_getNonnullProvider(List<ModelProvider> prov);
 	
 	public void priv_getNonnullResources(List<ModelResource> prov);
+	
+	@Override
+	public default boolean setValue(GeneralElement e) {
+		if (e instanceof Counter) {
+			return setValue((Counter)e);
+		}
+		return false;
+	}
+	
+	public default boolean setValue(Counter otherC) {
+		try {
+			set(otherC.getValue());
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+	
 
 }

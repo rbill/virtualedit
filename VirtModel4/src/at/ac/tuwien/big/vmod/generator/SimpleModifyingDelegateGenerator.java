@@ -68,6 +68,9 @@ public interface SimpleModifyingDelegateGenerator extends DelegateGenerator {
 						ret = retCount;
 					} else {
 						System.err.println("Don't know how to create "+type);
+						if (type != null) {
+							System.err.println("It is of type "+type.getClass());
+						}
 					}
 				}
 				if (ret instanceof GeneralElement) {

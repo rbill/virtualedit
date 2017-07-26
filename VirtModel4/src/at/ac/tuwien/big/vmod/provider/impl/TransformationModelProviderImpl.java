@@ -28,6 +28,7 @@ import at.ac.tuwien.big.vmod.provider.ModelProvider;
 import at.ac.tuwien.big.vmod.registry.SymbolRegistry;
 import at.ac.tuwien.big.vmod.type.ModelProviderType;
 import at.ac.tuwien.big.vmod.type.ModelResourceType;
+import at.ac.tuwien.big.vmod.type.Symbol;
 import at.ac.tuwien.big.vmodel.ecore.VEcoreFile;
 import at.ac.tuwien.big.vmodel.ecore.impl.VEcoreFileImpl;
 
@@ -77,6 +78,11 @@ public class TransformationModelProviderImpl extends SimpleGeneralElement<ModelP
 	protected Resource ecore;
 	
 	public TransformationModelProviderImpl(ModelProviderType type, String symbol, Resource ecore, ModelProvider inputProvider,
+			TransformationExecutor executor, ModelResource userDelta) {
+		this(type,Symbol.from(symbol),ecore,inputProvider,executor,userDelta);
+	}
+	
+	public TransformationModelProviderImpl(ModelProviderType type, Symbol symbol, Resource ecore, ModelProvider inputProvider,
 			TransformationExecutor executor, ModelResource userDelta) {
 		super(type);
 		this.ecore = ecore;
@@ -134,7 +140,12 @@ public class TransformationModelProviderImpl extends SimpleGeneralElement<ModelP
 		this.view = new SimpleModelView(subProvider, ecoreFile);
 	}
 	
-	public TransformationModelProviderImpl(ModelProviderType type, String symbol, Resource ecore, ModelProvider inputProvider,
+	public TransformationModelProviderImpl(ModelProviderType type,String symbol, Resource ecore, ModelProvider inputProvider,
+			TransformationExecutor executor) {
+		this(type,Symbol.from(symbol),ecore,inputProvider,executor);
+	}
+	
+	public TransformationModelProviderImpl(ModelProviderType type, Symbol symbol, Resource ecore, ModelProvider inputProvider,
 			TransformationExecutor executor) {
 		this(type,symbol,ecore,inputProvider,executor,null);
 	}
@@ -146,7 +157,7 @@ public class TransformationModelProviderImpl extends SimpleGeneralElement<ModelP
 	private ModelResource transformationDelta;
 	private ModelResource input;
 	private ModelProvider inputProvider;
-	private String symbol;
+	private Symbol symbol;
 	private VModelView view;
 
 	@Override
@@ -165,7 +176,7 @@ public class TransformationModelProviderImpl extends SimpleGeneralElement<ModelP
 	}
 
 	@Override
-	public String getSymbolName() {
+	public Symbol getMainSymbol() {
 		return symbol;
 	}
 	

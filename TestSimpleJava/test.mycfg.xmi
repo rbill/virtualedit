@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="ASCII"?>
+<wml:WMLRoot xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wml="http://www.wesnoth.org/WML">
+  <Expressions xsi:type="wml:WMLTextdomain" name="#textdomain wesnoth&#xD;&#xA;"/>
+  <Expressions xsi:type="wml:WMLPreprocIF" name="#ifdef TITLE_SCREEN&#xD;&#xA;" endName="#endif&#xD;&#xA;">
+    <Expressions xsi:type="wml:WMLMacroDefine" name="#define NO_TERRAIN_GFX&#xD;&#xA;" endName="#enddef&#xD;&#xA;"/>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLPreprocIF" name="#ifdef NO_GUI&#xD;&#xA;" endName="#endif&#xD;&#xA;">
+    <Expressions xsi:type="wml:WMLMacroDefine" name="#define NO_TERRAIN_GFX&#xD;&#xA;" endName="#enddef&#xD;&#xA;"/>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLMacroCall" name="english">
+    <Parameters xsi:type="wml:WMLValue" value="."/>
+    <Parameters xsi:type="wml:WMLValue" value="cfg"/>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLMacroCall" name="themes">
+    <Parameters xsi:type="wml:WMLValue" value="/"/>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLMacroCall" name="core">
+    <Parameters xsi:type="wml:WMLValue" value="/"/>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLTag" name="multiplayer_side" endName="multiplayer_side">
+    <Expressions xsi:type="wml:WMLKey" name="id">
+      <values xsi:type="wml:WMLValue" value="Custom"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+    <Expressions xsi:type="wml:WMLKey" name="name">
+      <values xsi:type="wml:WMLValue" value="_"/>
+      <values xsi:type="wml:WMLValue" value="Custom"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+    <Expressions xsi:type="wml:WMLKey" name="image">
+      <values xsi:type="wml:WMLValue" value="units/unknown-unit.png"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLPreprocIF" name="#ifdef MULTIPLAYER&#xD;&#xA;" endName="#endif&#xD;&#xA;">
+    <Expressions xsi:type="wml:WMLMacroCall" name="multiplayer">
+      <Parameters xsi:type="wml:WMLValue" value="/"/>
+    </Expressions>
+    <Expressions xsi:type="wml:WMLPreprocIF" name="#ifdef MP_TEST&#xD;&#xA;" endName="#endif&#xD;&#xA;">
+      <Expressions xsi:type="wml:WMLMacroCall" name="test">
+        <Parameters xsi:type="wml:WMLValue" value="/"/>
+        <Parameters xsi:type="wml:WMLValue" value="multiplayer"/>
+        <Parameters xsi:type="wml:WMLValue" value="/"/>
+      </Expressions>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLMacroCall" name="eras">
+    <Parameters xsi:type="wml:WMLValue" value="."/>
+    <Parameters xsi:type="wml:WMLValue" value="cfg"/>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLMacroCall" name="campaigns">
+    <Parameters xsi:type="wml:WMLValue" value="/"/>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLTag" name="ais" endName="ais">
+    <Expressions xsi:type="wml:WMLTag" name="default_config" endName="default_config">
+      <Expressions xsi:type="wml:WMLMacroCall" name="ai">
+        <Parameters xsi:type="wml:WMLValue" value="/"/>
+        <Parameters xsi:type="wml:WMLValue" value="utils"/>
+        <Parameters xsi:type="wml:WMLValue" value="/"/>
+        <Parameters xsi:type="wml:WMLValue" value="default_config"/>
+        <Parameters xsi:type="wml:WMLValue" value="."/>
+        <Parameters xsi:type="wml:WMLValue" value="cfg"/>
+      </Expressions>
+    </Expressions>
+    <Expressions xsi:type="wml:WMLMacroCall" name="ai">
+      <Parameters xsi:type="wml:WMLValue" value="/"/>
+      <Parameters xsi:type="wml:WMLValue" value="ais"/>
+      <Parameters xsi:type="wml:WMLValue" value="/"/>
+    </Expressions>
+    <Expressions xsi:type="wml:WMLPreprocIF" name="#ifdef DEBUG_MODE&#xD;&#xA;" endName="#endif&#xD;&#xA;">
+      <Expressions xsi:type="wml:WMLMacroCall" name="ai">
+        <Parameters xsi:type="wml:WMLValue" value="/"/>
+        <Parameters xsi:type="wml:WMLValue" value="dev"/>
+        <Parameters xsi:type="wml:WMLValue" value="/"/>
+      </Expressions>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLPreprocIF" name="#ifdef EDITOR&#xD;&#xA;" endName="#endif&#xD;&#xA;">
+    <Expressions xsi:type="wml:WMLTag" name="textdomain" endName="textdomain">
+      <Expressions xsi:type="wml:WMLKey" name="name">
+        <values xsi:type="wml:WMLValue" value="wesnoth-editor"/>
+        <eol>&#xD;
+</eol>
+      </Expressions>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLPreprocIF" name="#ifdef TEST&#xD;&#xA;" endName="#endif&#xD;&#xA;">
+    <Expressions xsi:type="wml:WMLMacroCall" name="scenario-test">
+      <Parameters xsi:type="wml:WMLValue" value="."/>
+      <Parameters xsi:type="wml:WMLValue" value="cfg"/>
+    </Expressions>
+    <Expressions xsi:type="wml:WMLMacroCall" name="scenario-leaders">
+      <Parameters xsi:type="wml:WMLValue" value="."/>
+      <Parameters xsi:type="wml:WMLValue" value="cfg"/>
+    </Expressions>
+    <Expressions xsi:type="wml:WMLMacroCall" name="scenario-movethrough">
+      <Parameters xsi:type="wml:WMLValue" value="."/>
+      <Parameters xsi:type="wml:WMLValue" value="cfg"/>
+    </Expressions>
+    <Expressions xsi:type="wml:WMLMacroCall" name="ai">
+      <Parameters xsi:type="wml:WMLValue" value="/"/>
+      <Parameters xsi:type="wml:WMLValue" value="scenarios"/>
+      <Parameters xsi:type="wml:WMLValue" value="/"/>
+    </Expressions>
+    <Expressions xsi:type="wml:WMLMacroCall" name="ai">
+      <Parameters xsi:type="wml:WMLValue" value="/"/>
+      <Parameters xsi:type="wml:WMLValue" value="micro_ais"/>
+      <Parameters xsi:type="wml:WMLValue" value="/"/>
+      <Parameters xsi:type="wml:WMLValue" value="scenarios"/>
+      <Parameters xsi:type="wml:WMLValue" value="/"/>
+    </Expressions>
+    <Expressions xsi:type="wml:WMLMacroDefine" name="#define DONT_RELOAD_CORE&#xD;&#xA;" endName="#enddef&#xD;&#xA;"/>
+    <Expressions xsi:type="wml:WMLMacroCall" name="test">
+      <Parameters xsi:type="wml:WMLValue" value="/"/>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLTag" name="textdomain" endName="textdomain">
+    <Expressions xsi:type="wml:WMLKey" name="name">
+      <values xsi:type="wml:WMLValue" value="wesnoth"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLTag" name="textdomain" endName="textdomain">
+    <Expressions xsi:type="wml:WMLKey" name="name">
+      <values xsi:type="wml:WMLValue" value="wesnoth-help"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLTag" name="textdomain" endName="textdomain">
+    <Expressions xsi:type="wml:WMLKey" name="name">
+      <values xsi:type="wml:WMLValue" value="wesnoth-ai"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLTag" name="textdomain" endName="textdomain">
+    <Expressions xsi:type="wml:WMLKey" name="name">
+      <values xsi:type="wml:WMLValue" value="wesnoth-units"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLTag" name="textdomain" endName="textdomain">
+    <Expressions xsi:type="wml:WMLKey" name="name">
+      <values xsi:type="wml:WMLValue" value="wesnoth-multiplayer"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLTag" name="textdomain" endName="textdomain">
+    <Expressions xsi:type="wml:WMLKey" name="name">
+      <values xsi:type="wml:WMLValue" value="wesnoth-anl"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLPreprocIF" name="#ifndef NO_TERRAIN_GFX&#xD;&#xA;" endName="#endif&#xD;&#xA;">
+    <Expressions xsi:type="wml:WMLMacroCall" name="core">
+      <Parameters xsi:type="wml:WMLValue" value="/"/>
+      <Parameters xsi:type="wml:WMLValue" value="terrain-graphics"/>
+      <Parameters xsi:type="wml:WMLValue" value="."/>
+      <Parameters xsi:type="wml:WMLValue" value="cfg"/>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLTag" name="binary_path" endName="binary_path">
+    <Expressions xsi:type="wml:WMLKey" name="path">
+      <values xsi:type="wml:WMLValue" value="data"/>
+      <values xsi:type="wml:WMLValue" value="/"/>
+      <values xsi:type="wml:WMLValue" value="core"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLMacroCall" name="advanced_preferences">
+    <Parameters xsi:type="wml:WMLValue" value="."/>
+    <Parameters xsi:type="wml:WMLValue" value="cfg"/>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLMacroCall" name="game_config">
+    <Parameters xsi:type="wml:WMLValue" value="."/>
+    <Parameters xsi:type="wml:WMLValue" value="cfg"/>
+  </Expressions>
+  <Expressions xsi:type="wml:WMLTag" name="textdomain" endName="textdomain">
+    <Expressions xsi:type="wml:WMLKey" name="name">
+      <values xsi:type="wml:WMLValue" value="wesnoth-lib"/>
+      <eol>&#xD;
+</eol>
+    </Expressions>
+  </Expressions>
+</wml:WMLRoot>

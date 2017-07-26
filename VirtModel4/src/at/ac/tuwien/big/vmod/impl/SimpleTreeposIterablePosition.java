@@ -55,4 +55,7 @@ public class SimpleTreeposIterablePosition extends SimpleIterablePosition<Treepo
 	}
 	
 
+	public String toString() {
+		return String.valueOf(getObject());
+	}
 }

@@ -16,7 +16,8 @@ Require-Bundle: at.ac.tuwien.big.simpleaspect,
  org.eclipse.compare,
  org.eclipse.xtext.builder,
  org.eclipse.xtend.lib;resolution:=optional,
- org.eclipse.xtext.xbase.lib
+ org.eclipse.xtext.xbase.lib,
+ at.ac.tuwien.big.virtualxtext
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: at.ac.tuwien.big.simpleaspect.ui.quickfix,

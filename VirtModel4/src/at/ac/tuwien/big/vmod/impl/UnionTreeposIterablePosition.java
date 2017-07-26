@@ -174,31 +174,7 @@ public class UnionTreeposIterablePosition<Type extends IterableType,T> extends S
 			nextEdit = edit;
 		}
 		//Both nextBase and nextEdit are != null
-		Object prev = nextBase.getObject();
-		Object next = nextEdit.getObject();
-				
-		int compareNext = 0;
-		if (nextBase.isEnd()) {
-			if (nextEdit.isEnd()) {
-				compareNext = 0;
-			} else {
-				compareNext = 1;
-			}
-		} else {
-			if (nextEdit.isEnd()) {
-				compareNext = -1;
-			} else {
-				if (prev == null && next == null) {
-					compareNext = 0;
-				} else if (prev == null) {
-					compareNext = -1;
-				} else if (next == null) {
-					compareNext = 1;
-				} else {
-					compareNext = nextBase.getObject().compareTo(nextEdit.getObject());
-				}
-			}
-		}
+		int compareNext = nextBase.compareTo(nextEdit);
 		
 		if (compareNext > 0) { //Base > Edit
 			//Take edit, not base
@@ -316,6 +292,10 @@ public class UnionTreeposIterablePosition<Type extends IterableType,T> extends S
 	@Override
 	public TreeposIterablePosition startPos() {
 		return new UnionTreeposIterablePosition<>(getParent(), getType(), null, getFakeBase().startPos(), null, null, getFakeEdit().startPos(), null, isUserEdit);
+	}
+	
+	public String toString() {
+		return String.valueOf(getObject());
 	}
 	
 }

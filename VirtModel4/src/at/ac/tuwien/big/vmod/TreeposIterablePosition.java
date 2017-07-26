@@ -6,7 +6,7 @@ import at.ac.tuwien.big.virtmod.basic.impl.SimpleTreepos;
 /**This iterable is guaranteed to return each element only once
  * Problem noch: Bootstrapping ...
  * */
-public interface TreeposIterablePosition extends IterablePosition<Treepos> {
+public interface TreeposIterablePosition extends IterablePosition<Treepos>, Comparable<TreeposIterablePosition> {
 
 	public TreeposIterablePosition getNextOrNull();
 
@@ -47,6 +47,51 @@ public interface TreeposIterablePosition extends IterablePosition<Treepos> {
 	
 	public default void remove() {
 		delete();
+	}
+	
+	@Override	
+	public default int compareTo(TreeposIterablePosition nextEdit) {
+		if (nextEdit == null) {
+			return 1;
+		}
+		Object prev = this.getObject();
+		Object next = nextEdit.getObject();
+				
+		int compareNext = 0;
+		if (this.isEnd()) {
+			if (nextEdit.isEnd()) {
+				compareNext = 0;
+			} else {
+				compareNext = 1;
+			}
+		} else {
+			if (nextEdit.isEnd()) {
+				compareNext = -1;
+			} else {
+				if (this.isStart()) {
+					if (nextEdit.isStart()) {
+						compareNext = 0;
+					} else {
+						compareNext = -1;
+					}
+				} else {
+					if (nextEdit.isStart()) {
+						compareNext = 1;
+					} else {
+						if (prev == null && next == null) {
+							compareNext = 0;
+						} else if (prev == null) {
+							compareNext = -1;
+						} else if (next == null) {
+							compareNext = 1;
+						} else {
+							compareNext = this.getObject().compareTo(nextEdit.getObject());
+						}
+					}
+				}
+			}
+		}
+		return compareNext;
 	}
 	
 	public Treepos delete();

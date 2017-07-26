@@ -69,4 +69,6 @@ public interface VObjectValues extends Iterable<Symbol> {
 	public default Iterable<Symbol> getInstances(String eclass) {
 		return ()->IteratorUtils.<Symbol>filterType(iterator(), (x)->hasClass(x,eclass));
 	}
+
+	public Iterable<Symbol> getRootObjects();
 }

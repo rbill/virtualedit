@@ -35,7 +35,9 @@ public class EcoreFuncUtil {
 		Stack<EClass> candiate = new Stack<>();
 		for (String ev: existingValues) {
 			EClass cl = helper.getClass(ev);
-			candiate.add(cl);
+			if (!candiate.contains(cl)) {
+				candiate.add(cl);
+			}
 		}
 		List<EClass> ret = new ArrayList<>();
 		while (!candiate.isEmpty()) {

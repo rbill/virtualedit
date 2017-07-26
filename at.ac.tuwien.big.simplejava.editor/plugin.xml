@@ -12,9 +12,9 @@
             id="org.eclipse.emf.ecore.Wizard.category.ID"
             name="%_UI_Wizard_category"/>
       <wizard
-            id="simplejava.presentation.SimplejavaModelWizardID"
+            id="at.ac.tuwien.big.simplejava.presentation.SimplejavaModelWizardID"
             name="%_UI_SimplejavaModelWizard_label"
-            class="simplejava.presentation.SimplejavaModelWizard"
+            class="at.ac.tuwien.big.simplejava.presentation.SimplejavaModelWizard"
             category="org.eclipse.emf.ecore.Wizard.category.ID"
             icon="icons/full/obj16/SimplejavaModelFile.gif">
          <description>%_UI_SimplejavaModelWizard_description</description>
@@ -25,13 +25,12 @@
    <extension point="org.eclipse.ui.editors">
       <!-- @generated Simplejava -->
       <editor
-            id="simplejava.presentation.SimplejavaEditorID"
+            id="at.ac.tuwien.big.simplejava.presentation.SimplejavaEditorID"
             name="%_UI_SimplejavaEditor_label"
             icon="icons/full/obj16/SimplejavaModelFile.gif"
-            extensions="simplejava"
-            class="simplejava.presentation.SimplejavaEditor"
-            contributorClass="simplejava.presentation.SimplejavaActionBarContributor">
+            extensions="vjava,java"
+            class="at.ac.tuwien.big.simplejava.presentation.SimplejavaEditor"
+            contributorClass="at.ac.tuwien.big.simplejava.presentation.SimplejavaActionBarContributor">
       </editor>
    </extension>
-
 </plugin>

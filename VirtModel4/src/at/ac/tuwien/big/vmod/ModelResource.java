@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import at.ac.tuwien.big.vmod.generator.Generator;
 import at.ac.tuwien.big.vmod.impl.DelegateModelResource;
 import at.ac.tuwien.big.vmod.impl.NullifyingDelegateGenerator;
+import at.ac.tuwien.big.vmod.impl.SimpleResource;
 import at.ac.tuwien.big.vmod.provider.ModelProvider;
 import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.DerivationStatus;
 import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.ExactDerivationStatus;
@@ -38,6 +39,7 @@ public interface ModelResource extends GeneralElement {
 	
 	public void addElement(Symbol symbol, GeneralElement element);
 	
+	
 	public URI getURI();
 	
 	public Resource getFakeResource();
@@ -48,6 +50,40 @@ public interface ModelResource extends GeneralElement {
 		NullifyingDelegateGenerator generator = new NullifyingDelegateGenerator();
 		return new DelegateModelResource(getProvider(), getURI(), getType(), this, generator, false);
 	}
+	
+
+
+	public default boolean setValue(GeneralElement e) {
+		if (e instanceof ModelResource) {
+			ModelResource mr = (ModelResource)e;
+			Iterator<Symbol> syms = mr.getStoredElements();
+			boolean ret = true;
+			while (syms.hasNext()) {
+				Symbol sym = syms.next();
+				GeneralElement curE = getElement(sym);
+				GeneralElement curOE = mr.getElement(sym);
+				if (curE == null || curOE == null) {
+					ret = false;
+				} else {
+					curE.setValue(curOE);
+				}
+			}
+			return ret;
+		}
+		return false;
+	}
+	
+	/*public default SimpleResource getSimpleResource() {
+		SimpleResource ret = new Simple   
+		Iterator<Symbol> stored = resultModel.getStoredElements();
+		while (stored.hasNext()) {
+			Symbol next = stored.next();
+			GeneralElement el = resultModel.getElement(next);
+			copyFrom(null);
+			addElement(next, resultModel.);
+		}
+		
+	}*/
 	
 	public default Object get(String key) {
 		if (key.startsWith("$")) {
@@ -142,6 +178,11 @@ public interface ModelResource extends GeneralElement {
 		@Override
 		public ModelResourceType getType() {
 			return ModelResourceType.SIMPLE_INSTANCE;
+		}
+
+		@Override
+		public boolean setValue(GeneralElement e) {
+			return this==e;
 		}
 	};
 

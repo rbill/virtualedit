@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<henshin:Module xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:henshin="http://www.eclipse.org/emf/2011/Henshin" xmi:id="_QXbYUP3jEea3eos8tpm6gA">
+  <imports href="http://www.ac.at/tuwien/big/Simplejava#/"/>
+  <units xsi:type="henshin:Rule" xmi:id="_VcJ2cP3jEea3eos8tpm6gA" name="freeitems">
+    <lhs xmi:id="_VdbBwP3jEea3eos8tpm6gA" name="Lhs">
+      <nodes xmi:id="_ZWAc4P3jEea3eos8tpm6gA" outgoing="_hKEPEP3jEea3eos8tpm6gA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//Method"/>
+        <attributes xmi:id="_aRKdkP3jEea3eos8tpm6gA" value="&quot;getPrice&quot;">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/name"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_d7W3YP3jEea3eos8tpm6gA" incoming="_hKEPEP3jEea3eos8tpm6gA" outgoing="_i6lKcP3jEea3eos8tpm6gA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock"/>
+      </nodes>
+      <nodes xmi:id="_if4LcP3jEea3eos8tpm6gA" incoming="_i6lKcP3jEea3eos8tpm6gA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//ReturnStatement"/>
+      </nodes>
+      <edges xmi:id="_hKEPEP3jEea3eos8tpm6gA" source="_ZWAc4P3jEea3eos8tpm6gA" target="_d7W3YP3jEea3eos8tpm6gA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/content"/>
+      </edges>
+      <edges xmi:id="_i6lKcP3jEea3eos8tpm6gA" source="_d7W3YP3jEea3eos8tpm6gA" target="_if4LcP3jEea3eos8tpm6gA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock/statements"/>
+      </edges>
+    </lhs>
+    <rhs xmi:id="_VdbBwf3jEea3eos8tpm6gA" name="Rhs">
+      <nodes xmi:id="_ZWAc4f3jEea3eos8tpm6gA" outgoing="_hKE2IP3jEea3eos8tpm6gA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//Method"/>
+        <attributes xmi:id="_aRKdkf3jEea3eos8tpm6gA" value="&quot;getPrice&quot;">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/name"/>
+        </attributes>
+      </nodes>
+      <nodes xmi:id="_d7W3Yf3jEea3eos8tpm6gA" incoming="_hKE2IP3jEea3eos8tpm6gA" outgoing="_rB5LsFKZEeeFwL_jEsueJQ">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock"/>
+      </nodes>
+      <nodes xmi:id="_if4Lcf3jEea3eos8tpm6gA" incoming="_rB5LsFKZEeeFwL_jEsueJQ" outgoing="_055LkFKZEeeFwL_jEsueJQ">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//ReturnStatement"/>
+      </nodes>
+      <nodes xmi:id="_LV6w0P3kEea3eos8tpm6gA" incoming="_055LkFKZEeeFwL_jEsueJQ">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//IntegerExpression"/>
+        <attributes xmi:id="_LxddUP3kEea3eos8tpm6gA" value="0">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//IntegerExpression/value"/>
+        </attributes>
+      </nodes>
+      <edges xmi:id="_hKE2IP3jEea3eos8tpm6gA" source="_ZWAc4f3jEea3eos8tpm6gA" target="_d7W3Yf3jEea3eos8tpm6gA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/content"/>
+      </edges>
+      <edges xmi:id="_rB5LsFKZEeeFwL_jEsueJQ" source="_d7W3Yf3jEea3eos8tpm6gA" target="_if4Lcf3jEea3eos8tpm6gA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock/statements"/>
+      </edges>
+      <edges xmi:id="_055LkFKZEeeFwL_jEsueJQ" source="_if4Lcf3jEea3eos8tpm6gA" target="_LV6w0P3kEea3eos8tpm6gA">
+        <type href="http://www.ac.at/tuwien/big/Simplejava#//ReturnStatement/expression"/>
+      </edges>
+    </rhs>
+    <mappings xmi:id="_ZWAc4v3jEea3eos8tpm6gA" origin="_ZWAc4P3jEea3eos8tpm6gA" image="_ZWAc4f3jEea3eos8tpm6gA"/>
+    <mappings xmi:id="_d7W3Yv3jEea3eos8tpm6gA" origin="_d7W3YP3jEea3eos8tpm6gA" image="_d7W3Yf3jEea3eos8tpm6gA"/>
+    <mappings xmi:id="_if4Lcv3jEea3eos8tpm6gA" origin="_if4LcP3jEea3eos8tpm6gA" image="_if4Lcf3jEea3eos8tpm6gA"/>
+    <multiRules xmi:id="_ztGBQFKZEeeFwL_jEsueJQ">
+      <lhs xmi:id="_ztGoUFKZEeeFwL_jEsueJQ" name="Lhs">
+        <nodes xmi:id="_ztH2cVKZEeeFwL_jEsueJQ" outgoing="_ztH2dlKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//Method"/>
+          <attributes xmi:id="_ztH2clKZEeeFwL_jEsueJQ" value="&quot;getPrice&quot;">
+            <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/name"/>
+          </attributes>
+        </nodes>
+        <nodes xmi:id="_ztH2dFKZEeeFwL_jEsueJQ" incoming="_ztH2dlKZEeeFwL_jEsueJQ" outgoing="_ztIdhFKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock"/>
+        </nodes>
+        <nodes xmi:id="_ztIdglKZEeeFwL_jEsueJQ" incoming="_ztIdhFKZEeeFwL_jEsueJQ" outgoing="_0KMM8FKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//ReturnStatement"/>
+        </nodes>
+        <nodes xmi:id="_zLJKwFKZEeeFwL_jEsueJQ" incoming="_0KMM8FKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//GenericExpression"/>
+        </nodes>
+        <edges xmi:id="_ztH2dlKZEeeFwL_jEsueJQ" source="_ztH2cVKZEeeFwL_jEsueJQ" target="_ztH2dFKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/content"/>
+        </edges>
+        <edges xmi:id="_ztIdhFKZEeeFwL_jEsueJQ" source="_ztH2dFKZEeeFwL_jEsueJQ" target="_ztIdglKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock/statements"/>
+        </edges>
+        <edges xmi:id="_0KMM8FKZEeeFwL_jEsueJQ" source="_ztIdglKZEeeFwL_jEsueJQ" target="_zLJKwFKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//ReturnStatement/expression"/>
+        </edges>
+      </lhs>
+      <rhs xmi:id="_ztHPYFKZEeeFwL_jEsueJQ" name="Rhs">
+        <nodes xmi:id="_ztHPYVKZEeeFwL_jEsueJQ" outgoing="_ztH2cFKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//Method"/>
+          <attributes xmi:id="_ztHPYlKZEeeFwL_jEsueJQ" value="&quot;getPrice&quot;">
+            <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/name"/>
+          </attributes>
+        </nodes>
+        <nodes xmi:id="_ztHPZFKZEeeFwL_jEsueJQ" incoming="_ztH2cFKZEeeFwL_jEsueJQ" outgoing="_ztIdgVKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock"/>
+        </nodes>
+        <nodes xmi:id="_ztH2eFKZEeeFwL_jEsueJQ" incoming="_ztIdgVKZEeeFwL_jEsueJQ" outgoing="_055LlFKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//ReturnStatement"/>
+        </nodes>
+        <nodes xmi:id="_055LkVKZEeeFwL_jEsueJQ" incoming="_055LlFKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//IntegerExpression"/>
+          <attributes xmi:id="_055LklKZEeeFwL_jEsueJQ" value="0">
+            <type href="http://www.ac.at/tuwien/big/Simplejava#//IntegerExpression/value"/>
+          </attributes>
+        </nodes>
+        <edges xmi:id="_ztH2cFKZEeeFwL_jEsueJQ" source="_ztHPYVKZEeeFwL_jEsueJQ" target="_ztHPZFKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//Method/content"/>
+        </edges>
+        <edges xmi:id="_ztIdgVKZEeeFwL_jEsueJQ" source="_ztHPZFKZEeeFwL_jEsueJQ" target="_ztH2eFKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//MethodBlock/statements"/>
+        </edges>
+        <edges xmi:id="_055LlFKZEeeFwL_jEsueJQ" source="_ztH2eFKZEeeFwL_jEsueJQ" target="_055LkVKZEeeFwL_jEsueJQ">
+          <type href="http://www.ac.at/tuwien/big/Simplejava#//ReturnStatement/expression"/>
+        </edges>
+      </rhs>
+      <mappings xmi:id="_ztH2d1KZEeeFwL_jEsueJQ" origin="_ztH2cVKZEeeFwL_jEsueJQ" image="_ztHPYVKZEeeFwL_jEsueJQ"/>
+      <mappings xmi:id="_ztIdhVKZEeeFwL_jEsueJQ" origin="_ztH2dFKZEeeFwL_jEsueJQ" image="_ztHPZFKZEeeFwL_jEsueJQ"/>
+      <mappings xmi:id="_ztIdhlKZEeeFwL_jEsueJQ" origin="_ztIdglKZEeeFwL_jEsueJQ" image="_ztH2eFKZEeeFwL_jEsueJQ"/>
+      <multiMappings xmi:id="_ztHPY1KZEeeFwL_jEsueJQ" origin="_ZWAc4f3jEea3eos8tpm6gA" image="_ztHPYVKZEeeFwL_jEsueJQ"/>
+      <multiMappings xmi:id="_ztHPZVKZEeeFwL_jEsueJQ" origin="_d7W3Yf3jEea3eos8tpm6gA" image="_ztHPZFKZEeeFwL_jEsueJQ"/>
+      <multiMappings xmi:id="_ztH2c1KZEeeFwL_jEsueJQ" origin="_ZWAc4P3jEea3eos8tpm6gA" image="_ztH2cVKZEeeFwL_jEsueJQ"/>
+      <multiMappings xmi:id="_ztH2dVKZEeeFwL_jEsueJQ" origin="_d7W3YP3jEea3eos8tpm6gA" image="_ztH2dFKZEeeFwL_jEsueJQ"/>
+      <multiMappings xmi:id="_ztIdgFKZEeeFwL_jEsueJQ" origin="_if4Lcf3jEea3eos8tpm6gA" image="_ztH2eFKZEeeFwL_jEsueJQ"/>
+      <multiMappings xmi:id="_ztIdg1KZEeeFwL_jEsueJQ" origin="_if4LcP3jEea3eos8tpm6gA" image="_ztIdglKZEeeFwL_jEsueJQ"/>
+      <multiMappings xmi:id="_055Lk1KZEeeFwL_jEsueJQ" origin="_LV6w0P3kEea3eos8tpm6gA" image="_055LkVKZEeeFwL_jEsueJQ"/>
+    </multiRules>
+  </units>
+</henshin:Module>
