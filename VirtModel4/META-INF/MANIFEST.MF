@@ -49,8 +49,7 @@ Export-Package: at.ac.tuwien.big.verocl.parameterdesc,
  at.ac.tuwien.big.vmodel.ecore,
  at.ac.tuwien.big.vmodel.ecore.impl,
  at.ac.tuwien.big.vmodel.general
-Require-Bundle: at.ac.tuwien.big.XtextUtil;bundle-version="1.0.0",
- org.eclipse.emf.henshin.interpreter,
+Require-Bundle: org.eclipse.emf.henshin.interpreter,
  org.eclipse.core.runtime,
  org.apache.commons.logging,
  org.eclipse.emf.compare,
@@ -58,4 +57,5 @@ Require-Bundle: at.ac.tuwien.big.XtextUtil;bundle-version="1.0.0",
  at.ac.tuwien.big.parameterdesc;bundle-version="0.1.0",
  at.ac.tuwien.big.simpleaspect,
  at.ac.tuwien.big.simplejava,
- com.google.inject
+ com.google.inject,
+ xtextutils;bundle-version="1.0.0"

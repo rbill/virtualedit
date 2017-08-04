@@ -1,8 +1,11 @@
 package at.ac.tuwien.big.verocl.parameterdesc;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import at.ac.tuwien.big.verocl.parameterdesc.impl.MultiPointImpl;
 import at.ac.tuwien.big.verocl.parameterdesc.impl.SinglePointImpl;
@@ -19,6 +22,23 @@ public interface MultiPoint extends Points, Intersectable<MultiPoint,SinglePoint
 	public default Iterable<SinglePoint> getPoints() {
 		return this;
 	}
+	
+
+
+	@Override
+	public default Collection<? extends SinglePoint> getNext() {
+		Set<Points> nextSet = new HashSet<>();
+		List<SinglePoint> next = new ArrayList<>();
+		for (SinglePoint val: this) {
+			for (SinglePoint nxt: val.getNext()) {
+				if (nextSet.add(nxt)) {
+					next.add(nxt);
+				}
+			}
+		}
+		return next;
+	}
+
 	
 	public default Iterator<SinglePoint> iterator() {
 		return getPoints().iterator();

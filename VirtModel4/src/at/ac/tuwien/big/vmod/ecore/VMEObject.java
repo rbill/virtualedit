@@ -48,7 +48,16 @@ public interface VMEObject extends EObject {
 	
 	public Symbol getUUID();
 	
-	public VMEObject project(Points mp);
+	public default VMEObject project(Points mp) {
+		MultiPoint curProj = getProjectionOrNull();
+		if (curProj == null) {
+			return withPoints(mp);
+		} else {
+			return withPoints(curProj.intersectWithOrSame(mp));
+		}
+	}
+	
+	public VMEObject withPoints(Points mp);
 	
 	/*public default VMEObject projectTuple(Iterable<? extends Tuple<?, ? extends EStructuralFeature>> tuples) {
 		MultiPoint point = getProjectionOrNull();

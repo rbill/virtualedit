@@ -3,7 +3,9 @@ package at.ac.tuwien.big.verocl.parameterdesc.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import at.ac.tuwien.big.verocl.parameterdesc.MultiPoint;
@@ -65,12 +67,6 @@ public class MultiPointImpl extends AbstractPoint implements MultiPoint {
 	
 	public String toString() {
 		return IteratorUtils.buildString(values,(x)->Arrays.toString(x.getValues()),"{","}",",");
-	}
-
-	@Override
-	public Collection<? extends Points> getNext() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

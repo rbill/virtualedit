@@ -258,26 +258,24 @@ public class SimpleVMEObject extends MinimalEObjectImpl implements VMEObject, In
 		EClass cl = eClass();
 		return (cl==null?"??":cl.getName())+" with id "+id;
 	}
+	
 
 	@Override
-	public VMEObject project(Points mp) {
+	public VMEObject withPoints(Points mp) {
 		SimpleVMEObject ret = new SimpleVMEObject(model, id);
-		MultiPoint curProj = getProjectionOrNull();
-		if (curProj == null) {
-			if (mp instanceof MultiPoint) {
-				ret.initProjection((MultiPoint)mp);
-			} else { 
-				if (mp instanceof SinglePoint) {
-					ret.initProjection(new MultiPointImpl(mp.getDesc(),((SinglePoint) mp)));
-				} else {
-					throw new IllegalArgumentException("mp must be MultiPoint or SinglePoint");
-				}
+		if (mp instanceof MultiPoint) {				
+			ret.initProjection((MultiPoint)mp);
+		} else { 
+			if (mp instanceof SinglePoint) {
+				ret.initProjection(new MultiPointImpl(mp.getDesc(),((SinglePoint) mp)));
+			} else {
+				throw new IllegalArgumentException("mp must be MultiPoint or SinglePoint");
 			}
-		} else {
-			ret.initProjection(curProj.intersectWithOrSame(mp));
 		}
 		return ret;
 	}
+	
+	
 
 	public void initProjection(MultiPoint mp) {
 		if (model instanceof VProjectedModelView) {
