@@ -33,48 +33,51 @@ import at.ac.tuwien.big.xtext.annotation.SourcedEObject;
 import at.tuwien.big.virtmod.basic.Converter;
 import at.tuwien.big.virtmod.basic.ProxyList;
 
-public class VEObjectImpl extends MinimalEObjectImpl implements at.ac.tuwien.big.vmodel.ecore.VEObject, InternalEObject {
+public class VEObjectImpl extends MinimalEObjectImpl
+		implements at.ac.tuwien.big.vmodel.ecore.VEObject, InternalEObject {
 	private String uuid;
 	private VModelView model;
 	private Resource rs;
 	private Map<EStructuralFeature, List<Object>> myValues = new HashMap<EStructuralFeature, List<Object>>();
-	
+
 	public VEObjectImpl(String uuid, VModelView model, Resource rs) {
 		this.uuid = uuid;
 		this.model = model;
 		this.rs = rs;
 	}
-	
+
 	public boolean equals(Object o) {
-		return (o instanceof at.ac.tuwien.big.vmodel.ecore.VEObject) && Objects.equals(getUUID(),((at.ac.tuwien.big.vmodel.ecore.VEObject)o).getUUID());
+		return (o instanceof at.ac.tuwien.big.vmodel.ecore.VEObject)
+				&& Objects.equals(getUUID(), ((at.ac.tuwien.big.vmodel.ecore.VEObject) o).getUUID());
 	}
-	
+
 	public int hashCode() {
 		return Objects.hashCode(getUUID());
 	}
 
 	@Override
 	public Iterable<? extends ElementSourceInfo> getObjectSource() {
-		//Hier muss ich eine Combined Source zurückliefern
+		// Hier muss ich eine Combined Source zurückliefern
 		// TODO Auto-generated method stub
 		return model.getInstances().getSource(uuid);
 	}
-	
+
 	@Override
 	public List<? extends Iterable<? extends ElementSourceInfo>> getFeatureSource(EStructuralFeature feat) {
 		List<? extends Iterable<? extends ElementSourceInfo>> ret = model.getFeatureValues(feat).getSource(uuid);
 		if (feat.getEType() instanceof EClass) {
-			//Filter out non-existant
-			List<Object> allObjs = model.getFeatureValues(feat.getEContainingClass().getName(), feat.getName()).getValueList(getUUID());
-			
-			
-			//Something is filtered out
+			// Filter out non-existant
+			List<Object> allObjs = model.getFeatureValues(feat.getEContainingClass().getName(), feat.getName())
+					.getValueList(getUUID());
+
+			// Something is filtered out
 			List<Iterable<? extends ElementSourceInfo>> realRet = new ArrayList<>();
-			at.ac.tuwien.big.xtext.util.IteratorUtils.Filter<String> objExists = model.getInstances().objectExistsFilter();
+			at.ac.tuwien.big.xtext.util.IteratorUtils.Filter<String> objExists = model.getInstances()
+					.objectExistsFilter();
 			Iterator<? extends Iterable<? extends ElementSourceInfo>> iter = ret.iterator();
-			for (Object strO: allObjs)  {
+			for (Object strO : allObjs) {
 				Iterable<? extends ElementSourceInfo> toAdd = iter.next();
-				if (strO instanceof String && objExists.matches((String)strO)) {
+				if (strO instanceof String && objExists.matches((String) strO)) {
 					realRet.add(toAdd);
 				}
 			}
@@ -83,7 +86,6 @@ public class VEObjectImpl extends MinimalEObjectImpl implements at.ac.tuwien.big
 			return ret;
 		}
 	}
-	
 
 	public String getUUID() {
 		return uuid;
@@ -92,21 +94,23 @@ public class VEObjectImpl extends MinimalEObjectImpl implements at.ac.tuwien.big
 	public VModelView getModel() {
 		return model;
 	}
-	
+
 	private List<Object> getValues(EStructuralFeature feat) {
 		List<Object> ret = myValues.get(feat);
 		if (ret == null) {
 			try {
-				ret = model.getFeatureValues(feat.getEContainingClass().getName(), feat.getName()).getValueList(getUUID());
+				ret = model.getFeatureValues(feat.getEContainingClass().getName(), feat.getName())
+						.getValueList(getUUID());
 				if (feat.getEType() instanceof EClass) {
-					List<String> stringRet = new FilteredList<String>((List<String>)(List)ret,model.getInstances().objectExistsFilter());
-					List<Object> realRet= new ProxyList(new Converter<String, Object>(){
-	
+					List<String> stringRet = new FilteredList<String>((List<String>) (List) ret,
+							model.getInstances().objectExistsFilter());
+					List<Object> realRet = new ProxyList(new Converter<String, Object>() {
+
 						@Override
 						public Object getValue(String t) {
 							return model.getEObject(t);
 						}
-	
+
 						@Override
 						public String getSource(Object v) {
 							if (v instanceof at.ac.tuwien.big.vmodel.ecore.VEObject) {
@@ -114,28 +118,25 @@ public class VEObjectImpl extends MinimalEObjectImpl implements at.ac.tuwien.big
 							}
 							throw new RuntimeException("Added EObject which was not a VEObject!");
 						}
-						
+
 					}, stringRet);
 					ret = realRet;
 				}
 			} catch (NullPointerException e) {
-				System.err.println("NPE when getting values for "+ feat);
+				System.err.println("NPE when getting values for " + feat);
 				throw e;
 			}
-			myValues.put(feat, FakeEListImpl.ensureEList(ret) );
+			myValues.put(feat, FakeEListImpl.ensureEList(ret));
 		}
 		return ret;
 	}
-	
 
-	/*@Override
-	public List<GlobalSource<?>> getSources(EStructuralFeature forFeature) {
-		List<Object> values = getValues(forFeature);
-		if (values instanceof SourcedList) {
-			return ((SourcedList) values).getSources();
-		}
-		return null;
-	}*/
+	/*
+	 * @Override public List<GlobalSource<?>> getSources(EStructuralFeature
+	 * forFeature) { List<Object> values = getValues(forFeature); if (values
+	 * instanceof SourcedList) { return ((SourcedList) values).getSources(); }
+	 * return null; }
+	 */
 
 	@Override
 	public EClass eClass() {
@@ -143,7 +144,6 @@ public class VEObjectImpl extends MinimalEObjectImpl implements at.ac.tuwien.big
 		EClass ret = model.getEcore().getClass(myClass);
 		return ret;
 	}
-
 
 	@Override
 	public EObject eContainer() {
@@ -193,7 +193,7 @@ public class VEObjectImpl extends MinimalEObjectImpl implements at.ac.tuwien.big
 
 	@Override
 	public void eSet(EStructuralFeature feature, Object newValue) {
-		FeaturePropertyValue.setToValue(getValues(feature),newValue);
+		FeaturePropertyValue.setToValue(getValues(feature), newValue);
 	}
 
 	@Override
@@ -208,8 +208,7 @@ public class VEObjectImpl extends MinimalEObjectImpl implements at.ac.tuwien.big
 
 	public String toString() {
 		EClass cl = eClass();
-		return (cl==null?"??":cl.getName())+" with id "+uuid;
+		return (cl == null ? "??" : cl.getName()) + " with id " + uuid;
 	}
-
 
 }

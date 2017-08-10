@@ -58,4 +58,4 @@ Require-Bundle: org.eclipse.emf.henshin.interpreter,
  at.ac.tuwien.big.simpleaspect,
  at.ac.tuwien.big.simplejava,
  com.google.inject,
- xtextutils;bundle-version="1.0.0"
+ xtextutils

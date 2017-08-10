@@ -1,20 +1,25 @@
 package shoppingcart ; public class Item {
-	double _price;
+	String _id
+	;
+	double _price
+	;
 	int bla
 	;
-	
-	public Item ( double price ) {
+	public Item ( String id , double price ) {
+		_id = id;
 		_price = ( price + 2 );
 	}
-	
+	public String getID ( ) {
+		return _id ;
+	}
 	public double getPrice ( ) {
 		return _price ;
 	}
 	public String toString ( ) {
-		return ( "Item: ") ;
+		return ( "Item: " + _id ) ;
 	}
 	public static void main ( String [] args ) {
-		Item item = new Item (5 );
+		Item item = new Item ( "Item" , 5 );
 		System.out.println(item);
 	}
 }

@@ -1,5 +1,6 @@
 package at.ac.tuwien.big.vmod.registry;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -144,6 +146,31 @@ public class MultiLoader {
 	
 	public ResourceSet getResourceSet() {
 		return rs;
+	}
+
+	private static int MY_INDEX = 1;
+	private static Map<URI,Integer> existingIndices = new HashMap<URI, Integer>();
+
+	/**Loads a resource, but does not add it internally to anything.
+	 * Changes to the returned resource may or may not reflect real changes
+	 * 
+	 * */
+	public Resource loadResource(ResourceSet resourceSet, File file) throws IOException {
+		URI uri = URIConverter.INSTANCE.normalize(URI.createFileURI(file.getCanonicalPath()));
+		Integer index = existingIndices.get(uri);
+		if (index == null) {
+			existingIndices.put(uri, (index=MY_INDEX));
+			++MY_INDEX;
+		}
+		SimpleEcoreModelProviderImpl prov = SimpleEcoreModelProviderImpl.createModelProvider(uri.toString(), ecoreRes);
+		prov.setIndex(index);
+		SimpleModelView loadedModel = new SimpleModelView(prov, ecore);
+		Resource res = resourceSet.getResource(uri, true);
+		ModelResource subRes = new EcoreModelResource(prov, ecoreRes, uri, null);
+		type = subRes.getType();
+		SimpleModelCorrespondance baseMC = loadedModel.loadResource(res);
+		FakeResource ret = new FakeResource(resourceSet, URI.createURI(uri.toString()+"#"), loadedModel.exposeContents());
+		return ret;
 	}
 	
 	public void loadRoot(ResourceSet rs, ModelRef root) {

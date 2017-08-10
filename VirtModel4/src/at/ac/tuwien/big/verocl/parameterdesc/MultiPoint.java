@@ -38,11 +38,6 @@ public interface MultiPoint extends Points, Intersectable<MultiPoint,SinglePoint
 		}
 		return next;
 	}
-
-	
-	public default Iterator<SinglePoint> iterator() {
-		return getPoints().iterator();
-	}
 	
 	public default MultiPoint intersect(MultiPoint other) {
 		return intersectWithOrSame(other);

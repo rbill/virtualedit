@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -67,6 +68,11 @@ public class MultiPointImpl extends AbstractPoint implements MultiPoint {
 	
 	public String toString() {
 		return IteratorUtils.buildString(values,(x)->Arrays.toString(x.getValues()),"{","}",",");
+	}
+
+	@Override
+	public Iterator<SinglePoint> iterator() {
+		return values.iterator();
 	}
 
 }

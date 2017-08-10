@@ -37,6 +37,16 @@ public class VFeatureValuesImpl<T> implements VFeatureValues<T> {
 			EReference er = (EReference)baseFeature;
 			this.isContainment = er.isContainment();
 			this.inverse = er.getEOpposite();
+			if (!this.isContainment) {
+				//TODO: Warum geht das nicht?
+				/*this.instanceFilter = (x)->{
+					if (x instanceof VMEObject) {
+						Symbol sym = ((VMEObject)x).getUUID();
+						return modelView.getInstances().contExists(sym);
+					}
+					return true;
+				};*/
+			}
 		}
 	}
 

@@ -1097,7 +1097,7 @@ public class MultiXtextEditor extends XtextEditor {
 								modelResources.add(s.resource);
 							}
 							modelResources.remove(null);
-							int activeModelResources = curView.enabledViews().size();
+							int activeModelResources = curView!=null?curView.enabledViews().size():0;
 							if (activeModelResources == 0) {
 								activeModelResources = getAllModelResources().size();
 							}

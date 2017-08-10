@@ -97,6 +97,7 @@ public class VFakeEList<T> extends FakeInternalEList<T> implements EList<T>, NoI
 	}
 	
 	public static final Filter NO_FILTER = (x)->true;
+
 	
 	private Filter<T> instanceFilter;
 	

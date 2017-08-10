@@ -28,7 +28,19 @@ public interface VObjectValues extends Iterable<Symbol> {
 	public default Filter<Symbol> objectExistsFilter() {
 		return (x)->exists(x);
 	}
+	
+	public default boolean contExists(Symbol objectId) {
+		if (!exists(objectId)) {
+			return false;
+		}
+		Symbol cont = getContainerFull(objectId);
+		return cont == null || contExists(cont);
+	}
 
+	public default Filter<Symbol> objectExistsEcoreFilter() {
+		return (x)->contExists(x);
+	}
+	
 	public void nullifyClear();
 	
 	public void setContainer(Symbol containedObject, Symbol containingObject, String featureName);

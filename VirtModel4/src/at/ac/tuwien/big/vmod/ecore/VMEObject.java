@@ -17,7 +17,7 @@ import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcoreFactory;
-import org.eclipse.ocl.copied.BasicTuple;
+//import org.eclipse.ocl.copied.BasicTuple;
 import org.eclipse.ocl.pivot.PivotFactory;
 import org.eclipse.ocl.pivot.PivotPackage;
 import org.eclipse.ocl.pivot.Property;
@@ -81,7 +81,7 @@ public interface VMEObject extends EObject {
 		return projectTuple(Collections.singleton(tuple));
 	}*/
 	
-	public default Tuple<EOperation,EStructuralFeature> getTuple(SinglePoint point, Object value, org.eclipse.ocl.ecore.TupleType tt) {
+	/*public default Tuple<EOperation,EStructuralFeature> getTuple(SinglePoint point, Object value, org.eclipse.ocl.ecore.TupleType tt) {
 		PointDesc desc = point.getDesc();
 		List<? extends EStructuralFeature> esfList = desc.getESFList();
 		Map<EStructuralFeature,Object> objectMap = new HashMap<EStructuralFeature, Object>();
@@ -96,7 +96,7 @@ public interface VMEObject extends EObject {
 		}
 		BasicTuple ret = new BasicTuple(tt,objectMap);
 		return ret;
-	}
+	}*/
 	
 	public default SequenceValue explodeTuple(EStructuralFeature feat) {
 		Map<SinglePoint,Object> map = explode(feat);

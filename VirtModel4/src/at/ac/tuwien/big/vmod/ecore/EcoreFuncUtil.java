@@ -1,6 +1,7 @@
 package at.ac.tuwien.big.vmod.ecore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Stack;
@@ -52,7 +53,8 @@ public class EcoreFuncUtil {
 			return null;
 		}
 		if (ret.size()>1) {
-			throw new RuntimeException("Multiple classes!!");
+			//Well, it might happen sometimes ...
+			System.err.println("Multiple classes: !!"+ Arrays.toString(ret.toArray()));
 		}
 		return ret.get(0);
 	}

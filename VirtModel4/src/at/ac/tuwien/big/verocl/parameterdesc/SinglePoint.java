@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.ocl.pivot.Signal;
@@ -44,6 +45,11 @@ public interface SinglePoint  extends Points {
 			@Override
 			public int hashCode() {
 				return SinglePoint.this.hashCode();
+			}
+
+			@Override
+			public Iterator<SinglePoint> iterator() {
+				return Collections.singleton(SinglePoint.this).iterator();
 			}
 			
 		};

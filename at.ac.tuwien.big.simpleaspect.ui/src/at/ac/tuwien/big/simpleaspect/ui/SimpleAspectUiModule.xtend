@@ -16,6 +16,6 @@ class SimpleAspectUiModule extends AbstractSimpleAspectUiModule {
 	 def Class<? extends XtextEditor> bindXtextEditor() {
   		return MultiXtextEditor;
 		//return VMXtextEditor;
-	 } 
+	 }  
 	
 }
