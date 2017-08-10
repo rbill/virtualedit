@@ -1,0 +1,39 @@
+grammar at.ac.tuwien.big.multimodeldesc.MMDesc with org.eclipse.xtext.common.Terminals
+
+generate mMDesc "http://www.ac.at/tuwien/big/multimodeldesc/MMDesc"
+
+MMDesc:
+	pointDesc=PointDesc
+	
+	(models+=ModelRef)*
+	(view=ModelView)?
+;
+
+PointDesc:
+	{PointDesc}
+	'PointDesc' '['
+		(type+='Integer'|type+='String' (',' (type+='Integer'|type+='String' ))* )?
+	']'
+;
+
+
+
+ModelRef:
+	'model' (id=INT) uri = STRING
+	(
+		'['
+			(data+= STRING|ID|INT)
+		']'
+	)?
+	('{'
+		(next+= ModelRef)*
+	 '}'	
+	)? (continue?='+')?
+	;
+
+ModelView:
+	{ModelView}
+	'view' '['
+		(viewed+=[ModelRef|ID] (',' viewed+=[ModelRef|ID])*)?
+	']'
+;
