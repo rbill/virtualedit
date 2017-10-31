@@ -1,5 +1,5 @@
 # Virtual Textual Model Composition for Supporting Versioning and Aspect-Orientation
-![Logo](http://virtualedit.big.tuwien.ac.at/img/VirtualEdit_v1-220x220.png)
+![Logo](http://virtualedit.big.tuwien.ac.at/img/VirtualEditLogo_220x220.png)
 
 The maintenance of modern systems often requires developers to perform complex and error-prone cognitive tasks, which are caused by the obscurity, redundancy, and irrelevancy of code, distracting from essential maintenance tasks.
 
