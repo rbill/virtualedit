@@ -9,13 +9,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
-import java.util.UUID;
-import java.util.Map.Entry;
-
-import javax.imageio.spi.ServiceRegistry;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -30,27 +27,18 @@ import at.ac.tuwien.big.autoedit.ecore.util.MyResource;
 import at.ac.tuwien.big.autoedit.test.OclExtractor;
 import at.ac.tuwien.big.virtmod.basic.col.impl.ConvertingListImpl;
 import at.ac.tuwien.big.virtmod.ecore.impl.FakeEListImpl;
-import at.ac.tuwien.big.virtmod.structure.DeltaManager;
-import at.ac.tuwien.big.virtmod.structure.GlobalSource;
-import at.ac.tuwien.big.virtmod.structure.VContainer;
-import at.ac.tuwien.big.virtmod.structure.impl.SimpleDeltaManager;
-import at.ac.tuwien.big.virtmod.structure.impl.VDeltaContainer;
-import at.ac.tuwien.big.virtmod.structure.impl.VSimpleContainer;
-import at.ac.tuwien.big.vmod.type.ModelProviderType;
-import at.ac.tuwien.big.vmod.type.Symbol;
-import at.ac.tuwien.big.vmod.type.impl.ModelProviderTypeImpl;
-import at.ac.tuwien.big.vmod.type.impl.SymbolRegistryTypeImpl;
-import at.ac.tuwien.big.vmod.ecore.VFeatureValues;
-import at.ac.tuwien.big.vmod.ecore.VObjectValues;
 import at.ac.tuwien.big.vmod.ecore.impl.SimpleModelView;
 import at.ac.tuwien.big.vmod.provider.ModelProvider;
 import at.ac.tuwien.big.vmod.provider.impl.SimpleDeltaModelProviderImpl;
 import at.ac.tuwien.big.vmod.provider.impl.SimpleEcoreModelProviderImpl;
 import at.ac.tuwien.big.vmod.registry.SymbolRegistry;
 import at.ac.tuwien.big.vmod.registry.SymbolRegistryImpl;
+import at.ac.tuwien.big.vmod.type.ModelProviderType;
+import at.ac.tuwien.big.vmod.type.Symbol;
+import at.ac.tuwien.big.vmod.type.impl.ModelProviderTypeImpl;
+import at.ac.tuwien.big.vmod.type.impl.SymbolRegistryTypeImpl;
 import at.ac.tuwien.big.vmodel.ecore.VEcoreFile;
 import at.ac.tuwien.big.vmodel.ecore.impl.VEcoreFileImpl;
-import at.ac.tuwien.big.xtext.annotation.SourcedEObject;
 import at.ac.tuwien.big.xtext.equalizer.Creater;
 import at.ac.tuwien.big.xtext.equalizer.InstanceCreator;
 import at.ac.tuwien.big.xtext.equalizer.ModelCorrespondance;
@@ -128,7 +116,7 @@ public interface VModelView {
 		Map<Symbol,String> eobjNames = new HashMap<>();
 		Map<EClass,Integer> curNames = new HashMap<>();
 		VObjectValues vov = getInstances();
-		for (Symbol uuid: vov) {
+		for (Symbol uuid: vov.existing()) {
 			EClass cl = vov.getClass(uuid);
 			Integer curInd = curNames.getOrDefault(cl, 1);
 			eobjNames.put(uuid, (cl==null?"UnknownClass":cl.getName())+curInd);
@@ -137,7 +125,8 @@ public interface VModelView {
 		Set<Symbol> haveInstances = new HashSet<>();
 		
 		Map<Symbol,VMEObject> eobj = new HashMap<>();
-		for (Symbol uuid: getInstances()) {
+		for (Symbol uuid: getInstances().existing()) {
+			
 			eobj.put(uuid, (VMEObject)getEObject(uuid));
 		}
 		List<VMEObject> containerless = new ArrayList<>();
@@ -211,16 +200,20 @@ public interface VModelView {
 		initModelForEdit();
 		//Now everything should be added, time to figure our what to add as root: Everything without container
 		List<EObject> ret = new ArrayList<>();
-		for (Symbol uuid: getInstances()) {
-			ret.add(getEObject(uuid));
+		Set<Symbol> retS = new HashSet<>();
+		for (Symbol uuid: getInstances().existing()) {
+			if (retS.add(uuid)) {
+				ret.add(getEObject(uuid));
+			}
 		}
 		return ret;
 	}
 	
 	public default List<EObject> allInstances(EClass cl) {
 		List<EObject> ret = new ArrayList<>();
+		Set<EObject> retS = new HashSet<EObject>(); 
 		for (EObject eobj: getAllEObjects()) {
-			if (eobj != null && eobj.eClass() != null && cl.isSuperTypeOf(eobj.eClass())) {
+			if (eobj != null && eobj.eClass() != null && cl.isSuperTypeOf(eobj.eClass()) && retS.add(eobj)) {
 				ret.add(eobj);
 			}
 		}
@@ -231,12 +224,12 @@ public interface VModelView {
 		initModelForEdit();
 		//Now everything should be added, time to figure our what to add as root: Everything without container
 		Map<Symbol,EObject> eobj = new HashMap<>();
-		for (Symbol uuid: getInstances()) {
+		List<EObject> containerless = new ArrayList<EObject>();
+		for (Symbol uuid: getInstances().existing()) {
 			eobj.put(uuid, getEObject(uuid));
 		}
-		List<EObject> containerless = new ArrayList<EObject>();
 		for (EObject so: eobj.values()) {
-			System.out.println("Container of "+so+": "+so.eContainer());
+			//System.out.println("Container of "+so+": "+so.eContainer());
 			if (so.eContainer() == null) {
 				containerless.add(so);
 			}
@@ -248,9 +241,11 @@ public interface VModelView {
 
 		//Create "real" objects
 		Map<Symbol,EObject> eobj = new HashMap<>();
-		for (Symbol uuid: getInstances()) {
+		List<EObject> containerless = new ArrayList<EObject>();
+		
+		for (Symbol uuid: getInstances().existing()) {
 			EClass cl = getInstances().getClass(uuid);
-			System.out.println(uuid+" has class "+(cl==null?"null":cl.getName()));
+			//System.out.println(uuid+" has class "+(cl==null?"null":cl.getName()));
 			if (cl == null) {
 				//TODO: This is a bug ...
 				System.err.println("Null class ..."+uuid);
@@ -262,6 +257,10 @@ public interface VModelView {
 				corr.putCorrespondence(getEObject(uuid), neweobj);
 			}
 		}
+		for (Symbol symb: getInstances().getRootObjects()) {
+			containerless.add(eobj.get(symb));
+		}
+		
 		for (Entry<Symbol,EObject> entry: eobj.entrySet()) {
 			EClass cl = entry.getValue().eClass();
 			Symbol uuid = entry.getKey();
@@ -282,11 +281,13 @@ public interface VModelView {
 					for (Object o: curValues) {
 						if (o instanceof VMEObject) {
 							VMEObject vm = (VMEObject)o;
-							EObject target = eobj.get(vm.getUUID());
-							if (target == null) {
-								System.err.println("Null target from "+o+" with symbol");
-							} else {
-								targets.add(target);
+							if (vm.contExists()) {
+								EObject target = eobj.get(vm.getUUID());
+								if (target == null) {
+									System.err.println("Null target from "+o+" with symbol");
+								} else {
+									targets.add(target);
+								}
 							}
 						} else {
 							List<?> newValues = getFeatureValues(ref).getEcoreValue(uuid);
@@ -330,29 +331,23 @@ public interface VModelView {
 						Object curV = curValues.iterator().next();
 						if (curV instanceof VMEObject) {
 							VMEObject vm = (VMEObject)curV;
-							EObject trg = eobj.get(vm.getUUID());
-							entry.getValue().eSet(ref, trg);
-							System.out.println("Set "+ref.getEContainingClass().getName()+"."+ref.getName()+" = "+trg + " (from "+curV+") for "+entry.getValue());
+							if (vm.contExists()) {
+								EObject trg = eobj.get(vm.getUUID());
+								entry.getValue().eSet(ref, trg);
+							}
+							//System.out.println("Set "+ref.getEContainingClass().getName()+"."+ref.getName()+" = "+trg + " (from "+curV+") for "+entry.getValue());
 						} else {
-							System.err.println("Wrong type: "+curV+" is not a VMEObject!");
+							//System.err.println("Wrong type: "+curV+" is not a VMEObject!");
 						}
 						
 					} else {
-						System.out.println("Set "+ref.getEContainingClass().getName()+"."+ref.getName()+" to null for "+entry.getValue());
+						//System.out.println("Set "+ref.getEContainingClass().getName()+"."+ref.getName()+" to null for "+entry.getValue());
 					}
 				}
 			}
 		}
 		//Now everything should be added, time to figure our what to add as root: Everything without container
-		List<EObject> containerless = new ArrayList<EObject>();
-		for (EObject so: eobj.values()) {
-			if (so.eContainer() == null) {
-				System.out.println("Containerless: "+so);
-				containerless.add(so);
-			} else {
-				System.out.println("Container of "+so+": "+so.eContainer());
-			}
-		}
+		
 		return containerless;
 	}
 	
@@ -398,14 +393,13 @@ public interface VModelView {
 	public default SimpleModelCorrespondance synchronizeWithResource(Resource xmiResource, SimpleModelCorrespondance correspondance) {
 		List<EObject> targetEObjects = getResourceEObjects();
 		List<EObject> oldEObjects = new ArrayList<>(targetEObjects);
-		VObjectValues instances = getInstances();
 		Map<EObject,Symbol> reuseSymbol = new HashMap<EObject, Symbol>();
 		Map<EObject,VMEObject> oldObj = new HashMap<EObject, VMEObject>();
 		for (EObject eobj: (Iterable<EObject>)()->xmiResource.getAllContents()) {
 			VMEObject oldObject = (VMEObject)correspondance.getLeftObject(eobj);
-			//Jetzt bräuchte ich aber
+			//Jetzt br?uchte ich aber
 			if (oldObject != null) {
-				//Es gab das objekt schon früher, benutzte die ID nocheinmal
+				//Es gab das objekt schon fr?her, benutzte die ID nocheinmal
 				oldObj.put(eobj, oldObject);
 				reuseSymbol.put(eobj, oldObject.getUUID());
 			} else {
@@ -416,7 +410,7 @@ public interface VModelView {
 			//newCorr.putCorrespondence(thingWhichChange, thingWhichShouldBeSynchronized);
 		}
 		SimpleModelCorrespondance empty = new SimpleModelCorrespondance();
-		//Es ist so ähnlich: Ich muss equalizen ...
+		//Es ist so ?hnlich: Ich muss equalizen ...
 		SimpleModelEqualizer eq = new SimpleModelEqualizer(xmiResource.getContents(), targetEObjects, correspondance.inverse(), 
 				empty, (cont,cl)->{					
 					throw new RuntimeException("Objects should have been created!");
@@ -474,8 +468,8 @@ public interface VModelView {
 					toAdd.add(uuid);
 				}
 				List originalObjects = fv.getValueValue(myId);
-				//So wie ich das lade, werden automatisch die Inversen Sachen eingefügt. Damit ich doppeltes einfügen vermeide, lösche ich die Liste
-				//So wie die Liste funktioniert, sollte es sein, dass beim indirekten hinzufügen durch die andere Liste die korrekte Reihenfolge wiederhergestellt wird
+				//So wie ich das lade, werden automatisch die Inversen Sachen eingef?gt. Damit ich doppeltes einf?gen vermeide, l?sche ich die Liste
+				//So wie die Liste funktioniert, sollte es sein, dass beim indirekten hinzuf?gen durch die andere Liste die korrekte Reihenfolge wiederhergestellt wird
 				if (originalObjects instanceof NoInverse) {
 					List l2 = (List)((NoInverse)originalObjects).noInverse();
 					l2.addAll(toAdd);
@@ -590,14 +584,14 @@ public interface VModelView {
 			@Override
 			public EObject createInstance(EObject cont, EClass cl) {
 				ModelProvider prov = getMainProvider();
-				Symbol newSymbol = getSymbol(cont, cl); //Alles was erzeugt wird landed hier TODO: ändern, so dass es passt ... wie ist das?
+				Symbol newSymbol = getSymbol(cont, cl); //Alles was erzeugt wird landed hier TODO: ?ndern, so dass es passt ... wie ist das?
 				VObjectValues val = getInstances();
 				val.add(newSymbol);
 				val.setClass(newSymbol, cl);
-				System.out.println("Creating "+ cl.getName()+" for id "+newSymbol);
-				if ("EClass".equals(cl.getName())) {
-					System.err.println("Creating eclass?!");
-				}
+				//System.out.println("Creating "+ cl.getName()+" for id "+newSymbol);
+				//if ("EClass".equals(cl.getName())) {
+//					System.err.println("Creating eclass?!");
+				//}
 				return getEObject(newSymbol);
 			}
 		};

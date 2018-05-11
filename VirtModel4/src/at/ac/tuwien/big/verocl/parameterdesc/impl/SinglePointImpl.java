@@ -42,6 +42,7 @@ public class SinglePointImpl extends AbstractPoint implements SinglePoint {
 		return Arrays.equals(values, pointValues);
 	}
 	
+	@Override
 	public boolean equals(Object other) {
 		return (other instanceof SinglePoint) && equals((SinglePoint)other);
 	}
@@ -50,6 +51,7 @@ public class SinglePointImpl extends AbstractPoint implements SinglePoint {
 		return Arrays.equals(values, other.getValues());
 	}
 	
+	@Override
 	public int hashCode() {
 		return hashCode;
 	}

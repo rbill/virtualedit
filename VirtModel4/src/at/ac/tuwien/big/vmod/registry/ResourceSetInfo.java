@@ -234,7 +234,7 @@ public class ResourceSetInfo {
 					} else {
 						break;
 					}
-				} catch (RuntimeException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 					break;
 				}
@@ -246,6 +246,15 @@ public class ResourceSetInfo {
 			return transformationUserDelta.get(forTransformation);
 		}
 		
+		public void resetBasicContentFromComplete(Resource res) {
+			ModelProvider baseProv = getBaseProvider();
+			baseProv.clear();
+			ModelProvider completeProv = getCompleteProvider();
+			completeProv.clear();
+			SimpleModelView smv = new SimpleModelView(baseProv, ecoreFile);
+			SimpleModelCorrespondance corr = smv.loadResource(res);
+			setBaseCorrespondance(corr);
+		}
 
 		public void resetBasicContent(Resource res) {
 			ModelProvider baseProv = getBaseProvider();
@@ -539,7 +548,7 @@ public class ResourceSetInfo {
 					gen = getGeneratorOrNull(parent.getName());
 				}
 				if (gen != null) {
-					//Wohl irgendeine nicht benötigte Resource
+					//Wohl irgendeine nicht ben???tigte Resource
 					TransformationExecutor executor = gen.getExecutor(res);
 					if (executor != null) {
 						tei = new TransformationExecutionInfo(executor, uriStr, res.getTimeStamp(), res);

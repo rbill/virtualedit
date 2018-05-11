@@ -14,7 +14,9 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 
+import at.ac.tuwien.big.verocl.ParameterDesc;
 import at.ac.tuwien.big.verocl.parameterdesc.PointDesc;
+import at.ac.tuwien.big.verocl.parameterdesc.SingleParameterDesc;
 import at.ac.tuwien.big.verocl.parameterdesc.SinglePoint;
 import at.ac.tuwien.big.verocl.parameterdesc.impl.SinglePointImpl;
 import at.ac.tuwien.big.xtext.util.IteratorUtils;
@@ -45,6 +47,7 @@ public class ModelRef implements Iterable<ModelRef> {
 		return new File(withoutExt(file.getPath(),extRef));
 	}
 	
+	
 	public static ModelRef modelRefOrNull(int[] index, ResourceSet rs, String baseUri, String ext, PointDesc desc) {
 		try {
 			if (!URIConverter.INSTANCE.exists(URIConverter.INSTANCE.normalize(URI.createURI(baseUri+"."+ext)), Collections.emptyMap())) {
@@ -57,7 +60,23 @@ public class ModelRef implements Iterable<ModelRef> {
 		uri = URIConverter.INSTANCE.normalize(URI.createURI(baseUri+"."+ext)).toString();
 		Object[] objs = new Object[desc.getParameterDescs().size()];
 		for (int i = 0; i < objs.length; ++i) {
-			objs[i] = uri; //TODO: ... This doesn't respect anything!
+			SingleParameterDesc d = desc.getParameterDescs().get(i);
+			if (d.getType() == String.class) {
+				objs[i] = uri; //TODO: ... This doesn't respect anything!
+			} else if (d.getType() == Integer.class) {
+				objs[i] = index[0];
+			} else if (d.getType() == Long.class) {
+				try {
+					//TODO: ...
+					String fileString = URI.createURI(uri).toFileString();
+					File file = new File(fileString);
+					if (file.exists()) {
+						objs[i] = file.lastModified();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		SinglePointImpl points = new SinglePointImpl(desc,objs);
 		ModelRef ret = new ModelRef(index[0]++,uri, points);
@@ -73,6 +92,14 @@ public class ModelRef implements Iterable<ModelRef> {
 		}
 		
 		return ret;
+	}
+	
+	
+
+
+	public static ModelRef intModelRefs(ResourceSet rs, File baseFile) {
+		int[] index = new int[]{1};
+		return realFakeDir(index, rs, baseFile, PointDesc.FULLBASIC);
 	}
 	
 	/**Reads in a tree of files starting from the base files. The files start with the base file, 
@@ -94,7 +121,7 @@ public class ModelRef implements Iterable<ModelRef> {
 	 * Uses an empty point desc
 	 */
 	public static ModelRef realFakeDir(int[] index, ResourceSet rs, File baseFile) {
-		return realFakeDir(index,rs, baseFile, PointDesc.SINGLESTRING);
+		return realFakeDir(index,rs, baseFile, PointDesc.FULLBASIC);
 	}
 	
 	public ModelRef(int index, String uri, SinglePoint points) {
@@ -109,6 +136,10 @@ public class ModelRef implements Iterable<ModelRef> {
 	public ModelRef(int index, Resource res, SinglePoint points) {
 		this(index,res.getURI().toString(),points);
 		this.res = res;
+	}
+
+	public ModelRef(int index, URI uri, SinglePoint points) {
+		this(index,uri.toString(),points);
 	}
 
 	public int getIndex() {

@@ -1,13 +1,10 @@
 package at.ac.tuwien.big.vmod.ecore.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.ecore.EClass;
@@ -22,21 +19,13 @@ import at.ac.tuwien.big.verocl.parameterdesc.MultiPoint;
 import at.ac.tuwien.big.verocl.parameterdesc.Points;
 import at.ac.tuwien.big.verocl.parameterdesc.SinglePoint;
 import at.ac.tuwien.big.verocl.parameterdesc.impl.MultiPointImpl;
-import at.ac.tuwien.big.virtmod.basic.Treepos;
 import at.ac.tuwien.big.virtmod.ecore.FeaturePropertyValue;
-import at.ac.tuwien.big.virtmod.ecore.VEObject;
-import at.ac.tuwien.big.virtmod.ecore.impl.FakeEListImpl;
-import at.ac.tuwien.big.virtmod.structure.ElementSourceInfo;
 import at.ac.tuwien.big.vmod.Counter;
 import at.ac.tuwien.big.vmod.Function;
-import at.ac.tuwien.big.vmod.ecore.VFakeEList;
 import at.ac.tuwien.big.vmod.ecore.VMEObject;
 import at.ac.tuwien.big.vmod.ecore.VModelView;
 import at.ac.tuwien.big.vmod.ecore.VProjectedModelView;
-import at.ac.tuwien.big.vmod.impl.ParametizedFunction;
-import at.ac.tuwien.big.vmod.modelview.ModelView;
 import at.ac.tuwien.big.vmod.type.Symbol;
-import at.ac.tuwien.big.vmodel.ecore.impl.FilteredList;
 
 public class SimpleVMEObject extends MinimalEObjectImpl implements VMEObject, InternalEObject {
 	private Function<String, ? extends Counter> classFunc;
@@ -191,7 +180,7 @@ public class SimpleVMEObject extends MinimalEObjectImpl implements VMEObject, In
 	
 	@Override
 	public NotificationChain eSetResource(Resource.Internal resource, NotificationChain notifications) {
-		System.out.println("Object with id "+id+" has now resource "+resource );
+		//System.out.println("Object with id "+id+" has now resource "+resource );
 		return super.eSetResource(resource, notifications);
 		
 	}
@@ -280,9 +269,14 @@ public class SimpleVMEObject extends MinimalEObjectImpl implements VMEObject, In
 	public void initProjection(MultiPoint mp) {
 		if (model instanceof VProjectedModelView) {
 			model = ((VProjectedModelView)model).project(mp);
-			//Tatsächlich vermutlich nicht notwendig, da wenn es initialisiert wird die myValues immer leer sind
+			//Tats?chlich vermutlich nicht notwendig, da wenn es initialisiert wird die myValues immer leer sind
 			myValues.clear();
 		}
+	}
+
+	@Override
+	public boolean contExists() {
+		return model.getInstances().contExists(getUUID());
 	}
 
 

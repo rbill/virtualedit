@@ -48,6 +48,7 @@ import at.ac.tuwien.big.vmod.impl.EcoreModelResource;
 import at.ac.tuwien.big.vmod.impl.ParametizedGenerator;
 import at.ac.tuwien.big.vmod.impl.ParametizedModelResource;
 import at.ac.tuwien.big.vmod.impl.Projector;
+import at.ac.tuwien.big.vmod.modelview.ModelView;
 import at.ac.tuwien.big.vmod.provider.ModelProvider;
 import at.ac.tuwien.big.vmod.provider.impl.SimpleDeltaModelProviderImpl;
 import at.ac.tuwien.big.vmod.provider.impl.SimpleEcoreModelProviderImpl;
@@ -155,22 +156,57 @@ public class MultiLoader {
 	 * Changes to the returned resource may or may not reflect real changes
 	 * 
 	 * */
-	public Resource loadResource(ResourceSet resourceSet, File file) throws IOException {
+	public Resource loadResource(ResourceSet resourceSet, File file, PointDesc pd) throws IOException {
+		
 		URI uri = URIConverter.INSTANCE.normalize(URI.createFileURI(file.getCanonicalPath()));
 		Integer index = existingIndices.get(uri);
 		if (index == null) {
 			existingIndices.put(uri, (index=MY_INDEX));
 			++MY_INDEX;
 		}
-		SimpleEcoreModelProviderImpl prov = SimpleEcoreModelProviderImpl.createModelProvider(uri.toString(), ecoreRes);
-		prov.setIndex(index);
-		SimpleModelView loadedModel = new SimpleModelView(prov, ecore);
-		Resource res = resourceSet.getResource(uri, true);
-		ModelResource subRes = new EcoreModelResource(prov, ecoreRes, uri, null);
-		type = subRes.getType();
-		SimpleModelCorrespondance baseMC = loadedModel.loadResource(res);
-		FakeResource ret = new FakeResource(resourceSet, URI.createURI(uri.toString()+"#"), loadedModel.exposeContents());
+		Object[] val = new Object[pd.getParameterDescs().size()];
+		{
+			int i = 0;
+			for (SingleParameterDesc spd: pd.getParameterDescs()) {
+				if (spd.getType() == String.class) {
+					val[i] = uri.toString();
+				}
+				if (spd.getType() == Integer.class) {
+					val[i] = index;
+				}
+				++i;
+			}
+		}
+		SinglePoint sipo = new SinglePointImpl(pd,val);
+		ModelRef fakeRef = new ModelRef(MY_INDEX, uri, sipo);
+		loadRoot(resourceSet, fakeRef);
+		VProjectedModelView loadedModel = modelView;
+		FakeResource ret = new FakeResource(resourceSet, URI.createURI(uri.toString()+"#"), 
+				loadedModel.exposeContents());
 		return ret;
+	}
+	
+
+
+	public Resource getFakeUnion() {
+		VProjectedModelView loadedModel = modelView;
+		FakeResource ret = new FakeResource(rs, URI.createURI(root.getURI()+"#"), 
+				loadedModel.exposeContents());
+		return ret;
+	}
+
+	
+	
+	
+
+	public void loadRoot(String string) {
+		loadRoot(new File(string));
+	}
+	
+	public void loadRoot(File file) {
+		ResourceSet rs = ecoreRes.getResourceSet();
+		ModelRef root = ModelRef.intModelRefs(rs, file);
+		loadRoot(rs,root);
 	}
 	
 	public void loadRoot(ResourceSet rs, ModelRef root) {
@@ -267,10 +303,12 @@ public class MultiLoader {
 			}	
 		}
 		
-		SimpleModelView mv = new SimpleModelView(test, ecore);
-		Resource deltaResource = new ResourceImpl();
-		Object ret = mv.saveResource(deltaResource);
-		System.out.println("Delta-Union-Model:" +mv.toContentString());
+		if (test != null) {
+			SimpleModelView mv = new SimpleModelView(test, ecore);
+			Resource deltaResource = new ResourceImpl();
+			Object ret = mv.saveResource(deltaResource);
+			System.out.println("Delta-Union-Model:" +mv.toContentString());
+		}
 		
 		//Jetzt habe ich dann das geladene Zeugs. Jetzt muss ich irgendwie die unterschiedlichen Modelle vereinen ...
 		//Ich weiﬂ, dass die Identifier die gleichen sind und dass im Delta-Modell die richtige Information steht
@@ -318,7 +356,7 @@ public class MultiLoader {
 				new ParametizedModelResource<MultiPoint, SinglePoint>(type, 
 						provider, allParam, projector, subFunc, gen, URI.createURI("http://parametizedtest/root"));
 		this.parameterResource = parRes;
-		VSimpleProjectedModelView modelView = new VSimpleProjectedModelView(provider, parRes, ecore);
+		VSimpleProjectedModelView modelView = new VSimpleProjectedModelView(provider, parRes, ecore, allParam);
 		this.modelView = modelView;
 	}
 	

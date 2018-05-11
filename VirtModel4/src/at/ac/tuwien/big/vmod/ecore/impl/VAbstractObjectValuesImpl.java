@@ -59,7 +59,7 @@ public abstract class VAbstractObjectValuesImpl implements VObjectValues {
 	@Override
 	public void setClass(Symbol objectId, EClass classId) {
 		EcoreFuncUtil.setClass(classFunction().getValue(objectId), classId);
-		System.out.println("Set class of "+objectId+ " to "+classId);
+		//System.out.println("Set class of "+objectId+ " to "+classId);
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public abstract class VAbstractObjectValuesImpl implements VObjectValues {
 
 	@Override
 	public void setContainer(Symbol containedObject, Symbol containingObject, String featureName) {
-		System.out.println("Object "+containedObject+" is contained via "+featureName+" in "+containingObject);
+		//System.out.println("Object "+containedObject+" is contained via "+featureName+" in "+containingObject);
 		Function.setToVal(containerFunction().getValue(containedObject), Symbol.buildFrom("Feature",containingObject,featureName));
 		Symbol curCont = contained.get(containingObject);
 		if (containedObject == curCont) {

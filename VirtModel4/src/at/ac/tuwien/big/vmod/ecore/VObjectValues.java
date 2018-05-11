@@ -3,7 +3,6 @@ package at.ac.tuwien.big.vmod.ecore;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 
-import at.ac.tuwien.big.virtmod.structure.ElementSourceInfo;
 import at.ac.tuwien.big.vmod.Counter;
 import at.ac.tuwien.big.vmod.Function;
 import at.ac.tuwien.big.vmod.ecore.impl.VObjectValuesImpl;
@@ -33,8 +32,8 @@ public interface VObjectValues extends Iterable<Symbol> {
 		if (!exists(objectId)) {
 			return false;
 		}
-		Symbol cont = getContainerFull(objectId);
-		return cont == null || contExists(cont);
+		Symbol cont = getContainingObject(objectId);
+		return cont == null || VObjectValuesImpl.MODEL_ROOT.equals(cont) || contExists(cont);
 	}
 
 	public default Filter<Symbol> objectExistsEcoreFilter() {
@@ -79,8 +78,14 @@ public interface VObjectValues extends Iterable<Symbol> {
 	}
 
 	public default Iterable<Symbol> getInstances(String eclass) {
-		return ()->IteratorUtils.<Symbol>filterType(iterator(), (x)->hasClass(x,eclass));
+		return ()->IteratorUtils.<Symbol>filterType(iterator(), (x)->(hasClass(x,eclass) && contExists(x)));
 	}
+	
+	
 
 	public Iterable<Symbol> getRootObjects();
+
+	public default Iterable<Symbol> existing() {
+		return ()->IteratorUtils.filterType(this.iterator(), (x)->contExists(x));
+	}
 }

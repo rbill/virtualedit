@@ -49,12 +49,14 @@ public class VSimpleProjectedModelView implements VProjectedModelView {
 	private VObjectValues instances;
 	private VEcoreFile ecoreFile;
 	private ModelProvider prov;
+	private MultiPoint rootPoint;
 	private ParametizedModelResource<MultiPoint, SinglePoint> modelResource;
 
-	public VSimpleProjectedModelView(ModelProvider prov, ParametizedModelResource<MultiPoint,SinglePoint> modelResource, VEcoreFile ecore) {
+	public VSimpleProjectedModelView(ModelProvider prov, ParametizedModelResource<MultiPoint,SinglePoint> modelResource, VEcoreFile ecore, MultiPoint basePoint) {
 		this.prov = prov;
 		this.modelResource = modelResource; 
 		this.ecoreFile = ecore;		
+		this.rootPoint = basePoint;
 		initModelForEdit();
 	}
 	
@@ -113,6 +115,14 @@ public class VSimpleProjectedModelView implements VProjectedModelView {
 	}
 	
 
+
+	@Override
+	public MultiPoint getProjectionBase() {
+		return rootPoint; 
+	}
+
+	
+	
 	@Override
 	public VMEObject getEObject(Symbol uuid) {
 		VMEObject ret = containedObjects.get(uuid);
@@ -144,10 +154,10 @@ public class VSimpleProjectedModelView implements VProjectedModelView {
 		ret.prov = prov;
 		ret.modelResource = modelResource.project(t);
 		ret.ecoreFile = ecoreFile;
+		ret.rootPoint = rootPoint;
 		ret.initModelForEdit();
 		//ret.initProjection(t);
 		return ret;
 	}
 
-	
 }

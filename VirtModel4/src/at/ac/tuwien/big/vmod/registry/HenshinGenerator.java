@@ -1,5 +1,7 @@
 package at.ac.tuwien.big.vmod.registry;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,16 +76,24 @@ public class HenshinGenerator implements TransformatorGeneratorGenerator {
 				UnitApplication application = new UnitApplicationImpl(engine, graph, match.getUnit(),
 						assignment);
 				try {
-					
+					List<EObject> prevRoots = graph.getRoots();
 					application.execute(null);
 					
 					InstanceCreator gtc = existingCreators.get(prefix);
 					if (gtc == null) {
 						existingCreators.put(prefix, gtc = view.getTransformationCreater(prefix,corr,subcorr));
 					}
+					//Was it a change? Unfortunately it seems that this graph may contain additional roots when one is deleted
 					List<EObject> roots = graph.getRoots();
+					if (roots.size() > 1) {
+						//Supress additional roots
+						if (roots.containsAll(prevRoots)) {
+							roots = prevRoots;
+						}
+					}
+					List<EObject> eobjs = view.exposeContents();
 					SimpleModelEqualizer eq = new SimpleModelEqualizer(roots,							
-							view.exposeContents(), corr.inverse(), subcorr, gtc);
+							eobjs, corr.inverse(), subcorr, gtc);
 					eq.equalize();
 				} catch (Exception e) {
 					System.err.println("Could not execute rule: " + e.getMessage());

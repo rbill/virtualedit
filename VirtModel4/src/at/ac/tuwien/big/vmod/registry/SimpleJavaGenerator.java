@@ -5,11 +5,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.tools.FileObject;
 
@@ -233,7 +235,11 @@ public class SimpleJavaGenerator implements TransformatorGeneratorGenerator {
 			public void executeOn(VModelView view) {
 				VObjectValues vals = view.getInstances();
 				classnameToSymbol = new HashMap<>();
-				Iterable<Symbol> cdinst = vals.getInstances("ClassDeclaration");
+				Iterable<Symbol> cdinstb = vals.getInstances("ClassDeclaration");
+				Set<Symbol> cdinst = new HashSet<>();
+				for (Symbol s: cdinstb) {
+					cdinst.add(s);
+				}
 				VFeatureValues namevals = view.getFeatureValues("ClassDeclaration", "name");
 				for (Symbol sym: cdinst) {
 					for (Object name: namevals.getValueValue(sym)) {

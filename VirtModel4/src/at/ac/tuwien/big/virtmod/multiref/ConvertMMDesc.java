@@ -116,7 +116,7 @@ public class ConvertMMDesc {
 			this.desc = new PointDesc();
 			int index = 0;
 			for (String type: pd.getType()) {
-				Class<?> cl = ("String".equals(type)?String.class:("Integer".equals(type)?Integer.class:null));
+				Class<?> cl = ("String".equals(type)?String.class:("Integer".equals(type)?Integer.class:("Long".equals(type)?Long.class:null)));
 				if (cl == null) {
 					throw new RuntimeException("Unknown type " + type);
 				}

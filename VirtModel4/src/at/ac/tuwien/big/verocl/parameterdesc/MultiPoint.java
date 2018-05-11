@@ -1,11 +1,14 @@
 package at.ac.tuwien.big.verocl.parameterdesc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import org.eclipse.jdt.annotation.NonNull;
 
 import at.ac.tuwien.big.verocl.parameterdesc.impl.MultiPointImpl;
 import at.ac.tuwien.big.verocl.parameterdesc.impl.SinglePointImpl;
@@ -19,11 +22,13 @@ public interface MultiPoint extends Points, Intersectable<MultiPoint,SinglePoint
 		return ()->IteratorUtils.convert(getPoints().iterator(), (x)->x.getValues());
 	}
 	
-	public default Iterable<SinglePoint> getPoints() {
+	public default @NonNull Iterable<@NonNull SinglePoint> getPoints() {
 		return this;
 	}
 	
-
+	public default String _toString() {
+		return IteratorUtils.buildString(getPoints(),(x)->Arrays.toString(x.getValues()),"{","}",",");
+	}
 
 	@Override
 	public default Collection<? extends SinglePoint> getNext() {
@@ -69,6 +74,22 @@ public interface MultiPoint extends Points, Intersectable<MultiPoint,SinglePoint
 		}
 		MultiPointImpl ret = new MultiPointImpl(getDesc(), retValues);
 		return ret;
+	}
+
+	/**Exclude all points which are next.
+	 * Requirement: Acyclic graph
+	 * */
+	public default Collection<SinglePoint> getRoots() {
+		Set<SinglePoint> nextPoints = new HashSet<>();
+		Set<SinglePoint> ret = new HashSet<SinglePoint>();
+		for (SinglePoint point: this) {
+			ret.add(point);
+			nextPoints.addAll(point.getNext());
+		}
+		ret.removeAll(nextPoints);
+		return ret;
+		
+				
 	}
 	
 

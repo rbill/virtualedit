@@ -6,4 +6,6 @@ import at.ac.tuwien.big.verocl.parameterdesc.MultiPoint;
 public interface VProjectedModelView extends VModelView, Projected<VProjectedModelView, MultiPoint> {
 
 	public MultiModelPoint getProjection();
+	
+	public MultiPoint getProjectionBase();
 }

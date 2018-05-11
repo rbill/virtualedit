@@ -64,7 +64,7 @@ public interface VMEObject extends EObject {
 		PointDesc desc = point.getDesc();
 		MultiPointImpl newProj = new MultiPointImpl(desc);
 		for (Tuple<?, ? extends EStructuralFeature> tuple: tuples) {
-			//Jedes feature, welches wohl nahezu wirklcih eines ist, enthält einen Parameter mit demselben Namen ...
+			//Jedes feature, welches wohl nahezu wirklcih eines ist, enth?lt einen Parameter mit demselben Namen ...
 			Object[] obj = new Object[desc.getParameterDescs().size()];
 			int i = 0;
 			for (SingleParameterDesc spc: desc.getParameterDescs()) {
@@ -496,6 +496,8 @@ public interface VMEObject extends EObject {
 		ret.append(middle);
 		return ret.toString();
 	}
+
+	public boolean contExists();
 
 
 }

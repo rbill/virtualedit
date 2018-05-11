@@ -13,10 +13,21 @@ public class PointDesc {
 	public static final PointDesc EMPTY = new PointDesc();
 
 
-	public static final PointDesc SINGLESTRING = new PointDesc(); 
+	public static final PointDesc SINGLESTRING = new PointDesc();
+
+	public static final PointDesc SINGLEINT = new PointDesc();
+	
+	public static final PointDesc SINGLELONG = new PointDesc();
+	
+	public static final PointDesc FULLBASIC = new PointDesc();
 	
 	static {
 		SINGLESTRING.addParameterDesc(new SingleParameterDesc("uri", String.class));
+		FULLBASIC.addParameterDesc(new SingleParameterDesc("uri", String.class));
+		SINGLEINT.addParameterDesc(new SingleParameterDesc("index", Integer.class));
+		FULLBASIC.addParameterDesc(new SingleParameterDesc("index", Integer.class));
+		SINGLELONG.addParameterDesc(new SingleParameterDesc("time", Long.class));
+		FULLBASIC.addParameterDesc(new SingleParameterDesc("time", Long.class));
 	}
 	
 	

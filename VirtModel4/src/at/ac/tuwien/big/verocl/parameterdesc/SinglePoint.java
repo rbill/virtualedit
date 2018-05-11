@@ -55,5 +55,17 @@ public interface SinglePoint  extends Points {
 		};
 	}
 
+	public default long getTimeOrZero() {
+		int index = 0;
+		PointDesc desc = getDesc();
+		for (SingleParameterDesc str: desc.getParameterDescs()) {
+			if ("time".equals(str.getName()) && (long.class == str.getType() || Long.class == str.getType())) {
+				return (Long)getValues()[index];
+			}
+			++index;
+		}
+		return 0;
+	}
+
 
 }
