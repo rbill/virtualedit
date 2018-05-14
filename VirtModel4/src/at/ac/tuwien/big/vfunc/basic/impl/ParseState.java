@@ -1,21 +1,46 @@
 package at.ac.tuwien.big.vfunc.basic.impl;
 
+import at.ac.tuwien.big.vfunc.op.BasicObjectLoader;
+import at.ac.tuwien.big.vfunc.op.BasicOperationManager;
+
 public class ParseState<Source, Target> {
 	
-	private BasicEEManager<Source, Target> manager;
+	private GeneralParseContainer manager;
 	private VariableRecManager recManager;
 	
-	public ParseState(BasicEEManager<Source, Target> manager, VariableRecManager recManager) {
+	public ParseState(GeneralParseContainer manager, VariableRecManager recManager) {
 		this.manager = manager;
 		this.recManager = recManager;
 	}
 
-	public BasicEEManager<Source, Target> getManager() {
+	public GeneralParseContainer getManager() {
 		return manager;
+	}
+	
+	public BasicOperationManager getLoader() {
+		return manager.loader();
 	}
 	
 	public VariableRecManager getRecManager() {
 		return recManager;
+	}
+	
+	
+	public void add(String variable, String newFunctionType, Object... newParam) {
+		BasicOperationManager loader = getLoader();
+		Object content = loader.createNew(newFunctionType, newParam);
+		
+	}
+	
+	public void add(String variable, VariableTypeContent initValue) {
+		recManager.createDirect(variable);
+		if (initValue != null) {
+			recManager.setValue(variable, initValue);
+		}
+	}
+	
+	public void reset(String variable, VariableTypeContent newValue) {
+		recManager.setValue(variable, newValue);
 	}
 	
 	//Ich brauche Placeholder-Variablen

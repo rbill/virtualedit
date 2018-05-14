@@ -11,5 +11,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/VirtModelPropApt"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/create-grammar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
