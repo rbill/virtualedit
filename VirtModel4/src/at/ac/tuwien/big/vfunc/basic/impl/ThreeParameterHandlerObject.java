@@ -5,15 +5,15 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import at.ac.tuwien.big.generalutil.Pair;
 import at.ac.tuwien.big.vfunc.basic.OneParameterSupplier;
 import at.ac.tuwien.big.vfunc.basic.ThreeParameterSupplier;
 import at.ac.tuwien.big.vfunc.basic.TwoParameterSupplier;
+import uk.ac.york.cs.ecss.learn.learnformat.MyPair;
 
 public class ThreeParameterHandlerObject<Source,Param1,Param2,Target,FuncSource> extends ThreeOrMoreParameterHandlerObject<ThreeParameterHandlerObject<Source,Param1,Param2,Target,FuncSource>, Source, Param1, Param2,Target,FuncSource> {
 
 	public ThreeParameterHandlerObject(
-			BiFunction<? super ThreeParameterHandlerObject<Source, Param1, Param2, Target, FuncSource>,Pair<FuncSource,List<Supplier<?>>>,? extends Target> func,
+			BiFunction<? super ThreeParameterHandlerObject<Source, Param1, Param2, Target, FuncSource>,MyPair<FuncSource,List<Supplier<?>>>,? extends Target> func,
 			Class<Source> sourceClass,
 			Class<Param1> param1Class,
 			Class<Param2> param2Class
@@ -24,7 +24,7 @@ public class ThreeParameterHandlerObject<Source,Param1,Param2,Target,FuncSource>
 	public static<Source,Param1,Param2,Target,FuncSource> ThreeParameterHandlerObject<Source,Param1,Param2,Target,FuncSource> get(Function<? super ThreeParameterSupplier<Source, Param1, Param2>,
 				Target> function, Class<Source> sourceClass, Class<Param1> param1Class, Class<Param2> param2Class) {
 		
-		BiFunction<? super ThreeParameterHandlerObject<Source, Param1, Param2, Target, FuncSource>, Pair<FuncSource,List<Supplier<?>>>, Target> biFunc = 
+		BiFunction<? super ThreeParameterHandlerObject<Source, Param1, Param2, Target, FuncSource>, MyPair<FuncSource,List<Supplier<?>>>, Target> biFunc = 
 				(thisObj, supplierListPair)->{
 				ThreeParameterSupplier<Source,Param1,Param2> supplier = new ThreeParameterSupplier<Source,Param1,Param2>() {
 

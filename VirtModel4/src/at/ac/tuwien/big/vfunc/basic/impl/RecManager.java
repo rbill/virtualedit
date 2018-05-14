@@ -35,6 +35,10 @@ public class RecManager<S,T,U> {
 		createDirect(returnName);
 	}
 	
+	public  RecManager<S, T, U> getParent() {
+		return parent;
+	}
+	
 	public RecManager(Function<S, T> func, Function<T, U> extractor, BiConsumer<T, U> writer, S returnName) {
 		this(null,func,extractor,writer, returnName);
 	}

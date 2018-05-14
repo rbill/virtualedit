@@ -11,6 +11,5 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/VirtModelPropApt"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/at.ac.tuwien.big.autoedit"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

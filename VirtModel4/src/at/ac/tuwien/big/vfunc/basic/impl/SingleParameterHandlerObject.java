@@ -5,13 +5,13 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import at.ac.tuwien.big.generalutil.Pair;
 import at.ac.tuwien.big.vfunc.basic.OneParameterSupplier;
+import uk.ac.york.cs.ecss.learn.learnformat.MyPair;
 
 public class SingleParameterHandlerObject<Source,Target,FuncSource> extends SingleOrMoreParameterHandlerObject<SingleParameterHandlerObject<Source,Target,FuncSource>, Source, Target,FuncSource> {
 
 	public SingleParameterHandlerObject(
-			BiFunction<? super SingleParameterHandlerObject<Source, Target, FuncSource>,Pair<FuncSource,List<Supplier<?>>>,? extends Target> func,
+			BiFunction<? super SingleParameterHandlerObject<Source, Target, FuncSource>,MyPair<FuncSource,List<Supplier<?>>>,? extends Target> func,
 			Class<Source> sourceClass
 			) {
 		super(func, sourceClass);
@@ -20,7 +20,7 @@ public class SingleParameterHandlerObject<Source,Target,FuncSource> extends Sing
 	public static<Source,Target,FuncSource> SingleParameterHandlerObject<Source,Target,FuncSource> get(Function<? super OneParameterSupplier<Source>,
 				Target> function, Class<Source> sourceClass) {
 		
-		BiFunction<? super SingleParameterHandlerObject<Source, Target,FuncSource>, Pair<FuncSource,List<Supplier<?>>>, Target> biFunc = 
+		BiFunction<? super SingleParameterHandlerObject<Source, Target,FuncSource>, MyPair<FuncSource,List<Supplier<?>>>, Target> biFunc = 
 				(thisObj, supplierListPair)->{
 				OneParameterSupplier<Source> supplier = new OneParameterSupplier<Source>() {
 

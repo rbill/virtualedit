@@ -2,16 +2,15 @@ package at.ac.tuwien.big.vfunc.basic.impl;
 
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
-import at.ac.tuwien.big.generalutil.Pair;
+import uk.ac.york.cs.ecss.learn.learnformat.MyPair;
 
 public abstract class ParameterHandlerObject<This extends ParameterHandlerObject<This,Target,FuncSource>, Target, FuncSource> implements BiFunction<FuncSource, List<Supplier<?>>, Target> {
 
-	private final BiFunction<? super This,Pair<FuncSource,List<Supplier<?>>>,? extends Target> func;
+	private final BiFunction<? super This,MyPair<FuncSource,List<Supplier<?>>>,? extends Target> func;
 	
-	public ParameterHandlerObject(BiFunction<? super This,Pair<FuncSource,List<Supplier<?>>>,? extends Target> func) {
+	public ParameterHandlerObject(BiFunction<? super This,MyPair<FuncSource,List<Supplier<?>>>,? extends Target> func) {
 		this.func = func;
 	}
 	
@@ -23,7 +22,7 @@ public abstract class ParameterHandlerObject<This extends ParameterHandlerObject
 	}
 	
 	public Target evaluate(FuncSource src, List<Supplier<?>> supplierList) {
-		return func.apply((This)this, new Pair<>(src,supplierList));
+		return func.apply((This)this, new MyPair<>(src,supplierList));
 	}
 	
 	public Target apply(FuncSource src, List<Supplier<?>> suppliers) {

@@ -5,14 +5,15 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import at.ac.tuwien.big.generalutil.Pair;
-import at.ac.tuwien.big.vfunc.basic.OneParameterSupplier;
+import org.sat4j.minisat.core.Pair;
+
 import at.ac.tuwien.big.vfunc.basic.TwoParameterSupplier;
+import uk.ac.york.cs.ecss.learn.learnformat.MyPair;
 
 public class TwoParameterHandlerObject<Source,Param1,Target,FuncSource> extends TwoOrMoreParameterHandlerObject<TwoParameterHandlerObject<Source,Param1,Target,FuncSource>, Source, Param1, Target,FuncSource> {
 
 	public TwoParameterHandlerObject(
-			BiFunction<? super TwoParameterHandlerObject<Source, Param1, Target, FuncSource>,Pair<FuncSource,List<Supplier<?>>>,? extends Target> func,
+			BiFunction<? super TwoParameterHandlerObject<Source, Param1, Target, FuncSource>,MyPair<FuncSource,List<Supplier<?>>>,? extends Target> func,
 			Class<Source> sourceClass,
 			Class<Param1> param1Class
 			) {
@@ -22,7 +23,7 @@ public class TwoParameterHandlerObject<Source,Param1,Target,FuncSource> extends 
 	public static<Source,Param1,Target,FuncSource> TwoParameterHandlerObject<Source,Param1,Target,FuncSource> get(Function<? super TwoParameterSupplier<Source, Param1>,
 				Target> function, Class<Source> sourceClass, Class<Param1> param1Class) {
 		
-		BiFunction<? super TwoParameterHandlerObject<Source, Param1, Target,FuncSource>, Pair<FuncSource,List<Supplier<?>>>, Target> biFunc = 
+		BiFunction<? super TwoParameterHandlerObject<Source, Param1, Target,FuncSource>, MyPair<FuncSource,List<Supplier<?>>>, Target> biFunc = 
 				(thisObj, supplierListPair)->{
 				TwoParameterSupplier<Source,Param1> supplier = new TwoParameterSupplier<Source,Param1>() {
 

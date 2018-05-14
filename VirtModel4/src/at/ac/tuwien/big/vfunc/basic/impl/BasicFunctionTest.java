@@ -14,13 +14,18 @@ public class BasicFunctionTest {
 	public static void main(String[] args) {
 		Editor editor = new Editor(){};
 		
+		//Func(x,y) exportiert
+		//Let assigned
+		//Alle parameter müssen entweder exportiert oder assigned werden, wenn sie zugewiesen werden
+		//Wobei man durchaus im Parent noch assignen usw. darf
+		
 		BasicFunction<Integer,Integer> plusTwo = new BasicFunction<Integer, Integer>(false, new BasicFunctionType<>(Integer.class,Integer.class));
 		Scope<Integer> plusTwoScope = new SetScope<Integer>(Arrays.asList(2,3,4));
 		BasicExpression<Integer, Integer> plusTwoExpr = new BasicExpression<Integer, Integer>((x)->x+2);
 		Assignment<Integer, Integer> plusTwoAss = new BasicAssignment<Integer, Integer>(plusTwo, plusTwoScope, plusTwoExpr, editor, AssignmentType.HARD);
 		plusTwo.addAssignment(plusTwoAss, AssignmentType.HARD);
 		
-		BasicFunction<Integer, Target>
+		//BasicFunction<Integer, Target>
 		
 		BasicFunction<Integer, Integer> bf = new BasicFunction<Integer, Integer>(false, new BasicFunctionType<>(Integer.class,Integer.class));
 		
