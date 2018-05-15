@@ -1,0 +1,198 @@
+grammar at.ac.tuwien.big.virtmodel.VLang with org.eclipse.xtext.common.Terminals
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+generate vLang "http://www.ac.at/tuwien/big/virtmodel/VLang"
+
+VLang:
+	(imports+= Import)*
+	(statement += AssignStatement)*
+;
+
+Import:
+	'import' (target=ESTRING);
+	
+AssignStatement:
+	(JavaFunctionDef | SetOrFunctionDef | RuleAssignment | BasicAction | DeleteAssignment) ';'
+;
+
+/**Definiere verschiedene Arten von Funktionen:
+ *  - Finite
+ *  - Constraintbasierte
+ *  - Ganz allgemeine
+ */
+
+SetOrFunctionDef:
+	SetDef | FunctionDef 
+; 
+
+FunctionDef:
+	(type = FunctionType)? 'function' name=ID ':=' 'new' (init=JavaFunctionCall) ('=' fullAssignment=FunctionAssignment)? 
+;
+
+/**TODO: No type checking is performed ... */
+JavaFunctionDef:
+	type=JavaFunctionType name=ID '=' javaFunc=ESTRING
+; 
+
+BasicAction:
+	thing=[SetOrFunctionDef] '.' (calledFunc=ID) FunctionPars
+;
+
+SetDef:
+	'set' name=ID  ('=' literal=SetLiteral)? ;
+
+SetLiteral:
+	{SetLiteral}
+	'{' (values+= FixedValue (',' values+= FixedValue)*)? '}'
+;
+
+RuleAssignment:
+	(function=[FunctionDef]) '(' scope=FunctionScope ')' (isFinite?=':=' | isDerive?= '=' | isConstraint?='==' ) assignment=FunctionAssignment
+;
+
+DeleteAssignment:
+	'delete' (function=[FunctionDef]) '(' scope=FunctionScope ')'
+;
+
+FunctionScope:
+	(SingleScope | FunctionDomainScope | SetScope | InfiniteScope) ('with' (filter=Filter))?
+;
+
+InfiniteScope:
+	{InfiniteScope}
+	'all'	
+;
+
+Filter: FunctionAssignment;
+
+FunctionDomainScope:
+	'@' function=[FunctionDef]
+;
+
+SetScope:
+	'&' (setRef=[SetDef] | set=SetLiteral)
+;
+
+SingleScope:
+	value=SingleValue
+;
+
+SingleValue:
+	FixedValue | CalculatedValue
+;
+
+FixedValue:
+	number = INT |
+	string = STRING |
+	objid = ObjId	
+;
+
+FunctionAssignment:
+	FullFunctionAssignment | Expression;
+
+FullFunctionAssignment:
+	(parameters=ParDef '->')? (expr = Expression)
+;
+
+Expression:
+	SingleValue | FullFunction | OclFunction
+;
+
+OclFunction:
+	'ocl' oclFunc = STRING
+;
+
+FullFunction:
+	Block
+;
+
+Block:
+	{Block}
+	'{'
+		((statements+=SingleStatement ';') | (statements+= Block))*
+	'}'
+;
+
+SingleStatement:
+	LetStatement | Block | ReturnStatement | IfStatement | ForStatement | ForLoopStatement
+;
+
+LetStatement:
+	'let' (name=ID) (MaybeValue)?
+;
+
+ReturnStatement:
+	'return' MaybeValue
+;
+
+IfStatement:
+	'if' '(' condition=FunctionAssignment ')' thenStatement = SingleStatement ('else' elseStatement=SingleStatement)?
+;
+
+ForStatement:
+	'for' '(' initVar=SingleStatement ';' condition=FunctionAssignment ';' endProcessing=SingleStatement ')' loopExpr=SingleStatement
+;
+
+ForLoopStatement:
+	'for' '(' name=ID ':' value=FunctionAssignment ')' loopExpr=SingleStatement
+;
+
+fragment MaybeValue:
+	'=' value=FunctionAssignment
+;
+
+
+
+
+ParDef:
+	{ParDef}
+	'(' (params+= FunctionParDef (',' params+= FunctionParDef)*)? ')'
+;
+
+FunctionParDef:
+	name=ID (':' type=ID)?
+;
+
+CalculatedValue:
+	FunctionCall | IfThenElse
+;
+
+IfThenElse:
+	'if' condition=FunctionAssignment 'then' thenExpr=FunctionAssignment 'else' elseExpr=FunctionAssignment 'endif' 
+;
+
+FunctionCall:
+	function=[FunctionDef] FunctionPars
+;
+
+JavaFunctionCall:
+	'$' function=[JavaFunctionDef] FunctionPars
+;
+
+fragment FunctionPars:
+	'(' (params+= FunctionPar (',' params+= FunctionPar)* )? ')'
+;
+
+FunctionPar:
+	SingleValue
+;
+
+ObjId:
+	'#' name=ID ('(' (params+= ObjParam (',' params+= ObjParam)*)? ')')?
+;
+
+ObjParam:
+	(number = INT) | (string= STRING) | (name=ID ('(' (params+= ObjParam (',' params+= ObjParam)*)? ')')?)
+;
+ 
+terminal ESTRING returns ecore::EString:
+	ID | STRING
+; 
+ 
+enum FunctionType:
+	FINITE='finite' | DERIVE='derive' | CONSTRAINT='constraint';
+	
+	
+enum JavaFunctionType:
+	FUNCCALL = 'jfunc' | CONSTRUCTOR = 'jcons' | OPERATION = 'jop';

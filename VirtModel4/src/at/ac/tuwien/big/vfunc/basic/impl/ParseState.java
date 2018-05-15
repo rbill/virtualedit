@@ -1,5 +1,8 @@
 package at.ac.tuwien.big.vfunc.basic.impl;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 import at.ac.tuwien.big.vfunc.op.BasicObjectLoader;
 import at.ac.tuwien.big.vfunc.op.BasicOperationManager;
 
@@ -26,11 +29,30 @@ public class ParseState<Source, Target> {
 	}
 	
 	
-	public void add(String variable, String newFunctionType, Object... newParam) {
+	public void addFunction(String variable, String newFunctionType, Object... newParam) {
 		BasicOperationManager loader = getLoader();
 		Object content = loader.createNew(newFunctionType, newParam);
-		
+		VariableTypeContent vtc = new VariableTypeContent();
+		vtc.setValue(content);
+		add(variable, vtc);
 	}
+
+
+	public void addSet(String variable) {
+		Object content = new HashSet<>();
+		VariableTypeContent vtc = new VariableTypeContent();
+		vtc.setValue(content);
+		add(variable, vtc);
+	}
+	
+	public Object getContent(String variable) {
+		VariableTypeContent value = recManager.getValue(variable);
+		if (value == null) {
+			System.err.println("Variable "+variable+" not declared!");
+		}
+		return value.getAssignExpression();
+	}
+	
 	
 	public void add(String variable, VariableTypeContent initValue) {
 		recManager.createDirect(variable);

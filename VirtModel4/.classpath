@@ -12,5 +12,6 @@
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/VirtModelPropApt"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/create-grammar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/at.ac.tuwien.big.virtmodel.vlang"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
