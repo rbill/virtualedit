@@ -3,6 +3,7 @@ package at.ac.tuwien.big.vfunc.op;
 import java.util.List;
 
 import at.ac.tuwien.big.vfunc.basic.AnyParameterModifier;
+import at.ac.tuwien.big.vfunc.basic.io.BasicStatement;
 
 /**TODO: moechte ich hier sowas verwenden oder lieber den EEModifier?*/
 public interface BasicFunction {
@@ -16,5 +17,6 @@ public interface BasicFunction {
 	public List<Class<?>> getRequiredInputs();
 	
 	public Class<?> getOutput();
+
 
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -75,6 +76,8 @@ import org.eclipse.xtext.ui.editor.model.IXtextDocument;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.eclipse.xtext.validation.IConcreteSyntaxValidator.InvalidConcreteSyntaxException;
 
+import com.google.common.io.Files;
+
 import at.ac.tuwien.big.vmod.ModelResource;
 import at.ac.tuwien.big.vmod.ecore.NoInverse;
 import at.ac.tuwien.big.vmod.ecore.VFeatureValues;
@@ -125,6 +128,7 @@ public class VMXtextEditor extends XtextEditor {
 	private VEcoreFile ecoreFile;
 	private String basicModelText;
 	private String fullModelText;
+	private long lastAspectChange = -1;
 	
 	private ResourceSetInfo curInfo;
 	private ResourceInfo curResourceInfo;
@@ -136,7 +140,7 @@ public class VMXtextEditor extends XtextEditor {
 	}
 	
 	public static Resource getEcoreRes(Resource my) {
-		//TODO: Wäre es nicht viel gescheiter, die ECore-Resource irgendwo statisch zu hinterlegen?
+		//TODO: W???re es nicht viel gescheiter, die ECore-Resource irgendwo statisch zu hinterlegen?
 		Resource ecoreRes = null;
 		/*for (Resource subres: my.getResourceSet().getResources()) {
 			List<EObject> contents = subres.getContents();
@@ -195,11 +199,13 @@ public class VMXtextEditor extends XtextEditor {
 					addFilesToResourceSet(rs,(IContainer)res,toAdd);
 				} else if (res instanceof IFile){
 					IFile ifile = (IFile)res;
+					long mod = ifile.getModificationStamp();
+					lastAspectChange = Math.max(mod, lastAspectChange);
 					String fn = ifile.getName();
-					if (fn.startsWith("simple") && fn.endsWith(".xmi")) {
+					/*if (fn.startsWith("simple") && fn.endsWith(".xmi")) {
 						//take it
 						toAdd.add(rs.getResource(nrm(ifile.getLocationURI()),true));
-					}
+					}*/
 					if (fn.endsWith(".vaspect")) {
 						toAdd.add(rs.getResource(nrm(ifile.getLocationURI()),true));
 					}
@@ -222,6 +228,18 @@ public class VMXtextEditor extends XtextEditor {
 		inInit = true;
 		boolean[] needUpdateXtext = new boolean[1];
 
+		IPath mainpath = getResource().getRawLocation();
+		final IPath path = mainpath.addFileExtension("basic");
+		File basicFile = path.toFile();
+		if (basicFile.exists()  && (basicFile.lastModified() == 0 || lastAspectChange < basicFile.lastModified())) {
+			try {
+				doc.set(Files.toString(basicFile, Charset.forName("UTF-8")));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			basicFile.delete();
+		}
+		
 		boolean wantModel = doc.readOnly((res)->{
 			//DeltaManager manager = SimpleDeltaManager.createDefaultManager();
 			Resource ecoreRes = getEcoreRes(res);
@@ -245,10 +263,7 @@ public class VMXtextEditor extends XtextEditor {
 				return false;
 			}
 			
-			IPath path = getResource().getRawLocation();
-			path = path.addFileExtension("basic");
-			File basicFile = path.toFile();
-			if (basicFile.exists()) {
+			if (basicFile.exists() && (basicFile.lastModified() == 0 || lastAspectChange < basicFile.lastModified())) {
 				Resource fake = getFakeXtextResource();
 				fake.load(new FileInputStream(basicFile), Collections.emptyMap());
 				curResourceInfo.resetBasicContent(fake);
@@ -257,13 +272,13 @@ public class VMXtextEditor extends XtextEditor {
 				//you can't use it, have to rely on desparate assoc!
 				xtextToViewCorrespondance = new SimpleModelCorrespondance();
 			} else {
-				needUpdateXtext[0] = true;
 				xtextToViewCorrespondance = curResourceInfo.getBaseCorresponcance();
+				needUpdateXtext[0] = true;
 			}
 			try {
 				Resource asXmi = rs.createResource(URI.createURI(res.getURI().toString()+".xmi"));
 				asXmi.getContents().addAll(EcoreUtil.copyAll(res.getContents()));
-				asXmi.save(Collections.emptyMap());
+				//asXmi.save(Collections.emptyMap());
 			} catch (Exception e) {
 				
 			}
@@ -443,7 +458,7 @@ public class VMXtextEditor extends XtextEditor {
 		
 		{
 			Iterator<?> it = annotationmodel.getAnnotationIterator();
-			//Sortiere zuerst nach Größe
+			//Sortiere zuerst nach Gr??????e
 			while (it.hasNext()) {
 				Object o  = it.next();
 				if (o instanceof MarkerAnnotation ) {
@@ -500,10 +515,10 @@ public class VMXtextEditor extends XtextEditor {
 			int end = node.getTotalEndOffset();
 			start = node.getOffset();
 			end = node.getEndOffset();
-			//mit etwas glück ist das mit dem offset nichts komplett anderes sondern noch immer
-			//in der datei und damit nur etwas kleiner und hat eine höhere Wahrscheinlichkeit, eine passende Annotation zu erhalten
+			//mit etwas gl???ck ist das mit dem offset nichts komplett anderes sondern noch immer
+			//in der datei und damit nur etwas kleiner und hat eine h???here Wahrscheinlichkeit, eine passende Annotation zu erhalten
 			
-			//Suche: kleinste Annotation, die das vollständig enthält
+			//Suche: kleinste Annotation, die das vollst???ndig enth???lt
 			List<MarkerAnnotation> candidates = fakeTree.getMostSpecificAnnotations(start, end);
 			List<Symbol> uuids = new ArrayList<>();
 			for (MarkerAnnotation annot: candidates) {
@@ -564,7 +579,7 @@ public class VMXtextEditor extends XtextEditor {
 		
 		SimpleModelCorrespondance nullcorr = new SimpleModelCorrespondance();
 		
-		//Für die doch nicht existierenden
+		//F???r die doch nicht existierenden
 		InstanceCreator creator = new InstanceCreator() {
 			
 			@Override
@@ -578,14 +593,14 @@ public class VMXtextEditor extends XtextEditor {
 						prov = alternative;
 					}
 				}
-				Symbol newSymbol = prov.newSymbol(cl!=null?cl.getName():null); //Alles was erzeugt wird landed hier TODO: ändern, so dass es passt ... wie ist das?
+				Symbol newSymbol = prov.newSymbol(cl!=null?cl.getName():null); //Alles was erzeugt wird landed hier TODO: ???ndern, so dass es passt ... wie ist das?
 				VObjectValues val = viewModel.getInstances();
 				val.add(newSymbol);
 				val.setClass(newSymbol, cl);
-				System.out.println("Creating "+ cl.getName()+" for id "+newSymbol);
-				if ("EClass".equals(cl.getName())) {
-					System.err.println("Creating eclass?!");
-				}
+				//System.out.println("Creating "+ cl.getName()+" for id "+newSymbol);
+				//if ("EClass".equals(cl.getName())) {
+//					System.err.println("Creating eclass?!");
+				//}
 				return viewModel.getEObject(newSymbol);
 			}
 		};
@@ -613,8 +628,12 @@ public class VMXtextEditor extends XtextEditor {
 		getDocument().readOnly((res)->{
 			viewModelProv = curInfo.getViewProvider(res, curInfo.getContainedViewState());
 			completeModelProv = curInfo.getCompleteProvider(res);
+			ViewState state = curInfo.createDefaultViewState();
+			state.deleteFromView(curInfo.getChangeModels());
+			baseModelProv = curInfo.getViewProvider(res, state);
 			viewModel = viewModelProv.simpleModelView(ecoreFile);
-			completeModel = completeModelProv.simpleModelView(ecoreFile);
+			completeModel = completeModelProv.simpleModelView(ecoreFile);			
+			baseModel = baseModelProv.simpleModelView(ecoreFile);
 			return null;
 		});
 	}
@@ -629,7 +648,7 @@ public class VMXtextEditor extends XtextEditor {
 	public Resource getFakeXtextResource() {
 		if (fake == null) {
 			String thisExtension = getResource().getFileExtension();
-			fake = getXtextResource().getResourceSet().createResource(URI.createURI("http://tempresource/temp."+thisExtension));
+			fake = getXtextResource().getResourceSet().createResource(URI.createURI("test://tempresource/temp."+thisExtension));
 		}
 		return fake;
 	}
@@ -736,9 +755,9 @@ public class VMXtextEditor extends XtextEditor {
 			
 			EObject simpleJava = null;
 			for (EObject eobj: test.getContents()) {
-				if (eobj.eClass() != null && "SimpleJava".equals(eobj.eClass().getName())) {
-					simpleJava = eobj;
-				}
+//				if (eobj.eClass() != null && "SimpleJava".equals(eobj.eClass().getName())) {
+					//simpleJava = eobj;
+				//}
 			}
 						
 			//Now there are new things ... regenerate the model and annotations
@@ -748,7 +767,7 @@ public class VMXtextEditor extends XtextEditor {
 			
 			
 			
-			System.out.println("Root objects before rev: "+myResourceList+" VS "+state.getContents());
+			//System.out.println("Root objects before rev: "+myResourceList+" VS "+state.getContents());
 			SimpleModelEqualizer reverseEqualizer = new SimpleModelEqualizer(
 					myResourceList, state.getContents(), 
 					inverse, newlyCreated, myEcoreCreater);
@@ -761,7 +780,7 @@ public class VMXtextEditor extends XtextEditor {
 			String newContent;
 			try {
 				newContent = getContent(state);				
-				System.out.println("New content: "+newContent);
+				//System.out.println("New content: "+newContent);
 			} catch (Exception e) {
 				e.printStackTrace();
 				//runAfter[0] = ()->{};
@@ -786,10 +805,10 @@ public class VMXtextEditor extends XtextEditor {
 				@Override
 				public Object exec(XtextResource state) throws Exception {
 					
-					System.out.println("Root objects After execute II: "+myResourceList+" VS "+state.getContents());
+					//System.out.println("Root objects After execute II: "+myResourceList+" VS "+state.getContents());
 					for (EObject eobj: state.getContents()) {
 						try {
-							System.out.println("Contained in Resource: "+state.getSerializer().serialize(eobj));
+							//System.out.println("Contained in Resource: "+state.getSerializer().serialize(eobj));
 						}  catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -863,11 +882,11 @@ public class VMXtextEditor extends XtextEditor {
 						List<INode> inodes = NodeModelUtils.findNodesForFeature(eobj, esf);
 						VFeatureValues vfv = viewModel.getFeatureValues(esf);
 						List<Object> vfvList = vfv.getValueValue(uuid);
-						System.out.println("Values: "+Arrays.toString(vfvList.toArray())+ " For feature "+esf.getEContainingClass().getName()+"."+esf.getName());
-						if (esf.getName().equals("source")) {
-							watchObject = vfv;
-							System.out.print("xx");
-						}
+						//System.out.println("Values: "+Arrays.toString(vfvList.toArray())+ " For feature "+esf.getEContainingClass().getName()+"."+esf.getName());
+						//if (esf.getName().equals("source")) {
+							//watchObject = vfv;
+							//System.out.print("xx");
+						//}
 						List<ResourceSetInfo.ExactDerivationStatus> derivationStatus = new ArrayList<>();
 						if (vfvList instanceof NoInverse) {
 							derivationStatus = ((NoInverse) vfvList).getDerivationStatus(userModelResources);
@@ -955,9 +974,9 @@ public class VMXtextEditor extends XtextEditor {
 								
 								String annotationType = isGenerated?(isFullGenerated?ANNOTATION_TYPE_FULLGENERATED:ANNOTATION_TYPE_GENERATED):ANNOTATION_TYPE_NONGENERATED;
 
-								System.out.println("Feature "+esf.getEContainingClass().getName()+"."+esf.getName()+": "+genstate+" from "+nstart+" to "+nend+
-										", index: "+symbolIndex);
-								System.out.println(inode.getStartLine()+" - "+inode.getEndLine());
+								//System.out.println("Feature "+esf.getEContainingClass().getName()+"."+esf.getName()+": "+genstate+" from "+nstart+" to "+nend+
+								//		", index: "+symbolIndex);
+								//System.out.println(inode.getStartLine()+" - "+inode.getEndLine());
 								if (isGenerated && symbolIndex != -1) {
 									annotationType = annotationType+symbolIndex;
 								}

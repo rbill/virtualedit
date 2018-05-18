@@ -18,7 +18,7 @@
 	</category>
 	<view id="at.ac.tuwien.big.virtualxtext.resview"
 		name="VirtualEdit view"
-		icon="icons\view.gif"
+		icon="icons\icon_aspect.png"
 		class="at.ac.tuwien.big.virtualxtext.ResourceList"/>
 </extension>
 
@@ -28,7 +28,7 @@
 	</category>
 	<view id="at.ac.tuwien.big.virtualxtext.mmview"
 		name="VirtualEdit Multi-view"
-		icon="icons\view.gif"
+		icon="icons\icon_multim.png"
 		class="at.ac.tuwien.big.virtualxtext.ResourceListMulti"/>
 </extension>
 

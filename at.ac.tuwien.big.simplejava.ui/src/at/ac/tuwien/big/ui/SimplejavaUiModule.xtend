@@ -16,8 +16,8 @@ class SimplejavaUiModule extends AbstractSimplejavaUiModule {
 	
 	
 	def Class<? extends XtextEditor> bindXtextEditor() {
-		return MultiXtextEditor;
-		//return VMXtextEditor;
+		//return MultiXtextEditor;
+		return VMXtextEditor;
 	} 
 
 }

@@ -12,7 +12,7 @@
       <returnType isVoid="true"/>
       <parameter name="item">
         <type>
-          <typeRef href="Item.vjava#//@clazz"/>
+          <typeRef href="Inventory.vjava#|0"/>
         </type>
       </parameter>
       <content>
@@ -25,7 +25,7 @@
       <returnType isVoid="true"/>
       <parameter name="item">
         <type>
-          <typeRef href="Item.vjava#//@clazz"/>
+          <typeRef href="Inventory.vjava#|3"/>
         </type>
       </parameter>
       <content>
