@@ -14,14 +14,14 @@ import java.util.function.Supplier;
 
 public class RecManager<S,T,U> {
 	
-	private Map<S,T> map = new HashMap<>();
+	protected Map<S,T> map = new HashMap<>();
 	private final Function<S, T> function;
 	private final Function<T, U> extractor;
 	private final BiConsumer<T, U> writer;
-	private RecManager<S, T, U> parent;
-	private Set<S> usedVariables = new HashSet<>();
-	private Set<RecManager<S, T, U>> subManagers = new HashSet<RecManager<S,T,U>>();
-	private S returnName;
+	protected RecManager<S, T, U> parent;
+	protected Set<S> usedVariables = new HashSet<>();
+	protected Set<RecManager<S, T, U>> subManagers = new HashSet<RecManager<S,T,U>>();
+	protected S returnName;
 	
 	public RecManager(RecManager<S, T, U> parent, Function<S, T> func, Function<T, U> extractor, BiConsumer<T, U> writer, S returnName) {
 		this.parent = parent;

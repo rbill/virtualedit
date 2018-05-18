@@ -3,6 +3,7 @@ package at.ac.tuwien.big.vfunc.basic.impl;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import at.ac.tuwien.big.vfunc.basic.io.SuperBasicFunction;
 import at.ac.tuwien.big.vfunc.op.BasicObjectLoader;
 import at.ac.tuwien.big.vfunc.op.BasicOperationManager;
 
@@ -49,6 +50,7 @@ public class ParseState<Source, Target> {
 		VariableTypeContent value = recManager.getValue(variable);
 		if (value == null) {
 			System.err.println("Variable "+variable+" not declared!");
+			return null;
 		}
 		return value.getAssignExpression();
 	}
@@ -61,8 +63,34 @@ public class ParseState<Source, Target> {
 		}
 	}
 	
+	public Object[] execute(SuperBasicFunction sbf, String[] variableNames) {
+		Object[] objs = new Object[variableNames.length];
+		for (int i = 0; i < variableNames.length; ++i) {
+			objs[i] = getContent(variableNames[i]);
+		}
+		return sbf.execute(objs);
+	}
+	
+	public void set(SuperBasicFunction sbf, String[] inputVariables, String[] outputVariables) {
+		Object[] returnValue = execute(sbf, inputVariables);
+		if (returnValue == null) {
+			if (outputVariables.length>0) {
+				System.err.println("Function did not return a value when it was supposed to!");
+			}
+			return;
+		}
+		int minLen = Math.min(returnValue.length, outputVariables.length);
+		for (int i = 0; i < minLen; ++i) {
+			set(outputVariables[i], returnValue[i]);
+		}
+	}
+		
 	public void reset(String variable, VariableTypeContent newValue) {
 		recManager.setValue(variable, newValue);
+	}
+	
+	public void set(String variable, Object newContent) {
+		recManager.set(variable, newContent);
 	}
 	
 	//Ich brauche Placeholder-Variablen
