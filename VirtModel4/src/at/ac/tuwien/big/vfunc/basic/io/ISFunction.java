@@ -40,10 +40,8 @@ public class ISFunction implements java.util.function.Function<Object[], Object>
 		fakeBody.add(new BasicStatement.SuperMovStatement("$funresult", VariableRecManager.RETURN_VAR));
 		BasicStatement.insertSub(completeBody, fakeBody);
 		
-		state.executeNow(completeBody);
-		//ExecuteNow setzt ja zurueck ...
-		state.getContent("$funresult");
-		return null;
+		Object[] ret = state.executeNow(completeBody, "$funresult");
+		return ret.length<1?null:ret[0];
 	}
 
 }

@@ -2,12 +2,20 @@ package at.ac.tuwien.big.vfunc.basic.io;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 
+import at.ac.tuwien.big.vfunc.basic.AssignmentType;
 import at.ac.tuwien.big.vfunc.basic.Scope;
+import at.ac.tuwien.big.vfunc.basic.VFunction;
+import at.ac.tuwien.big.vfunc.basic.ValueCache;
+import at.ac.tuwien.big.vfunc.basic.impl.BasicAssignment;
+import at.ac.tuwien.big.vfunc.basic.impl.BasicExpression;
+import at.ac.tuwien.big.vfunc.basic.impl.BasicInfiniteScope;
+import at.ac.tuwien.big.vfunc.basic.impl.EditingStructure;
 import at.ac.tuwien.big.vfunc.basic.impl.GeneralParseContainer;
 import at.ac.tuwien.big.vfunc.basic.impl.ParseState;
 import at.ac.tuwien.big.vfunc.basic.impl.SetScope;
@@ -70,6 +78,10 @@ public class FileReader {
 	
 	public FileReader() {
 		parseState = new InterpretationState(new GeneralParseContainer(new BasicOperationManager()));
+	}
+	
+	private EditingStructure getEditingStructure() {
+		return parseState.getManager().getEditingStructure();
 	}
 	
 	private List<BasicStatement> baseStatements = new ArrayList<BasicStatement>();
@@ -184,19 +196,47 @@ public class FileReader {
 			compileFunctionCall(retVariable, (at.ac.tuwien.big.virtmodel.vLang.Expression)fa, statements);
 		}
 	}
-
-	private void compileFunctionCall(String retVariable, FullFunctionAssignment fa, List<BasicStatement> statements) {
-		if (true) throw new UnsupportedOperationException("Custom function calls are not yet supported!");
-		List<BasicStatement> subStatements = new ArrayList<BasicStatement>();
+	
+	private ISFunction convertFunctionCall(FullFunctionAssignment fa) {
+		
 		//Hier definiere ich eine Funktion
 		ParDef parameters = fa.getParameters();
+		String[] parList = new String[parameters.getParams().size()];
+		int idx = 0;
 		for (FunctionParDef fpd: parameters.getParams()) {
 			String name = fpd.getName();
 			String type = fpd.getType();
+			parList[idx] = name;
+			++idx;
 		}
+		List<BasicStatement> subStatements = new ArrayList<BasicStatement>();
 		Expression expr = fa.getExpr();
-		compileFunctionCall("asdf", expr, subStatements);
-		BasicStatement.insertSub(statements, subStatements);
+		compileFunctionCall(VariableRecManager.RETURN_VAR, expr, subStatements);
+		return new ISFunction(clonedState(), subStatements, parList);
+	}
+	
+	private ISFunction convertFunctionCall(Expression fa) {
+		
+		
+		//Hier definiere ich eine Funktion
+		String[] parList = new String[0];
+		List<BasicStatement> subStatements = new ArrayList<BasicStatement>();
+		Expression expr = fa;
+		compileFunctionCall(VariableRecManager.RETURN_VAR, expr, subStatements);
+		return new ISFunction(clonedState(), subStatements, parList);
+	}
+	
+	private ISFunction convertFunctionCall(FunctionAssignment fas) {
+		if (fas instanceof Expression) {
+			return convertFunctionCall((Expression)fas);
+		} else {
+			return convertFunctionCall((FullFunctionAssignment)fas);
+		}
+	}
+
+	private void compileFunctionCall(String retVariable, FullFunctionAssignment fa, List<BasicStatement> statements) {
+	
+		statements.add((state)->state.set(retVariable, convertFunctionCall(fa)));
 	}
 
 	private void compileFunctionCall(String retVariable, Expression fa, List<BasicStatement> statements) {
@@ -535,14 +575,20 @@ public class FileReader {
 		compileSetLiterals(name, literal, statements);
 	}
 	
+	public Object evaluateSetLiteral(SetLiteral literal) {
+		List<BasicStatement> bstmt = new ArrayList<BasicStatement>();
+		compileSetLiterals(VariableRecManager.RETURN_VAR, literal, bstmt);
+		Object[] ret = parseState.executeNow(bstmt, VariableRecManager.RETURN_VAR);
+		return ret.length<1?null:ret[0];
+	}
 
 	private void compileStatement(FunctionDef statement, List<BasicStatement> statements) {
 		String name = statement.getName();
 		FunctionDef fd = (FunctionDef)statement;
 		at.ac.tuwien.big.virtmodel.vLang.FunctionType ft = fd.getType();
 		JavaFunctionCall call = fd.getInit();
-		compileFunctionCall(name, call);
-		Object initZeugs = evaluateConstructor(jfc);
+		compileFunctionCall(name, call, statements);
+		
 		FunctionAssignment fa = fd.getFullAssignment();
 		switch (ft) {
 		case CONSTRAINT:
@@ -555,6 +601,31 @@ public class FileReader {
 		default:
 			break;
 		}
+		statements.add((state)->{
+			//Die Funktion ist ja schon da
+			VFunction afunc = state.getContent(name, VFunction.class);
+			if (afunc instanceof at.ac.tuwien.big.vfunc.basic.impl.BasicFunction) {
+				at.ac.tuwien.big.vfunc.basic.impl.BasicFunction func = (at.ac.tuwien.big.vfunc.basic.impl.BasicFunction)afunc;
+				ISFunction isfunc = convertFunctionCall(fa);
+				java.util.function.Function<Object[],Object> jfunc = (pars)->isfunc.apply(pars);
+				at.ac.tuwien.big.vfunc.basic.Expression expr = new BasicExpression<>(jfunc); 
+				AssignmentType at = null;
+				switch(ft) {
+				case CONSTRAINT:
+					at = AssignmentType.CONSTRAINT;
+					break;
+				case DERIVE:
+					at = AssignmentType.SOFT;
+					break;
+				case FINITE:
+					at = AssignmentType.HARD;
+					break;
+				}
+				getEditingStructure().addBasicExpression(func, BasicInfiniteScope.EVERYTHING(), expr, at);
+			} else {
+				System.err.println("Could not initialize function "+name+": not a basic function");
+			}
+		});
 	}
 	
 	private void compileStatement(SetOrFunctionDef statement, List<BasicStatement> statements) {
@@ -572,8 +643,29 @@ public class FileReader {
 		if (filter instanceof FunctionAssignment) {
 			//Hier brauche ich einen Interpreter ...
 			//Wobei der Interpreter vom aktuellen Interpreterstate erben muss (!!)
-			
+			ISFunction generalFunc = convertFunctionCall((FunctionAssignment)filter);
+			//Must take exactly a single parameter
+			return (inputPar)->{
+				Object output = generalFunc.apply(new Object[]{inputPar});
+				if (output instanceof Boolean) {
+					return ((Boolean)output);
+				}
+				System.err.println("Error: filter function returned "+output);
+				return false;
+			};
+		} else {
+			System.err.println("Cannot transform "+filter+" as filter");
+			return (x)->true;
 		}
+	}
+	
+	private Collection<?> toCollection(SetLiteral setLiteral) {
+		List<Object> ret = new ArrayList<Object>();
+		for (FixedValue val: setLiteral.getValues()) {
+			Object eval = evaluate(val);
+			ret.add(eval);
+		}
+		return ret;
 	}
 	
 	public Scope<?> convertScope(FunctionScope oriScope) {
@@ -582,23 +674,48 @@ public class FileReader {
 		if (filter != null) {
 			filterFunc = convertFilter(filter);
 		}
-		
 		if (oriScope instanceof FunctionDomainScope) {
 			FunctionDomainScope fds = (FunctionDomainScope)oriScope;
+			FunctionDef function = fds.getFunction();
+			String functionName = function.getName();
+			//The domain of the function
 			
+			//I think we can only make a dynamic thing anyway
+			Object fun = parseState.getContent(functionName);
+			if (fun instanceof VFunction) {
+				VFunction vfun = (VFunction)fun;
+				ValueCache cache = vfun.cache();
+				return vfun.getScope();
+			} else {
+				System.err.println("Expected "+functionName+" to be a function, but was " +fun);
+				return null;
+			}
 		} else if (oriScope instanceof InfiniteScope) {
 			InfiniteScope is = (InfiniteScope)oriScope;
-			
-		} else if (oriScope instanceof SetScope) {
-			SetScope ss = (SetScope)oriScope;
-			
+			return new BasicInfiniteScope<>(filterFunc);
+		} else if (oriScope instanceof at.ac.tuwien.big.virtmodel.vLang.SetScope) {
+			at.ac.tuwien.big.virtmodel.vLang.SetScope ss = (at.ac.tuwien.big.virtmodel.vLang.SetScope)oriScope;
+			Collection<?> col = toCollection(ss.getSet());
+			SetScope<?> retScope = new SetScope<>(col);
+			return retScope;
 		} else if (oriScope instanceof SingleScope) {
 			SingleScope ss = (SingleScope)oriScope;
-			
+			SingleValue val = ss.getValue();
+			//Shouldn't this be a fixed value!?
+			if (val instanceof FixedValue) {
+				Object singleThing = evaluate((FixedValue)val);
+				return new SetScope<>(Collections.singleton(val));
+			} else {
+				System.err.println("I don't yet support non-fixed values for scopes and maybe never will");
+				return null;
+			}
 		} else {
 			System.err.println("Unknown scope "+oriScope);
 			return null;
 		}		
+	}
+	
+	public void test() {
 	}
 	
 	private void parseStatement(SetOrFunctionDef statement) {

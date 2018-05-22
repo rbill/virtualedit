@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import at.ac.tuwien.big.vfunc.basic.MyCloneable;
+import at.ac.tuwien.big.vfunc.basic.VFunction;
 import at.ac.tuwien.big.vfunc.basic.impl.GeneralParseContainer;
 import at.ac.tuwien.big.vfunc.basic.impl.VariableRecManager;
 import at.ac.tuwien.big.vfunc.basic.impl.VariableTypeContent;
@@ -29,7 +30,7 @@ public class InterpretationState implements MyCloneable<InterpretationState>{
 		this.manager = manager;
 	}
 	
-	public Object[] executeNow(List<? extends BasicStatement> statements, String[] returnParam) {
+	public Object[] executeNow(List<? extends BasicStatement> statements, String... returnParam) {
 		Position oldPos = curPosition;
 		Stack<Position> oldStack = positionStack;
 		curPosition = null;
@@ -412,5 +413,14 @@ public class InterpretationState implements MyCloneable<InterpretationState>{
 			System.err.println("Expected boolean for "+condVar+", got "+var+"!");
 		}
 		
+	}
+
+	public<T> T getContent(String name, Class<T> class1) {
+		Object ret = getContent(name);
+		if (ret != null && !class1.isInstance(ret)) {
+			System.err.println("Expected "+name+" to be of type "+class1+", but was "+ret);
+			return null;
+		}
+		return (T)ret;
 	}
 }
