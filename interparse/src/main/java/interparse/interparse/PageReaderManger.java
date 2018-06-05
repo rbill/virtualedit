@@ -431,7 +431,7 @@ public class PageReaderManger implements Serializable {
 	
 	public void trainAll() {
 		for (SimilarityType type: SimilarityType.ML) {
-			train(type);
+			//train(type);
 		}
 	}
 	
@@ -472,7 +472,26 @@ public class PageReaderManger implements Serializable {
 		prm.addCategoryReal("https://de.wikipedia.org/wiki/Kategorie:Politische_Partei");
 		prm.processAll();
 		PageReaderManger fprm = prm;
-		prm.getPages().values().forEach(x->x.printRecalls(fprm));
+		Map<SimilarityType,double[]> similarityRecalls = new HashMap<Page.SimilarityType, double[]>();
+		for (SimilarityType type: SimilarityType.values()) {
+			if (type.name().endsWith("COS")) {
+				System.out.println("Calculating similarity for "+type);
+				double[] ar = new double[3];
+				similarityRecalls.put(type, ar);
+				for (Page page: prm.pagesToPageUrl.values()) {
+					double recall = page.getRecall(type, prm);
+					double weight = page.getRecallWeight();
+					ar[0]+= recall*recall*weight;
+					ar[1]+= recall*weight;
+					ar[2]+= weight;
+				}
+			}
+		}
+		similarityRecalls.forEach((k,v)->{
+			double avgRecall = v[1]/v[2];
+			double variance = v[0]/v[2] - avgRecall*avgRecall;
+			System.out.println("Recall for "+k+": "+avgRecall+" +/- "+variance);
+		});
 	}
 
 

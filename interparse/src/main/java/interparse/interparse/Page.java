@@ -385,4 +385,8 @@ public class Page implements Serializable {
 			augmentVDM(twoGramTFIDF, state); break;
 		}
 	}
+
+	public double getRecallWeight() {
+		return getLinks().size();
+	}
 }
