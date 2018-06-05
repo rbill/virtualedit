@@ -1,0 +1,33 @@
+<html>
+<head>
+<title>Update things</title>
+<script type="text/javascript">
+
+function update() {
+	fetch("values").then((resp)=>resp.json()).then(json=>{
+		var table = document.getElementById('mainTable');
+		table.innerHTML = "<tr><td>Link</td><td>Yes</td><td>No</td></tr>";
+		for (let i = 0; i < json.length; ++i) {
+			var tr = document.createElement("tr");
+			tr.innerHTML = "<td><a href='"+json[i]+"'>"+json[i]+"</a></td><td><button onclick='makeUrl(\""+json[i]+"\",true)'>Take</button></td><td><button onclick='makeUrl(\""+json[i]+"\",false)'>Take not</button></td>";
+			table.appendChild(tr);
+		}
+	})
+}
+
+function makeUrl(url,value) {
+	fetch("values?url="+encodeURIComponent(url)+"&use="+value, {'method': 'POST'});
+}
+
+window.onload = update;
+window.onfocus = update;
+
+</script>
+</head>
+<body>
+<p><button id="updatebutton" onclick="update()">Update</button></p>
+<table id="mainTable">
+
+</table>
+</body>
+</html>
