@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Shimin_Network"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Neue_Partei_Daichi"],"recall":0.0,"weight":1.0},"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Nippon_S%C5%8Dshint%C5%8D"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Tomin_First_no_Kai"],"recall":0.0,"weight":1.0},"THREEGRAMML":{"bestpages":["https://de.wikipedia.org/wiki/Sozialdemokratie"],"recall":0.0,"weight":1.0}}}

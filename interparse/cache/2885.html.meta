@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Libanesische_Demokratische_Partei"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Libanesische_Kommunistische_Partei"],"recall":0.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Arabisch-Demokratische_Nasseristische_Partei"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Libanesische_Kommunistische_Partei"],"recall":0.0,"weight":1.0}}}

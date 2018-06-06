@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Vatan_Partisi"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Liste_der_politischen_Parteien_in_der_T%C3%BCrkei"],"recall":0.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/T%C3%BCrkiye_%C4%B0htilalci_Kom%C3%BCnistler_Birli%C4%9Fi"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/T%C3%BCrkiye_Partisi"],"recall":0.0,"weight":1.0}}}

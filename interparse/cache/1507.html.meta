@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Liste_der_CSU-Parteitage"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Liste_der_Parteitage_der_PDS_und_der_Linkspartei_bis_2007"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Liste_der_Parteitage_der_PDS_und_der_Linkspartei_bis_2007"],"recall":0.0,"weight":1.0},"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Braunes_Haus"],"recall":0.0,"weight":1.0}}}

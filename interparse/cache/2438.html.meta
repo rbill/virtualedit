@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Milliyet%C3%A7i_ve_Muhafazak%C3%A2r_Parti"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Hak_ve_E%C5%9Fitlik_Partisi"],"recall":0.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Halk%C4%B1n_Y%C3%BCkseli%C5%9Fi_Partisi"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Halk%C4%B1n_Y%C3%BCkseli%C5%9Fi_Partisi"],"recall":0.0,"weight":1.0}}}

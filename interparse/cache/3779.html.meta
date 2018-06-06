@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Liberaldemokratische_Partei_(T%C3%BCrkei)"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Liberal-Demokratische_Partei_Deutschlands"],"recall":0.0,"weight":1.0},"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Neuer_Liberaler_Klub"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Liberal-Demokratische_Partei_Deutschlands"],"recall":0.0,"weight":1.0}}}

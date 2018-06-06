@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Volksnationale_Reichsvereinigung"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Trib%C3%BCne_(KPD-Zeitung)"],"recall":0.0,"weight":1.0},"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Deutsche_Demokratische_Partei"],"recall":1.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Deutsche_Demokratische_Partei"],"recall":1.0,"weight":1.0}}}

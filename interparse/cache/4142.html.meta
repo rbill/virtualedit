@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Snanije"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Oktoberrevolution"],"recall":0.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Nikolski_(Geheimdienstoffizier)"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Nikolski_(Geheimdienstoffizier)"],"recall":0.0,"weight":1.0}}}

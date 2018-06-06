@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Nationaldemokratischer_Hochschul-Bund"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Junge_Nationalisten"],"recall":0.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Partido_Nacional_de_Honduras"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Junge_Nationalisten"],"recall":0.0,"weight":1.0}}}

@@ -1,0 +1,280 @@
+<html>
+<head>
+<title>Update things</title>
+<style>
+table.hide .hidden {
+	display:none;
+}
+
+.marked {
+	background-color:green;
+}
+
+tr:nth-child(even) {
+	background:#FFFF66;
+}
+
+tr td {
+	border-bottom:1px solid black;
+}
+
+</style>
+<script type="text/javascript">
+
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
+function hide() {
+		var table = document.getElementById('mainTable');
+		table.setAttribute("class","hide");
+}
+
+function unhide() {
+		var table = document.getElementById('mainTable');
+		table.setAttribute("class","show");
+}
+
+var allPages = [];
+var types = [];
+
+function update() {
+	let value = document.getElementById('similarpages').value;
+	fetch("getsimilarity?url="+encodeURIComponent(value)).then((resp)=>resp.json()).then(json=>{
+	    allPages = [];
+	    var allPagesMap = {};
+	    
+	    var realLinks = json.links
+	    for (var key in realLinks) {
+	    	if (realLinks[key]) {
+	    		var newPage = {'url': key, 'reallink': true, 'sources': {'real': true}};
+	    		allPages[allPages.length] = newPage;
+	    		allPagesMap[key] = newPage; 
+	    	}
+	    }
+	    
+	    var simil = json.similarities;
+	    var url = json.url;
+	    
+	    types = [];
+	    
+	    
+	    for (var type in simil) {
+	    	types[types.length] = type;
+	    	var subsim = simil[type];
+	    	var bestSim = subsim.bestsimilarities;
+	    	for (var i = 0; i < bestSim.length; ++i) {
+	    		var singlesim = bestSim[i];
+	    		var existingPage = allPagesMap[singlesim.url];
+	    		if (!existingPage) {
+	    			var newPage = {'url': singlesim.url, 'reallink': false, 'sources': {}};
+	    			newPage.sources[type] = true;
+	    			allPages[allPages.length] = newPage;
+	    			allPagesMap[singlesim.url] = newPage;
+	    		} else {
+	    			existingPage.sources[type] = true;
+	    		}
+	    	}
+	    }
+	    
+	    types.sort();
+	    allPages.sort((x,y)=>x.url.localeCompare(y.url));
+	    
+	    types[types.length] = "real";
+	    
+	    allPages = shuffle(allPages);
+	
+		var table = document.getElementById('mainTable');
+		document.getElementById('recalltable').innerHTML = "";
+		
+		var initRow = document.createElement("tr");
+		initRow.innerHTML="<td></td><th>Irrelevant</th><th>Semi-relevant</th><th>Relevant</th>";
+		for (var i = 0; i < types.length; ++i) {
+			var td = document.createElement("th");
+			td.setAttribute("class","hidden");
+			td.innerHTML = types[i];
+			initRow.appendChild(td);
+		}
+		table.appendChild(initRow);
+		console.log(allPages);
+		table.setAttribute("class","hide");
+		for (let i = 0; i < allPages.length; ++i) {
+			var tr = document.createElement("tr");
+			tr.innerHTML = "<td><a href='"+allPages[i].url+"'>"+short(allPages[i].url)+"</a></td>"+
+			"<td><input type='radio' id='radio_1_"+i+"' name='radio_"+i+"'></input></td>"+
+			"<td><input type='radio' id='radio_2_"+i+"' name='radio_"+i+"'></input></td>"+
+			"<td><input type='radio' id='radio_3_"+i+"' name='radio_"+i+"'></input></td>";
+			for (var j = 0; j < types.length; ++j) {
+				var td = document.createElement("td");
+				var mbool = !!allPages[i].sources[types[j]];
+				var marked = (mbool)?"marked":"nonmarked";
+				var mstring = mbool?"X":"";
+				td.setAttribute("class","hidden "+marked);
+				td.innerHTML = mstring; 
+				tr.appendChild(td);
+			}
+			table.appendChild(tr);
+		}
+		var mainLink = document.getElementById('mainlink');
+		mainLink.setAttribute("href",value);
+		mainLink.innerHTML = value;
+	});
+
+}	
+	
+	
+	function short(url) {
+		return decodeURIComponent(url.indexOf('/')>=0?url.substr(url.lastIndexOf('/')+1):url);
+	}
+	
+	function calcrecall() {
+		var atLeast0 = {};
+		var atLeast1 = {};
+		var atLeast2 = {};
+		var latexText1 = "URL & Rel. & Real";
+		var latexText2 = " Type & Real";
+		for (let i = 0; i < types.length-1; ++i) {
+			latexText1+= " & " + types[i];
+			latexText2+= " & " + types[i];
+		}
+		latexText1+= "\\\\\n";
+		latexText2+= "\\\\\n";
+		var totalCount0 = 0;
+		var totalCount1 = 0;
+		var totalCount2 = 0;
+		for (let i = 0; i < allPages.length; ++i) {
+			var relevancy = -1;
+			for (var j = 1; j <= 3; ++j) {
+		
+				
+				if (document.getElementById('radio_'+j+'_'+i).checked) {
+					var src = allPages[i].sources;
+					relevancy = j;
+					for (var key in src) {
+						if (j >= 0) {
+							atLeast0[key] = 1 + (atLeast0[key]||0);
+						}
+						if (j >= 2) {
+							atLeast1[key] = 1 + (atLeast1[key]||0);
+						}
+						if (j >= 3) {
+							atLeast2[key] = 1 + (atLeast2[key]||0);
+						}
+					}
+					if (j >= 1) {
+						++totalCount0;
+					}
+					if (j >= 2) {
+						++totalCount1;
+					}
+					
+					if (j >= 3) {
+						++totalCount2;
+					}
+				}
+			}
+			if (relevancy != -1) {
+				let url = allPages[i].url;
+				urlPart = short(url);
+				latexText1+= urlPart+" & ";
+				if (relevancy == 1) {
+					latexText1+= "-";
+				} else if (relevancy == 2) {
+					latexText1+= "\~";
+				} else {
+					latexText1+= "+";
+				}
+				latexText1+= "&";
+				if (allPages[i].sources.real) {
+					latexText1+= "X";
+				}
+				for (let j = 0; j < types.length-1; ++j) {
+					latexText1+= "&";
+					if (allPages[i].sources[types[j]]) {
+						latexText1+= "X";
+					}
+				}
+				latexText1+= "\\\\\n";
+			}
+		}
+		var recalltable = document.getElementById('recalltable');
+		recalltable.innerHTML = "";
+		var tr = document.createElement("tr");
+		tr.innerHTML = "<td></td>";
+		var tr1 = document.createElement("tr");
+		tr1.innerHTML = "<th>Recall 1+</th>";
+		var tr2 = document.createElement("tr");
+		tr2.innerHTML = "<th>Recall 2+</th>";
+		var tr3 = document.createElement("tr");
+		tr3.innerHTML = "<th>Precision 1+</th>";
+		var tr4 = document.createElement("tr");
+		tr4.innerHTML = "<th>Precision 2+</th>";
+		recalltable.appendChild(tr);
+		recalltable.appendChild(tr1);
+		recalltable.appendChild(tr2);
+		recalltable.appendChild(tr3);
+		recalltable.appendChild(tr4);
+		var latexText2_1 = "";
+		var latexText2_2 = "";
+		var latexText2_3 = "";
+		var latexText2_4 = "";
+		for (var i = 0; i < types.length; ++i) {
+			var th = document.createElement("th");
+			th.appendChild(document.createTextNode(types[i]));
+			tr.appendChild(th);
+			var recall1 = (atLeast1[types[i]]||0.0)/totalCount1;
+			var recall2 = (atLeast2[types[i]]||0.0)/totalCount2;
+			var precision1 = (atLeast1[types[i]]||0.0)/atLeast0[types[i]];
+			var precision2 = (atLeast2[types[i]]||0.0)/atLeast0[types[i]];
+			var td1 = document.createElement("td");
+			td1.appendChild(document.createTextNode(recall1));
+			if (types[i] == 'real') {
+				latexText2_1 = "Recall 1 & "+recall1 + " "+ latexText2_1;
+				latexText2_2 = "Recall 2 & "+recall2 + " "+ latexText2_2; 
+				latexText2_3 = "Precision 1 & "+precision1 + " "+ latexText2_3;
+				latexText2_4 = "Precision 2 & "+precision2 + " "+ latexText2_4; 
+			} else {
+				latexText2_1 = latexText2_1+ " & "+recall1;
+				latexText2_2 = latexText2_2+ " & "+recall2;
+				latexText2_3 = latexText2_3+ " & "+precision1;
+				latexText2_4 = latexText2_4+ " & "+precision2;
+			}
+			tr1.appendChild(td1);
+			var td2 = document.createElement("td");
+			td2.appendChild(document.createTextNode(recall2));
+			tr2.appendChild(td2);
+			var td3 = document.createElement("td");
+			td3.appendChild(document.createTextNode(precision1));
+			tr3.appendChild(td3);
+			var td4 = document.createElement("td");
+			td4.appendChild(document.createTextNode(precision2));
+			tr4.appendChild(td4);
+		}
+		latexText2 = latexText2  + latexText2_1 + " \\\\\n "+latexText2_2 + " \\\\\n "+latexText2_3+ " \\\\\n "+latexText2_4; 
+		document.getElementById('latextext1').value = latexText1;
+		document.getElementById('latextext2').value = latexText2;
+		
+	}
+</script>
+</head>
+<body>
+<p><input id="similarpages" style="width:25em" onchange="update()"></p>
+<p><button onclick="hide()">Hide</button> <button onclick="unhide()">Show</button> <button onclick="calcrecall()">Calc recall</button></p>
+<p>Main Link: <a id="mainlink"></a></p>
+<table id="mainTable">
+
+</table>
+<p>Recall:</p>
+<table id="recalltable">
+</table>
+<p><textarea id="latextext1"></textarea></p>
+<p><textarea id="latextext2"></textarea></p>
+</body>
+</html>

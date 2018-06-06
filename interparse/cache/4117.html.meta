@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Singapore_People%E2%80%99s_Party"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Singapore_Democratic_Alliance"],"recall":1.0,"weight":1.0},"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Singapore_Democratic_Alliance"],"recall":1.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Singapore_Justice_Party"],"recall":0.0,"weight":1.0}}}

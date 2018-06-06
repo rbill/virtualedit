@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Gesamt%C3%A4thiopische_Einheitsorganisation"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/%C3%84thiopische_Sozialdemokratische_Partei"],"recall":0.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/%C3%84thiopische_Demokratische_Liga"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/%C3%84thiopische_Demokratische_Liga"],"recall":0.0,"weight":1.0}}}

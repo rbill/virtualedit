@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Kulmiye","https://de.wikipedia.org/wiki/UDUB"],"recall":0.5,"weight":2.0}}}
+{"similarities":{"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/UDUB","https://de.wikipedia.org/wiki/UCID"],"recall":1.0,"weight":2.0},"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/UDUB","https://de.wikipedia.org/wiki/UCID"],"recall":1.0,"weight":2.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/UDUB","https://de.wikipedia.org/wiki/UCID"],"recall":1.0,"weight":2.0}}}

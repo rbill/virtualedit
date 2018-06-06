@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Adolf-Hitler-Spende_der_deutschen_Wirtschaft"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Adolf-Hitler-Dank"],"recall":0.0,"weight":1.0},"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Nationalsozialistische_Deutsche_Arbeiterpartei"],"recall":1.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Adolf-Hitler-Dank"],"recall":0.0,"weight":1.0}}}

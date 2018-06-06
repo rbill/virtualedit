@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Express_(%C3%B6sterreichische_Zeitung)"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Neue_Zeitung_(Wien)"],"recall":0.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Deutsche_Tibet-Expedition_Ernst_Sch%C3%A4fer"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Neue_Zeitung_(Wien)"],"recall":0.0,"weight":1.0}}}

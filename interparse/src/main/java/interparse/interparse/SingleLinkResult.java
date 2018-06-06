@@ -1,7 +1,7 @@
 package interparse.interparse;
 
-import javax.json.Json;
-import javax.json.JsonObject;
+
+import com.google.gson.JsonObject;
 
 public class SingleLinkResult {
 	public final String url;
@@ -15,7 +15,10 @@ public class SingleLinkResult {
 	}
 	
 	public JsonObject toJsonObject() {
-		JsonObject ret = Json.createObjectBuilder().add("url", url).add("similarity", similarity).add("realLink", hasRealLink).build();
+		JsonObject ret = new JsonObject();
+		ret.addProperty("url", url);
+		ret.addProperty("similarity", similarity);
+		ret.addProperty("realLink", hasRealLink);
 		return ret;
 	}
 

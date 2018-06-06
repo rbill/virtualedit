@@ -11,8 +11,8 @@ public class SvmState {
 
 	public void augmentVDM(ValueDescManager vdm) {
 		MultiSlotValueMap msvm = new MultiSlotValueMap("");
-		msvm.addSlotValueMap(svm);
-		msvm.augmentValuesDesc(vdm);
+		msvm.addSlotValueMap(svm); 
+		msvm.augmentValuesDescTemp(vdm);
 	}
 
 	public MyInputDesc getInput(ValueDescManager man) {

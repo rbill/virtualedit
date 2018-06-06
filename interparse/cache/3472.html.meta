@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Strana_Slobodn%C3%A9_Slovo_%E2%80%93_Nory_Mojsejovej"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/N%C3%A1rod_a_Spravodlivos%C5%A5_%E2%80%93_na%C5%A1a_strana"],"recall":0.0,"weight":1.0},"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Kres%C5%A5anskodemokratick%C3%A9_hnutie"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Kres%C5%A5anskodemokratick%C3%A9_hnutie"],"recall":0.0,"weight":1.0}}}

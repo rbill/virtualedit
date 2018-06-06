@@ -1,9 +1,11 @@
 package interparse.interparse;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -13,13 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.stream.JsonParser;
 
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class PageReader {
 	
@@ -95,15 +98,22 @@ public class PageReader {
 			try {
 				File file = getJsonFile(url);
 				if (file.exists()) {
-					JsonParser parser = Json.createParser(new FileInputStream(file));
-					JsonObject obj = parser.getObject();
-					parser.close();
-					return obj;
+					JsonParser parser = new JsonParser();
+					JsonElement obj = null;
+					try (FileReader fr = new FileReader(file)) {
+						obj = parser.parse(fr);
+					}
+					if (obj instanceof JsonObject) {
+						return ((JsonObject)obj);
+					} else {
+						System.err.println("Could not parse "+url+".meta as JsonObject!");
+					}
 				}
-				return Json.createObjectBuilder().build();
+				return new JsonObject();
 			} catch (Exception e) {
+				e.printStackTrace();
 				System.err.println("Can't read metainfo for "+url+": "+e.getMessage());
-				return Json.createObjectBuilder().build();
+				return new JsonObject();
 			}
 		});
 	}

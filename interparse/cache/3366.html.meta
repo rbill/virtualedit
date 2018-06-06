@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Mutterlandpartei_(Aserbaidschan)"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Aserbaidschanische_Kommunistische_Partei"],"recall":0.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Liste_der_politischen_Parteien_in_Aserbaidschan"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Aserbaidschanische_Kommunistische_Partei"],"recall":0.0,"weight":1.0}}}

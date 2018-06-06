@@ -6,20 +6,18 @@ import java.nio.file.Files;
 import java.util.List;
 
 import org.nanohttpd.protocols.http.IHTTPSession;
-
-import javax.json.Json;
-import javax.json.JsonObject;
 import org.nanohttpd.protocols.http.NanoHTTPD;
 import org.nanohttpd.protocols.http.request.Method;
-import org.nanohttpd.protocols.http.response.IStatus;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 import org.nanohttpd.util.IHandler;
 
+import com.google.gson.JsonObject;
+
 public class CustomServer extends NanoHTTPD {
 
 	public CustomServer(PageReaderManger manager) {
-		super(3210);
+		super(3211);
 		
 		addHTTPInterceptor(new IHandler<IHTTPSession, Response>() {
 
@@ -30,7 +28,7 @@ public class CustomServer extends NanoHTTPD {
 					if (input.getUri().endsWith(".html")) {
 						byte[] textContent = null;
 						try {
-							textContent = Files.readAllBytes(new File("html/index.html").toPath());
+							textContent = Files.readAllBytes(new File("html"+input.getUri()).toPath());
 						} catch (IOException e) {
 							e.printStackTrace();
 						}

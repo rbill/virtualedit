@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Takiji-Yuriko-Preis"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Liste_der_politischen_Parteien_in_Norwegen"],"recall":0.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Parteivorstand_der_japanischen_Liberaldemokratischen_Partei"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Parteivorstand_der_japanischen_Liberaldemokratischen_Partei"],"recall":0.0,"weight":1.0}}}

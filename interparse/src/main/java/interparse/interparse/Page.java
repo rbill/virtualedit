@@ -8,19 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonNumber;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonValue;
-import javax.json.bind.annotation.JsonbVisibility;
-
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import uk.ac.york.cs.ecss.learn.learnable.manager.ClassificationMap;
 import uk.ac.york.cs.ecss.learn.learnable.manager.IOPair;
@@ -99,6 +94,14 @@ public class Page implements Serializable {
 		
 	}
 	
+	/*public void ensureVDM(SimilarityType type, PageReaderManger prm) {
+		SvmState state = new SvmState();
+		augmentVDM(type, state.push("1_"));
+		augmentVDM(type, state.push("2_"));
+		ValueDescManager vdm = prm.getVDM(type);
+		state.augmentVDM(vdm);
+	}*/
+	
 	public double getSimilarity(Page other, SimilarityType type, PageReaderManger prm) {
 		switch (type) {
 		case TOKENCOS:
@@ -111,9 +114,11 @@ public class Page implements Serializable {
 		case TWOGRAMML:
 		case THREEGRAMML:
 			SvmState state = new SvmState();
-			augmentVDM(type, state.push("1_"));
-			augmentVDM(type, state.push("2_"));
-			MyInputDesc input = state.getInput(prm.getVDM(type));
+			augmentState(type, state.push("1_"));
+			other.augmentState(type, state.push("2_"));
+			ValueDescManager vdm = prm.getVDM(type);
+			//state.augmentVDM(vdm);
+			MyInputDesc input = state.getInput(vdm);
 			return prm.getWeka(type).guess(input)[0];
 		default:
 			System.err.println("Similarity type "+type+" NYI!");
@@ -139,16 +144,28 @@ public class Page implements Serializable {
 		getRecall(type, prm);
 		return bestPages.getOrDefault(type, Collections.emptyList());
 	}
-	
-	private JsonObjectBuilder jsonObjectToBuilder(JsonObject jo) {
-	    JsonObjectBuilder job = Json.createObjectBuilder();
-	    if (jo != null) {
-		    for (Entry<String, JsonValue> entry : jo.entrySet()) {
-		        job.add(entry.getKey(), entry.getValue());
-		    }
-	    }
 
-	    return job;
+	private static JsonObject getJsonObject(JsonObject from, String name) {
+		JsonElement ret = from.get(name);
+		if (ret != null && ret.isJsonObject()) {
+			return ret.getAsJsonObject();
+		} else if (ret != null) {
+			System.err.println("Wanted JsonObject, but got "+ret);
+		}
+		return new JsonObject();
+	}
+	
+	public Double getNumber(JsonObject object, String name) {
+		JsonElement ret = object.get(name);
+		if (ret == null) {
+			return null;
+		}
+		try {
+			return ret.getAsDouble();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public synchronized double getRecall(SimilarityType type, PageReaderManger prm) {
@@ -157,75 +174,89 @@ public class Page implements Serializable {
 			storedRecall = new HashMap<Page.SimilarityType, Double>();
 		}
 		return storedRecall.computeIfAbsent(type, typ->{
-			JsonObject metaInfo = PageReader.instance().getMetaInfo(getUrl());
-			JsonObjectBuilder completeBuilder = jsonObjectToBuilder(metaInfo);
-			JsonObject similarity = metaInfo.getJsonObject("similarities");
-			JsonObjectBuilder similarityBuilder = jsonObjectToBuilder(similarity);
-			similarity = similarityBuilder.build();
-			
-			JsonObjectBuilder thisSimilarity = jsonObjectToBuilder(similarity.getJsonObject(type.name()));
-			Double curRecall = null;
-			Double curWeight = null;
-			List<String> pageList = new ArrayList<>();
-			{
-				JsonNumber recall = similarity.getJsonNumber("recall");
-				if (recall != null) {
-					curRecall = recall.doubleValue();
-				}
-				JsonNumber weight = similarity.getJsonNumber("weight");
-				if (weight != null) {
-					curWeight = weight.doubleValue();
-				}
-				JsonArray pageListJson = similarity.getJsonArray("bestpages");
-				if (pageListJson != null) {
-					pageListJson.forEach(x->pageList.add(x.toString()));
-				}
-			}
-			bestPages.put(typ, pageList);
-			if (curRecall == null || curWeight == null) {
-				int linkCount = numberLinks.size();
-				List<PageSimilarity> allSimilarities = new ArrayList<Page.PageSimilarity>();
-				for (Page page: prm.getPages().values()) {
-					allSimilarities.add(new PageSimilarity(page, getSimilarity(page, typ, prm)));
-				}
-				allSimilarities.sort((x,y)->-Double.compare(x.similarity, y.similarity));
-				int found = 0;
-				for (int i = 0; i < linkCount; ++i) {
-					Page page = allSimilarities.get(i).page;
-					pageList.add(page.getUrl());
-					if (numberLinks.containsKey(page)) {
-						++found;
+			return refreshRecall(typ, prm);
+		});
+	}
+	
+	public double refreshRecall(SimilarityType type, PageReaderManger prm) {
+		SimilarityType typ = type;
+		JsonObject metaInfo = PageReader.instance().getMetaInfo(getUrl());
+		JsonObject similarity = getJsonObject(metaInfo,"similarities");
+		
+		JsonObject thisSimilarity = getJsonObject(similarity,type.name());
+		Double curRecall = null;
+		Double curWeight = null;
+		List<String> pageList = new ArrayList<>();
+		{
+			curRecall = getNumber(thisSimilarity,"recall");
+			curWeight = getNumber(thisSimilarity,"weight");
+			JsonElement bestPagesEl = thisSimilarity.get("bestpages");
+			if (bestPagesEl != null && bestPagesEl.isJsonArray()) {
+				JsonArray bestPagesAr = bestPagesEl.getAsJsonArray();
+				for (JsonElement sub: bestPagesAr) {
+					if (sub.isJsonPrimitive()) {
+						try {
+							String str = sub.getAsString();
+							pageList.add(str);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} else {
+						System.err.println("Required string, but got "+sub+" for best page!");
 					}
 				}
-				bestPages.put(type, pageList);
-				
-				JsonArrayBuilder jab = Json.createArrayBuilder();
-				for (String spage: pageList) {
-					jab.add(spage);
-				}
-	
-				thisSimilarity.add("bestpages", jab.build());
-				double recall = ((double)found)/linkCount;
-				if (linkCount == 0) {
-					recall = 1.0; //Well, it is undefined
-				}
-				curRecall = recall;
-				double rcallWeight = linkCount;
-				//Wtf - but Json.createValue(double) doesn't seem to work?!
-				thisSimilarity.add("recall", Json.createArrayBuilder().add(recall).build().get(0));
-				thisSimilarity.add("weight", Json.createArrayBuilder().add(rcallWeight).build().get(0));
-				
-
-				similarityBuilder.add(type.name(), thisSimilarity.build());
-				completeBuilder.add("similarities", similarityBuilder.build());
-				
-				PageReader.instance().setMetaInfo(getUrl(), completeBuilder.build());
 			}
+		}
+		bestPages.put(typ, pageList);
+		if (curRecall == null || curWeight == null) {
+			int linkCount = numberLinks.size();
+			List<PageSimilarity> allSimilarities = new ArrayList<Page.PageSimilarity>();
+			prm.getPages().values().parallelStream().forEach(x->{
+				if (x != this) {
+					PageSimilarity ps = new PageSimilarity(x, getSimilarity(x, typ, prm));
+					synchronized (allSimilarities) {
+						allSimilarities.add(ps);	
+					}
+				}
+			});
+			allSimilarities.sort((x,y)->-Double.compare(x.similarity, y.similarity));
+			int found = 0;
+			for (int i = 0; i < linkCount; ++i) {
+				Page page = allSimilarities.get(i).page;
+				pageList.add(page.getUrl());
+				if (numberLinks.containsKey(page)) {
+					++found;
+				}
+			}
+			bestPages.put(type, pageList);
 			
+			JsonArray jab = new JsonArray();
+			for (String spage: pageList) {
+				jab.add(spage);
+			}
+
+			thisSimilarity.add("bestpages", jab);
+			double recall = ((double)found)/linkCount;
+			if (linkCount == 0) {
+				recall = 1.0; //Well, it is undefined
+			}
+			curRecall = recall;
+			double rcallWeight = linkCount;
+			//Wtf - but Json.createValue(double) doesn't seem to work?!
+			thisSimilarity.addProperty("recall", recall);
+			thisSimilarity.addProperty("weight", rcallWeight);
 			
+			similarity.add(type.name(), thisSimilarity);
+			metaInfo.add("similarities", similarity);
 			
-			return curRecall;
-		});
+			PageReader.instance().setMetaInfo(getUrl(), metaInfo);
+		} else {
+			System.out.println("Have metainfo for "+type+"/"+getUrl());
+		}
+		
+		
+		
+		return curRecall;
 	}
 	
 	public void printRecalls(PageReaderManger prm) {
@@ -329,9 +360,14 @@ public class Page implements Serializable {
 		});
 		return ret;
 	}
+	
+	public static boolean EXCLUDE_SELF = true;
 
 	public void finishCalcLinks() {
 		this.numberLinks = prm.getLinkCount(allLinks);
+		if (EXCLUDE_SELF) {
+			numberLinks.remove(this);
+		}
 	}
 
 	public Map<String, Integer> getTerms() {
@@ -367,22 +403,22 @@ public class Page implements Serializable {
 		return this.numberLinks;
 	}
 
-	public void augmentVDM(Map<String, Double> tokenidf, SvmState state) {
+	public void augmentState(Map<String, Double> tokenidf, SvmState state) {
 		tokenidf.forEach((k,v)->{
 			state.add(k, v);
 		});
 	}
-	public void augmentVDM(SimilarityType similarityType, SvmState state) {
+	public void augmentState(SimilarityType similarityType, SvmState state) {
 		switch(similarityType) {
 		case THREEGRAMCOS:
 		case THREEGRAMML:
-			augmentVDM(threeGramTFIDF, state); break;
+			augmentState(threeGramTFIDF, state); break;
 		case TOKENCOS:
 		case TOKENML:
-			augmentVDM(tokenTFIDF, state); break;
+			augmentState(tokenTFIDF, state); break;
 		case TWOGRAMCOS:
 		case TWOGRAMML:
-			augmentVDM(twoGramTFIDF, state); break;
+			augmentState(twoGramTFIDF, state); break;
 		}
 	}
 

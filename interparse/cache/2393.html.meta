@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Christliche_W%C3%A4hlergemeinschaft"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Liste_christdemokratischer_Parteien"],"recall":0.0,"weight":1.0},"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Commonweal_Party"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Geschichte_der_Gr%C3%BCnen_%E2%80%93_Die_Gr%C3%BCne_Alternative"],"recall":0.0,"weight":1.0}}}

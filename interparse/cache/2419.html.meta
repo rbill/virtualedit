@@ -1,1 +1,1 @@
-{"similarities":{"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Wiedergeburt_(ukrainische_Partei)"],"recall":0.0,"weight":1.0}}}
+{"similarities":{"TWOGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Allukrainische_Vereinigung_%E2%80%9EVaterland%E2%80%9C"],"recall":0.0,"weight":1.0},"TOKENCOS":{"bestpages":["https://de.wikipedia.org/wiki/Union_f%C3%BCr_Demokratische_Wiedergeburt"],"recall":0.0,"weight":1.0},"THREEGRAMCOS":{"bestpages":["https://de.wikipedia.org/wiki/Partei_der_Regionen"],"recall":1.0,"weight":1.0}}}
