@@ -13,6 +13,7 @@ import at.ac.tuwien.big.vfunc.basic.CompleteResult;
 import at.ac.tuwien.big.vfunc.basic.Expression;
 import at.ac.tuwien.big.vfunc.basic.FourParameterModifier;
 import at.ac.tuwien.big.vfunc.basic.FunctionApplicator;
+import at.ac.tuwien.big.vfunc.basic.FunctionNotifyer;
 import at.ac.tuwien.big.vfunc.basic.VFunction;
 
 public class ExpressionExpression<Source,Target> implements Expression<Source, Target> {
@@ -61,7 +62,7 @@ public class ExpressionExpression<Source,Target> implements Expression<Source, T
 	}
 	
 	@Override
-	public Target calcResult(AssignmentSourceInfo<Source, Target> src, List<CompleteResult<?, ?>> subResultInfos) {
+	public Target calcResult(AssignmentSourceInfo<Source, Target> src, List<FunctionNotifyer<?, ?, ?>> subResultInfos) {
 		Source source = src.source();
 		List<Supplier<?>> supplierList = new ArrayList<>();
 		functionApplicators.forEach(x->{

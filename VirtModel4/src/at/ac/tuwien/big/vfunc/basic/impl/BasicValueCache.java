@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import at.ac.tuwien.big.vfunc.basic.Assignment;
 import at.ac.tuwien.big.vfunc.basic.AssignmentSourceInfo;
@@ -21,12 +22,14 @@ import at.ac.tuwien.big.vfunc.basic.ChangeListenable;
 import at.ac.tuwien.big.vfunc.basic.CompleteResult;
 import at.ac.tuwien.big.vfunc.basic.ConstraintViolation;
 import at.ac.tuwien.big.vfunc.basic.FixedFinitScope;
+import at.ac.tuwien.big.vfunc.basic.FunctionType;
 import at.ac.tuwien.big.vfunc.basic.Scope;
+import at.ac.tuwien.big.vfunc.basic.ScopedValueCache;
 import at.ac.tuwien.big.vfunc.basic.VFunction;
 import at.ac.tuwien.big.vfunc.basic.Value;
 import at.ac.tuwien.big.vfunc.basic.ValueCache;
 
-public class BasicValueCache<Src,Target> implements ValueCache<Src, Target> {
+public class BasicValueCache<Src,Target> implements ScopedValueCache<Src, Target> {
 
 	private boolean isSorted;
 	
@@ -182,14 +185,18 @@ public class BasicValueCache<Src,Target> implements ValueCache<Src, Target> {
 		}
 	}
 	
-	private Map<ValueCache<Src, Target>,Integer> cacheId = new HashMap<ValueCache<Src,Target>, Integer>();
+	private Map<ValueCache<Src, Target>,Integer> cacheId = new HashMap<>();
 	private Map<Src,SingleAssignment> map;
 	private VFunction<Src, Target> function;
 	private List<WeakReference<ChangeListenable<? super ValueCache<Src, Target>, ? super Src,? super Target>>> changeListeners = new ArrayList<>();
-	private List<ValueCache<Src, Target>> subCaches = new ArrayList<ValueCache<Src,Target>>();
+	private List<SingleFunction<Src, Target>> subCaches = new ArrayList<>();
+	
+	public int getCacheId(SingleFunction<Src, Target> cache) {
+		return getCacheId(cache.cache());	
+	}
 	
 	public int getCacheId(ValueCache<Src, Target> cache) {
-		return cacheId.computeIfAbsent(cache, (x)->(cacheId.size()+1));
+		return cacheId.computeIfAbsent(cache, (x)->(cacheId.size()+1));	
 	}
 	
 	public BasicValueCache(boolean isSorted) {
@@ -199,6 +206,10 @@ public class BasicValueCache<Src,Target> implements ValueCache<Src, Target> {
 		} else {
 			map = new HashMap<>();
 		}
+	}
+	
+	public void initFunction(VFunction<Src, Target> func) {
+		this.function = func;
 	}
 	
 	@Override
@@ -227,12 +238,13 @@ public class BasicValueCache<Src,Target> implements ValueCache<Src, Target> {
 					SingleAssignment assignment = getOrCreateAssignment(src);
 					AssignmentSourceInfo<Src, Target> asi = new BasicAssignmentSourceInfo<Src, Target>(ass, src);
 					assignment.setMyAssignment(ass.getExpression().apply(asi));
+					this.scope.notifyChanged(src, false, true);
 				}
 			}
 			break;
 		case SOFT:
 			//Finite scope, dynamic values - add as subfunction
-			ValueCache<Src, Target> cache = ass.getCacheIfExists(); 
+			SingleFunction<Src, Target> cache = ass.getFunctionIfExists(); 
 			if (cache != null) {
 				addSubCache(cache);
 			} else {
@@ -248,21 +260,23 @@ public class BasicValueCache<Src,Target> implements ValueCache<Src, Target> {
 		}
 	}
 	
-	private void addSubCache(ValueCache<Src, Target> subCache) {
+	private void addSubCache(SingleFunction<Src, Target> subCache) {
 		subCaches.add(subCache);
-		subCache.addChangeListener(subCacheChangeListenable);
+		subCache.cache().addChangeListener(subCacheChangeListenable);
+		this.scope.notifyChanged(null, false, true);
 	}
 	
-	private void removeSubCache(ValueCache<Src, Target> subCache) {
+	private void removeSubCache(SingleFunction<Src, Target> subCache) {
 		subCaches.remove(subCache);
-		subCache.removeChangeListener(subCacheChangeListenable);
+		subCache.cache().removeChangeListener(subCacheChangeListenable);
 		Integer index = cacheId.get(subCache);
 		if (index != null) {
 			map.values().forEach(x->x.removeCompleteResult(index));
 		}
+		this.scope.notifyChanged(null, true, false);
 	}
 	
-	public List<? extends ValueCache<Src, Target>> getSubCaches() {
+	public List<? extends SingleFunction<Src, Target>> getSubCaches() {
 		return subCaches;
 	}
 	
@@ -299,16 +313,62 @@ public class BasicValueCache<Src,Target> implements ValueCache<Src, Target> {
 
 	@Override
 	public CompleteResult<Src, Target> put(Src src, CompleteResult<Src, Target> result) {
+		boolean currentlyInScope = getScope().contains(src);
 		SingleAssignment ass = map.computeIfAbsent(src, x->new SingleAssignment(src));
+		Target oldValue = ass.getTarget();
 		ass.setMyAssignment(result);
+		if (!Objects.equals(oldValue, result.value())) {
+			//TODO: ich weiﬂ nicht was ich mache ... k.A. ob das hier sinnvoll ist
+			notifyChanged(src, oldValue, result.value());
+		}
+		if (!currentlyInScope) {
+			scope.notifyChanged(src, false, true);
+		}
 		return ass.myAssignment;
 	}
 
 	@Override
 	public CompleteResult<Src, Target> getOrNull(Src src) {
 		SingleAssignment ret = map.get(src);
-		if (ret == null) {return null;}
-		return ret.getResult();
+		if (ret == null) {
+			CompleteResult<Src, Target> retV = null;
+			for (SingleFunction<Src, Target> subCache: subCaches) {
+				CompleteResult<Src, Target> value = subCache.cache().getOrNull(src);
+				if (value != null) {
+					retV = value;
+				}
+			}
+			return retV;
+		} else {
+			return ret.getResult();
+		}
+	}
+	
+	@Override
+	public CompleteResult<Src, Target> getOrCreate(Src src) {
+		SingleAssignment ret = map.get(src);
+		if (ret == null) {
+			CompleteResult<Src, Target> retV = null;
+			SingleFunction<Src, Target> lastFunc = null;
+			for (SingleFunction<Src, Target> subCache: subCaches) {
+				//Das passt irgendwie nicht ...
+				if (!subCache.getScope().contains(src)) {continue;}
+				lastFunc = subCache;
+			}
+			if (lastFunc != null) {
+				CompleteResult<Src, Target> value = lastFunc.evaluate(src);
+				if (value != null) {
+					retV = value;
+				}
+			}
+			if (retV == null) {
+				retV = BasicCompleteResult.NO_RESULT(src);
+				put(src, retV);
+			}
+			return retV;
+		} else {
+			return ret.getResult();
+		}
 	}
 
 	@Override
@@ -329,13 +389,70 @@ public class BasicValueCache<Src,Target> implements ValueCache<Src, Target> {
 	private FixedFinitScope<Src> scope = new FixedFinitScope<Src>() {
 
 		@Override
+		public boolean contains(Src src) {
+			if (map.keySet().contains(src)) {
+				return true;
+			}
+			for (SingleFunction<?, ?> ss: subCaches) {
+				if (((Scope)ss.getScope()).contains(src)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		@Override
 		public Collection<Src> getValues() {
-			return map.keySet();
+			if (subCaches.isEmpty()) {
+				return map.keySet();
+			}
+			Set<Src> ret = isSorted?new TreeSet<Src>(map.keySet()):new HashSet<Src>(map.keySet());
+			for (SingleFunction<?, ?> ss: subCaches) {
+				Scope<?> scope = ss.getScope();
+				if (scope instanceof FixedFinitScope) {
+					ret.addAll(((FixedFinitScope)scope).getValues());
+				}
+			}
+			return ret;
+		}
+		
+		List<WeakReference<ChangeListenable<? super Scope<Src>, ? super Src, ? super Boolean>>> changeListeners = new ArrayList<>();
+
+		@Override
+		public List<WeakReference<ChangeListenable<? super Scope<Src>, ? super Src, ? super Boolean>>> getChangeListeners() {
+			return changeListeners;
+		}
+
+		@Override
+		public CompleteResult<Src, Boolean> priv_calcResult(Src source) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public ValueCache<Src, Boolean> cache() {
+			return BasicValueCache;
+		}
+
+		@Override
+		public Scope<Src> getScope() {
+			return this;
+		}
+
+		@Override
+		public FunctionType<Src, Boolean> getType() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	};
 
-	public Scope<Src> getScope() {
+	public FixedFinitScope<Src> getScope() {
 		return scope;
 	}
 
+	public Map<Src, CompleteResult<Src, Target>> getDirectMap() {
+		Map<Src, CompleteResult<Src, Target>> ret = new HashMap<Src, CompleteResult<Src,Target>>();
+		map.forEach((k,v)->{if (v.myAssignment != null) {ret.put(k, v.myAssignment);}});
+		return ret;
+	}
 }

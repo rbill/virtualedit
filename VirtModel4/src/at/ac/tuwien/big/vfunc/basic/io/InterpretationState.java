@@ -1,6 +1,5 @@
 package at.ac.tuwien.big.vfunc.basic.io;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,19 +7,11 @@ import java.util.Map;
 import java.util.Stack;
 
 import at.ac.tuwien.big.vfunc.basic.MyCloneable;
-import at.ac.tuwien.big.vfunc.basic.VFunction;
 import at.ac.tuwien.big.vfunc.basic.impl.GeneralParseContainer;
 import at.ac.tuwien.big.vfunc.basic.impl.VariableRecManager;
 import at.ac.tuwien.big.vfunc.basic.impl.VariableTypeContent;
 import at.ac.tuwien.big.vfunc.op.BasicOperationManager;
 import at.ac.tuwien.big.vfunc.op.SimpleBasicFunction;
-import at.ac.tuwien.big.virtmodel.vLang.Block;
-import at.ac.tuwien.big.virtmodel.vLang.ForLoopStatement;
-import at.ac.tuwien.big.virtmodel.vLang.ForStatement;
-import at.ac.tuwien.big.virtmodel.vLang.IfStatement;
-import at.ac.tuwien.big.virtmodel.vLang.LetStatement;
-import at.ac.tuwien.big.virtmodel.vLang.ReturnStatement;
-import at.ac.tuwien.big.virtmodel.vLang.SingleStatement;
 
 public class InterpretationState implements MyCloneable<InterpretationState>{
 	

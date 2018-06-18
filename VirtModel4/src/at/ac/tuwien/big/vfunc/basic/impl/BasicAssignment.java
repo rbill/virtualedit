@@ -83,6 +83,12 @@ public class BasicAssignment<Src,Target> implements Assignment<Src, Target> {
 		return sf.cache();
 	}
 
+	//Der cache hier muss der eigene sein ...
+	@Override
+	public SingleFunction<Src, Target> getFunctionIfExists() {
+		return sf;
+	}
+
 	@Override
 	public AssignmentType getType() {
 		return type;

@@ -27,6 +27,7 @@ public class BasicFunction<Src,Target> implements VFunction<Src, Target>{
 	
 	public BasicFunction(boolean isSorted, FunctionType<Src, Target> type) {
 		bvc = new BasicValueCache<Src,Target>(isSorted);
+		bvc.initFunction(this);
 		this.type = type;
 	}
 
@@ -39,7 +40,7 @@ public class BasicFunction<Src,Target> implements VFunction<Src, Target>{
 		//I think when the assignment is added, the values should be calculated already??
 		
 		// TODO Auto-generated method stub
-		return bvc.getOrNull(source);
+		return bvc.getOrCreate(source);
 	}
 
 	@Override
@@ -77,7 +78,7 @@ public class BasicFunction<Src,Target> implements VFunction<Src, Target>{
 	}
 
 	@Override
-	public Scope<Src> getScope() {
+	public FixedFinitScope<Src> getScope() {
 		return bvc.getScope();
 	}
 
@@ -90,5 +91,9 @@ public class BasicFunction<Src,Target> implements VFunction<Src, Target>{
 		List<ConstraintViolation<Src, Target>> violations = new ArrayList<>();
 		bvc.getConstraintViolations(violations);
 		return violations;
+	}
+
+	public void removeAssignments(Scope<?> scope) {
+		throw new UnsupportedOperationException("Deleting things not yet supported!");
 	}
 }

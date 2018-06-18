@@ -1,6 +1,6 @@
 package at.ac.tuwien.big.vfunc.basic;
 
-public interface CompleteResult<Src,Target> extends FunctionBasedValue<Src, Target>, Refreshable, ChangeListenable<Notifyer<?,Object,Object>, Object, Object>, Notifyer<CompleteResult<Src, Target>,Src,Target> {
+public interface CompleteResult<Src,Target> extends FunctionBasedValue<Src, Target>, Refreshable, ChangeListenable<FunctionNotifyer<?,Object,Object>, Object, Object>, FunctionNotifyer<CompleteResult<Src, Target>,Src,Target> {
 	
 	public SubResultInfo usedResults();
 

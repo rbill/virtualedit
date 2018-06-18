@@ -3,14 +3,15 @@ package at.ac.tuwien.big.vfunc.basic.impl;
 import java.util.List;
 
 import at.ac.tuwien.big.vfunc.basic.CompleteResult;
+import at.ac.tuwien.big.vfunc.basic.FunctionNotifyer;
 import at.ac.tuwien.big.vfunc.basic.SubResultInfo;
 
 public class BasicSubResultInfo implements SubResultInfo {
 
-	List<CompleteResult<?, ?>> subResults;
+	List<FunctionNotifyer<?, ?, ?>> subResults;
 	CompleteResult<?, ?> thisResult;
 	
-	public BasicSubResultInfo(List<CompleteResult<?,?>> subResults) {
+	public BasicSubResultInfo(List<FunctionNotifyer<?,?,?>> subResults) {
 		this.subResults = subResults;
 	}
 	
@@ -19,7 +20,7 @@ public class BasicSubResultInfo implements SubResultInfo {
 	}
 	
 	@Override
-	public List<CompleteResult<?, ?>> subResults() {
+	public List<FunctionNotifyer<?, ?, ?>> subResults() {
 		return subResults;
 	}
 

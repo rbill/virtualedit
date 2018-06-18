@@ -5,6 +5,7 @@ import java.util.List;
 import at.ac.tuwien.big.vfunc.basic.AssignmentSourceInfo;
 import at.ac.tuwien.big.vfunc.basic.CompleteResult;
 import at.ac.tuwien.big.vfunc.basic.Expression;
+import at.ac.tuwien.big.vfunc.basic.FunctionNotifyer;
 import at.ac.tuwien.big.vfunc.basic.FunctionSourceInfo;
 
 public class ConstantExpression<Source,Target> implements Expression<Source, Target> {
@@ -16,7 +17,7 @@ public class ConstantExpression<Source,Target> implements Expression<Source, Tar
 	}
 
 	@Override
-	public Target calcResult(AssignmentSourceInfo<Source, Target> src, List<CompleteResult<?, ?>> subResultInfos) {
+	public Target calcResult(AssignmentSourceInfo<Source, Target> src, List<FunctionNotifyer<?, ?, ?>> subResultInfos) {
 		return target;
 	}
 	

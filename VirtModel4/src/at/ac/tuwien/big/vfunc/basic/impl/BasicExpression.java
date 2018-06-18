@@ -6,6 +6,7 @@ import java.util.function.Function;
 import at.ac.tuwien.big.vfunc.basic.AssignmentSourceInfo;
 import at.ac.tuwien.big.vfunc.basic.CompleteResult;
 import at.ac.tuwien.big.vfunc.basic.Expression;
+import at.ac.tuwien.big.vfunc.basic.FunctionNotifyer;
 
 public class BasicExpression<Source, Target> implements Expression<Source, Target> {
 	
@@ -16,7 +17,7 @@ public class BasicExpression<Source, Target> implements Expression<Source, Targe
 	}
 
 	@Override
-	public Target calcResult(AssignmentSourceInfo<Source, Target> src, List<CompleteResult<?, ?>> subResultInfos) {
+	public Target calcResult(AssignmentSourceInfo<Source, Target> src, List<FunctionNotifyer<?, ?, ?>> subResultInfos) {
 		return function.apply(src.source());
 	}
 

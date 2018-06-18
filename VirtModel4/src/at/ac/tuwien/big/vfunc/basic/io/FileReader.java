@@ -9,6 +9,7 @@ import java.util.List;
 import org.eclipse.emf.common.util.EList;
 
 import at.ac.tuwien.big.vfunc.basic.AssignmentType;
+import at.ac.tuwien.big.vfunc.basic.Editor;
 import at.ac.tuwien.big.vfunc.basic.Scope;
 import at.ac.tuwien.big.vfunc.basic.VFunction;
 import at.ac.tuwien.big.vfunc.basic.ValueCache;
@@ -17,10 +18,8 @@ import at.ac.tuwien.big.vfunc.basic.impl.BasicExpression;
 import at.ac.tuwien.big.vfunc.basic.impl.BasicInfiniteScope;
 import at.ac.tuwien.big.vfunc.basic.impl.EditingStructure;
 import at.ac.tuwien.big.vfunc.basic.impl.GeneralParseContainer;
-import at.ac.tuwien.big.vfunc.basic.impl.ParseState;
 import at.ac.tuwien.big.vfunc.basic.impl.SetScope;
 import at.ac.tuwien.big.vfunc.basic.impl.VariableRecManager;
-import at.ac.tuwien.big.vfunc.basic.io.BasicStatement.JmpStatement;
 import at.ac.tuwien.big.vfunc.op.BasicFunction;
 import at.ac.tuwien.big.vfunc.op.BasicOperationManager;
 import at.ac.tuwien.big.virtmodel.vLang.AssignStatement;
@@ -56,17 +55,15 @@ import at.ac.tuwien.big.virtmodel.vLang.ObjParam;
 import at.ac.tuwien.big.virtmodel.vLang.OclFunction;
 import at.ac.tuwien.big.virtmodel.vLang.ParDef;
 import at.ac.tuwien.big.virtmodel.vLang.ReturnStatement;
+import at.ac.tuwien.big.virtmodel.vLang.RuleAssignment;
+import at.ac.tuwien.big.virtmodel.vLang.SetDef;
+import at.ac.tuwien.big.virtmodel.vLang.SetLiteral;
 import at.ac.tuwien.big.virtmodel.vLang.SetOrFunctionDef;
 import at.ac.tuwien.big.virtmodel.vLang.SingleScope;
 import at.ac.tuwien.big.virtmodel.vLang.SingleStatement;
 import at.ac.tuwien.big.virtmodel.vLang.SingleValue;
-import at.ac.tuwien.big.virtmodel.vLang.RuleAssignment;
-import at.ac.tuwien.big.virtmodel.vLang.SetDef;
-import at.ac.tuwien.big.virtmodel.vLang.SetLiteral;
 import at.ac.tuwien.big.virtmodel.vLang.VLang;
-import at.ac.tuwien.big.vmod.Function;
 import at.ac.tuwien.big.vmod.type.Symbol;
-import at.ac.tuwien.big.vmod.type.SymbolImpl;
 
 public class FileReader {
 
@@ -154,10 +151,19 @@ public class FileReader {
 	}
 	
 	private void compileFunctionCall(String retVariable, FunctionCall fv, List<BasicStatement> statements) {
-		
-		
+		compileFunctionCall(retVariable, fv.getFunction().getName(),
+				fv.getParams(), JavaFunctionType.FUNCCALL,
+				statements);
 	}
 	
+
+	public Object evaluateNow(FunctionPar par) {
+		List<BasicStatement> subStatements = new ArrayList<BasicStatement>();
+		String parName = "$$";
+		BasicStatement.createDirectVar(subStatements, parName);
+		compileFunctionCall(parName, par, subStatements);
+		return parseState.executeNow(subStatements, parName)[0];
+	}
 
 	private void compileFunctionCall(String retVariable, String name, List<? extends FunctionPar> params, JavaFunctionType type, List<BasicStatement> statements) {
 		List<BasicStatement> subStatements = new ArrayList<BasicStatement>();
@@ -213,6 +219,12 @@ public class FileReader {
 		Expression expr = fa.getExpr();
 		compileFunctionCall(VariableRecManager.RETURN_VAR, expr, subStatements);
 		return new ISFunction(clonedState(), subStatements, parList);
+	}
+	
+	public at.ac.tuwien.big.vfunc.basic.Expression<?, ?> toExpression(ISFunction isfunc) {
+		java.util.function.Function<Object[],Object> jfunc = (pars)->isfunc.apply(pars);
+		at.ac.tuwien.big.vfunc.basic.Expression expr = new BasicExpression<>(jfunc); 
+		return expr;
 	}
 	
 	private ISFunction convertFunctionCall(Expression fa) {
@@ -607,8 +619,7 @@ public class FileReader {
 			if (afunc instanceof at.ac.tuwien.big.vfunc.basic.impl.BasicFunction) {
 				at.ac.tuwien.big.vfunc.basic.impl.BasicFunction func = (at.ac.tuwien.big.vfunc.basic.impl.BasicFunction)afunc;
 				ISFunction isfunc = convertFunctionCall(fa);
-				java.util.function.Function<Object[],Object> jfunc = (pars)->isfunc.apply(pars);
-				at.ac.tuwien.big.vfunc.basic.Expression expr = new BasicExpression<>(jfunc); 
+				at.ac.tuwien.big.vfunc.basic.Expression<?,?> expr = toExpression(isfunc);
 				AssignmentType at = null;
 				switch(ft) {
 				case CONSTRAINT:
@@ -621,7 +632,8 @@ public class FileReader {
 					at = AssignmentType.HARD;
 					break;
 				}
-				getEditingStructure().addBasicExpression(func, BasicInfiniteScope.EVERYTHING(), expr, at);
+				Class<?> sourceClass = Object.class; //TODO: ...
+				getEditingStructure().addBasicExpression(func, (BasicInfiniteScope)BasicInfiniteScope.EVERYTHING(sourceClass), expr, at);
 			} else {
 				System.err.println("Could not initialize function "+name+": not a basic function");
 			}
@@ -723,24 +735,71 @@ public class FileReader {
 		compileStatement(statement, statements);
 		parseState.executeNow(statements);
 	}
+	
+	private AssignmentType convertType(FunctionType type) {
+		switch(type) {
+		case CONSTRAINT:
+			return AssignmentType.CONSTRAINT;
+		case DERIVE:
+			return AssignmentType.SOFT;
+		case FINITE:
+			return AssignmentType.HARD;
+			default: System.err.println("Unknown function type "+ type); return null;
+		}
+	}
 
 	private void parseStatement(RuleAssignment statement) {
 		FunctionScope scope = statement.getScope();
+		Scope cvscope = convertScope(scope);
 		FunctionDef function = statement.getFunction();
 		FunctionAssignment assignment = statement.getAssignment();
-		asdf;
+		List<BasicStatement> statements = new ArrayList<>();
+		
+		statements.add((state)-> { 
+			Editor editor = getEditingStructure().getEditor();
+			at.ac.tuwien.big.vfunc.basic.Expression target = toExpression(convertFunctionCall(assignment));
+			AssignmentType type = convertType(function.getType());
+			VFunction existingFunction = parseState.getContent(function.getName(), VFunction.class);
+			//BasicAssignment bas  = new BasicAssignment(existingFunction, cvscope, target, editor, type);
+			if (existingFunction instanceof at.ac.tuwien.big.vfunc.basic.impl.BasicFunction) {
+				getEditingStructure().addBasicExpression((at.ac.tuwien.big.vfunc.basic.impl.BasicFunction)existingFunction, cvscope, target, type);
+			} else {
+				System.err.println("Can only add things to basic function, but not "+existingFunction+"!");
+			}
+		});
+		parseState.executeNow(statements);
 	}
 
 	private void parseStatement(DeleteAssignment statement) {
 		FunctionDef function = statement.getFunction();
 		FunctionScope scope = statement.getScope();
-		asdf;
+		Scope cvscope = convertScope(scope);
+		List<BasicStatement> statements = new ArrayList<>();
+		
+		statements.add((state)-> { 
+			Editor editor = getEditingStructure().getEditor();
+			AssignmentType type = convertType(function.getType());
+			VFunction existingFunction = parseState.getContent(function.getName(), VFunction.class);
+			//BasicAssignment bas  = new BasicAssignment(existingFunction, cvscope, target, editor, type);
+			if (existingFunction instanceof at.ac.tuwien.big.vfunc.basic.impl.BasicFunction) {
+				getEditingStructure().removeDefinition((at.ac.tuwien.big.vfunc.basic.impl.BasicFunction)existingFunction, cvscope);
+			} else {
+				System.err.println("Can only remove things from function, but not "+existingFunction+"!");
+			}
+		});
 	}
+	
 
 	private void parseStatement(BasicAction statement) {
 		SetOrFunctionDef thing = statement.getThing();
 		String calledFunc = statement.getCalledFunc();
 		EList<FunctionPar> params = statement.getParams();
-		asdf;
+		String variable = thing.getName();
+		Object content = parseState.getContent(variable);
+		Object[] paramsAr = new Object[params.size()];
+		for (int i = 0; i < params.size(); ++i) {
+			paramsAr[i] = evaluateNow(params.get(i));
+		}
+		parseState.getLoader().executeOperation(content, calledFunc, paramsAr);
 	}
 }

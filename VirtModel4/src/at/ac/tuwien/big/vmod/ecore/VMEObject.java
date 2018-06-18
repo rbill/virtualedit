@@ -1,10 +1,7 @@
 package at.ac.tuwien.big.vmod.ecore;
 
-import java.security.spec.ECField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,20 +13,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcoreFactory;
 //import org.eclipse.ocl.copied.BasicTuple;
 import org.eclipse.ocl.pivot.PivotFactory;
-import org.eclipse.ocl.pivot.PivotPackage;
 import org.eclipse.ocl.pivot.Property;
 import org.eclipse.ocl.pivot.internal.PivotFactoryImpl;
-import org.eclipse.ocl.pivot.internal.SequenceTypeImpl;
-import org.eclipse.ocl.pivot.internal.values.SequenceValueImpl;
-import org.eclipse.ocl.pivot.values.OrderedSet;
 import org.eclipse.ocl.pivot.values.SequenceValue;
-import org.eclipse.ocl.types.CollectionType;
-import org.eclipse.ocl.types.OCLStandardLibrary;
-import org.eclipse.ocl.types.OrderedSetType;
-import org.eclipse.ocl.types.SequenceType;
 import org.eclipse.ocl.util.Tuple;
 
 import at.ac.tuwien.big.verocl.parameterdesc.MultiPoint;

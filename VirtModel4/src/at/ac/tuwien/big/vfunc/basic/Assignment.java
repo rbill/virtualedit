@@ -1,5 +1,7 @@
 package at.ac.tuwien.big.vfunc.basic;
 
+import at.ac.tuwien.big.vfunc.basic.impl.SingleFunction;
+
 public interface Assignment<Src, Target> {
 
 	VFunction<Src, Target> getFunction();
@@ -11,6 +13,8 @@ public interface Assignment<Src, Target> {
 	Editor getEditor();
 	
 	public ValueCache<Src, Target> getCacheIfExists();
+	
+	public SingleFunction<Src, Target> getFunctionIfExists();
 	
 	/**Hard assignment: := - Only for fixed Scopes ...
 	 * Soft assignment: =

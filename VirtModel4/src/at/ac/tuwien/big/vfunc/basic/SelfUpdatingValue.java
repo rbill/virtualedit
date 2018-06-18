@@ -9,11 +9,11 @@ import java.util.Set;
 
 import at.ac.tuwien.big.vfunc.basic.impl.BasicChange;
 
-public class SelfUpdatingValue<Src,Trg> implements ChangeListenable<SelfUpdatingValue<Src,Trg>, Src, Trg>, Notifyer<SelfUpdatingValue<Src,Trg>, Src, Trg> {
+public class SelfUpdatingValue<Src,Trg> implements ChangeListenable<SelfUpdatingValue<Src,Trg>, Src, Trg>, FunctionNotifyer<SelfUpdatingValue<Src,Trg>, Src, Trg> {
 	
 	/*Diese BasicFunction wird wohl eine implementierung dieser interpretierten Funktionen*/
 	private BasicFunctionForUpdate<Src, Trg> baseFunc;
-	private Set<Notifyer<?, ?, ?>> usedResources = new HashSet<>();
+	private Set<FunctionNotifyer<?, ?, ?>> usedResources = new HashSet<>();
 	private Trg value;
 	private Src src;
 	

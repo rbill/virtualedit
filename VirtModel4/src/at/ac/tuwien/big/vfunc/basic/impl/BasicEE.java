@@ -17,12 +17,14 @@ import at.ac.tuwien.big.vfunc.basic.TwoParameterModifier;
 public class BasicEE implements AnyParameterModifier {
 	
 	private Object[] objects;
+	private int hashCode = -1;
 
 	public void set(int index, Object obj)  {
 		if (objects.length<index) {
 			objects = Arrays.copyOf(objects, index+1);
 		}
 		objects[index] = obj;
+		hashCode = -1;
 	}
 	
 	public Object get(int index) {
@@ -79,7 +81,10 @@ public class BasicEE implements AnyParameterModifier {
 	
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(objects);
+		if (hashCode == -1) {
+			hashCode = Arrays.hashCode(objects);
+		}
+		return hashCode;
 	}
 	
 	@Override

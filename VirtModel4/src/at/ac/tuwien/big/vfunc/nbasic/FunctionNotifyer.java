@@ -1,11 +1,12 @@
-package at.ac.tuwien.big.vfunc.basic;
+package at.ac.tuwien.big.vfunc.nbasic;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import at.ac.tuwien.big.vfunc.basic.ChangeListenable;
 import at.ac.tuwien.big.vfunc.basic.impl.BasicChange;
 
-public interface FunctionNotifyer<This extends FunctionNotifyer<This,Source,Target>, Source, Target> {
+public interface FunctionNotifyer<This extends FunctionNotifyer<This,Source,Target>, Source, Target> extends WeakObject<Source> {
 	
 	public default void addChangeListener(ChangeListenable<? super This,? super Source, ? super Target> src) {
 		getChangeListeners().add(new WeakReference<ChangeListenable<? super This,? super Source,? super Target>>(src));
@@ -29,6 +30,13 @@ public interface FunctionNotifyer<This extends FunctionNotifyer<This,Source,Targ
 			}
 		});
 		changeListeners.removeIf(x->x.get()==null);		
+	}
+
+	/**Always call me before finalizing!*/
+	public default void doFinalize() {
+		WeakObject.super.doFinalize();
+		
+		
 	}
 
 }

@@ -9,7 +9,7 @@ import at.ac.tuwien.big.vfunc.basic.Assignment;
 import at.ac.tuwien.big.vfunc.basic.Change;
 import at.ac.tuwien.big.vfunc.basic.ChangeListenable;
 import at.ac.tuwien.big.vfunc.basic.CompleteResult;
-import at.ac.tuwien.big.vfunc.basic.Notifyer;
+import at.ac.tuwien.big.vfunc.basic.FunctionNotifyer;
 import at.ac.tuwien.big.vfunc.basic.SubResultInfo;
 import at.ac.tuwien.big.vfunc.basic.VFunction;
 import at.ac.tuwien.big.vfunc.basic.Value;
@@ -27,6 +27,15 @@ public class BasicCompleteResult<Src,Target> implements CompleteResult<Src, Targ
 		this.source = source;
 		this.target = target;
 		this.usedResults = usedResults;
+	}
+	
+	public static<Src,Target> BasicCompleteResult<Src,Target> NO_RESULT(Src source) {
+		return new BasicCompleteResult<Src, Target>(null, source, null,  new BasicSubResultInfo(new ArrayList<>()));
+	}
+	
+
+	public static<Src,Target> BasicCompleteResult<Src,Target> WORKING_NO_RESULT(Assignment<Src, Target> assignment, Src source) {
+		return new BasicCompleteResult<Src, Target>(assignment, source, null,  new BasicSubResultInfo(new ArrayList<>()));
 	}
 	
 	@Override
@@ -87,6 +96,7 @@ public class BasicCompleteResult<Src,Target> implements CompleteResult<Src, Targ
 			target = newResult.value();
 			usedResults = newResult.usedResults();
 			usedResults.addSubChangeListener(this);
+			reason = newResult.reason();
 			if (!Objects.equals(oldTarget,target)) {
 				notifyChanged(source,oldTarget,target);
 			}
@@ -94,7 +104,7 @@ public class BasicCompleteResult<Src,Target> implements CompleteResult<Src, Targ
 	}
 
 	@Override
-	public void changed(Change<? extends Notifyer<?, Object, Object>, ? extends Object, ? extends Object> change) {
+	public void changed(Change<? extends FunctionNotifyer<?, Object, Object>, ? extends Object, ? extends Object> change) {
 		refresh();
 	}
 

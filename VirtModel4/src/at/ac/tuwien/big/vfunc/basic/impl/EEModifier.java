@@ -13,6 +13,7 @@ import at.ac.tuwien.big.vfunc.basic.CompleteResult;
 import at.ac.tuwien.big.vfunc.basic.Expression;
 import at.ac.tuwien.big.vfunc.basic.FourParameterModifier;
 import at.ac.tuwien.big.vfunc.basic.FunctionApplicator;
+import at.ac.tuwien.big.vfunc.basic.FunctionNotifyer;
 import at.ac.tuwien.big.vfunc.basic.OneParameterModifier;
 import at.ac.tuwien.big.vfunc.basic.ThreeParameterModifier;
 import at.ac.tuwien.big.vfunc.basic.TwoParameterModifier;
@@ -26,7 +27,7 @@ public class EEModifier implements Expression<BasicEE, BasicEE> {
 	}
 	
 	@Override
-	public BasicEE calcResult(AssignmentSourceInfo<BasicEE, BasicEE> src, List<CompleteResult<?, ?>> subResultInfos) {
+	public BasicEE calcResult(AssignmentSourceInfo<BasicEE, BasicEE> src, List<FunctionNotifyer<?, ?, ?>> subResultInfos) {
 		return eeModifier.apply(src.source(), subResultInfos);
 	}
 	
