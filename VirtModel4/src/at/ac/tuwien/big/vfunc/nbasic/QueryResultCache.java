@@ -8,12 +8,20 @@ import java.util.function.Function;
 public class QueryResultCache<T, U extends WeakObject<T>> {
 	
 	private Map<T, WeakReference<U>> cacheMap = new HashMap<>();
-	private Function<T, U> calculator;
+	private Function<? super T, ? extends U> calculator;
 
-	public QueryResultCache(Function<T, U> calculator) {
+	public QueryResultCache(Function<? super T, ? extends U> calculator) {
 		this.calculator = calculator;
 	}
 	
+	public U getIfExists(T key) {
+		WeakReference<U> ret = cacheMap.get(key);
+		U realRet = null;
+		if (ret != null) {
+			realRet = ret.get();
+		}
+		return realRet;
+	}
 	
 	public U get(T key) {
 		WeakReference<U> ret = cacheMap.get(key);

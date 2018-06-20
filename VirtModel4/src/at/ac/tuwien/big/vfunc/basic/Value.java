@@ -4,4 +4,7 @@ public interface Value<T> {
 	
 	public T value();
 
+	public default boolean isDefined() {
+		return value() != null;
+	}
 }

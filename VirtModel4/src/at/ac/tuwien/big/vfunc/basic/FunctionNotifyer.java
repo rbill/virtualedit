@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import at.ac.tuwien.big.vfunc.basic.impl.BasicChange;
+import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyer;
 
 public interface FunctionNotifyer<This extends FunctionNotifyer<This,Source,Target>, Source, Target> {
 	
@@ -28,7 +29,7 @@ public interface FunctionNotifyer<This extends FunctionNotifyer<This,Source,Targ
 				cl.changed(bc);
 			}
 		});
-		changeListeners.removeIf(x->x.get()==null);		
+		changeListeners.removeIf(x->x.get()==null);
 	}
 
 }

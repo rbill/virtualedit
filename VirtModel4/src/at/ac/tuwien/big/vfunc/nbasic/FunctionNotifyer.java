@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import at.ac.tuwien.big.vfunc.basic.ChangeListenable;
+import at.ac.tuwien.big.vfunc.basic.Value;
 import at.ac.tuwien.big.vfunc.basic.impl.BasicChange;
 
 public interface FunctionNotifyer<This extends FunctionNotifyer<This,Source,Target>, Source, Target> extends WeakObject<Source> {
