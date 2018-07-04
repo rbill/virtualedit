@@ -3,23 +3,44 @@ package at.ac.tuwien.big.vfunc.nbasic;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
-public class OperationBasedResult<Target> extends BasicResultImpl<Target> {
-	
-	private Function<List<Object>, Target> function;
-	private List<? extends BasicValuedChangeNotifyer<?>> sources;
+public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Target> {
+
+	private Function<? super List<? super AllSource>, ? extends Target> function;
+	private List<? extends BasicValuedChangeNotifyer<? extends AllSource>> sources;
 	private List<BasicListenable> listeners = new ArrayList<BasicListenable>();
 	
-	public OperationBasedResult(Function<List<Object>, Target> function, List<? extends BasicValuedChangeNotifyer<?>> sources, MetaInfo mi) {
+	public static<Trg> OperationBasedResult<Trg,Trg> getMergeOperation() {
+		static Function<? super List<? extends Trg>, Trg> source2Target = (list)->{
+			if (list.isEmpty()) {
+				return null;
+			}
+			Iterator<? extends Trg> iter = list.iterator();
+			Trg ret = iter.next();
+			while (iter.hasNext()) {
+				Object next = iter.next();
+				if (!Objects.equals(next, ret)) {
+					System.err.println("Constraint violation: "+ret+" VS "+next);
+					break;
+				}
+			}
+			return ret;
+		};
+		
+	}
+	
+	public OperationBasedResult(Function<? super List<? super AllSource>, ? extends Target> function, List<? extends BasicValuedChangeNotifyer<? extends AllSource>> sources, MetaInfo mi) {
 		super(mi);
 		this.function = function;
 		this.sources = sources;
 		setSources(sources);
 	}
 	
-	public OperationBasedResult(Function<List<Object>, Target> function, MetaInfo mi, BasicValuedChangeNotifyer<?>... sources) {
+	public OperationBasedResult(Function<? super List<? super AllSource>, ? extends Target> function, MetaInfo mi, BasicValuedChangeNotifyer<? extends AllSource>... sources) {
 		this(function,Arrays.asList(sources), mi);
 	}
 	
@@ -38,7 +59,12 @@ public class OperationBasedResult<Target> extends BasicResultImpl<Target> {
 		refresh();
 	}
 	
-	public void setSources(List<? extends BasicValuedChangeNotifyer<?>> newSources) {
+	public void setSources(List<? extends BasicValuedChangeNotifyer<? extends AllSource>> newSources) {
+		setSourcesNoRefresh(newSources);
+		refresh();
+	}
+	
+	private void setSourcesNoRefresh(List<? extends BasicValuedChangeNotifyer<? extends AllSource>> newSources) {
 		if (this.sources != null) {
 			removeListeners();
 		}
@@ -49,10 +75,9 @@ public class OperationBasedResult<Target> extends BasicResultImpl<Target> {
 				sources.get(i).addBasicChangeListener(listeners.get(i));
 			}
 		}
-		refresh();
 	}
 	
-	public void setFunction(Function<List<Object>, Target> newFunction) {
+	public void setFunction(Function<? super List<? super AllSource>, ? extends Target> newFunction) {
 		this.function = newFunction;
 		refresh();
 	}
@@ -72,7 +97,11 @@ public class OperationBasedResult<Target> extends BasicResultImpl<Target> {
 	public Target calcValue() {
 		List<Object> vals = new ArrayList<>();
 		for (BasicValuedChangeNotifyer<?> bvc: sources) {
-			vals.add(bvc.value());
+			if (bvc.isDefined()) {
+				vals.add(bvc.value());
+			} else {
+				return null;
+			}
 		}
 		Target ret = function.apply(vals);
 		return ret;
@@ -89,9 +118,21 @@ public class OperationBasedResult<Target> extends BasicResultImpl<Target> {
 		if (sources != null) {
 			removeListeners();
 		}
-		super.finalize();
-		
+		super.finalize();	
 	}
+	
+
+	public void replaceBy(OperationBasedResult<AllSource,Target> newResult) {
+		if (this != newResult) {
+			this.function = newResult.function;
+			if (!Objects.equals(sources, newResult.sources)) {
+				setSourcesNoRefresh(newResult.sources);
+			}
+			Target newValue = newResult.value();
+			checkNewValue(newValue);
+		}
+	}
+	
 	
 	public static void main(String[] args) {
 		Function<List<Object>, Integer> sumFunction = FuncWrappers.log(FuncWrappers.reduceFunction((a,b)->a+b, ()->0, Integer.class), (l,t)->"Summed up to "+t);
@@ -101,10 +142,10 @@ public class OperationBasedResult<Target> extends BasicResultImpl<Target> {
 		ConstantValue<Integer> secondThing = new ConstantValue<Integer>(2);
 		ConstantValue<Integer> thirdThing = new ConstantValue<Integer>(1);
 		
-		OperationBasedResult<Integer> initMultThing = new OperationBasedResult<Integer>(multFunction, new BasicMetaInfo(), firstThing, secondThing);
-		OperationBasedResult<Integer> basicSum = new OperationBasedResult<Integer>(sumFunction, new BasicMetaInfo(), initMultThing, thirdThing);
+		OperationBasedResult<?,Integer> initMultThing = new OperationBasedResult<Object,Integer>(multFunction, new BasicMetaInfo(), firstThing, secondThing);
+		OperationBasedResult<?,Integer> basicSum = new OperationBasedResult<Object,Integer>(sumFunction, new BasicMetaInfo(), initMultThing, thirdThing);
 				
-		OperationBasedResult<Integer> constantMult = new OperationBasedResult<Integer>(multFunction, new BasicMetaInfo(), new ConstantValue<>(2), basicSum);
+		OperationBasedResult<?,Integer> constantMult = new OperationBasedResult<Object,Integer>(multFunction, new BasicMetaInfo(), new ConstantValue<>(2), basicSum);
 		System.out.println("Initial: "+constantMult.value());
 		secondThing.setValue(0);
 		System.out.println("Set second value to 0");
@@ -114,6 +155,27 @@ public class OperationBasedResult<Target> extends BasicResultImpl<Target> {
 		System.out.println("Set first value to 5");
 		secondThing.setValue(7);
 		System.out.println("Set second value to 7");
+	}
+
+	@Override
+	public Object evaluateNew(Replacer replacer, boolean[] changed) {
+		List<BasicValuedChangeNotifyer<? extends AllSource>> newSources = new ArrayList<>();
+		boolean[] subChanged = new boolean[1];
+		for (BasicValuedChangeNotifyer<? extends AllSource> bvc: sources) {
+			if (bvc != null) {
+				BasicValuedChangeNotifyer<? extends AllSource> newCN = bvc.evaluate(replacer, subChanged, BasicValuedChangeNotifyer.class);
+				newSources.add(newCN);
+			} else {
+				newSources.add(null);
+			}
+		}
+		if (!subChanged[0]) {
+			return this;
+		}
+		//TODO: Implement creating new meta info
+		MetaInfo newMetaInfo = getMetaInfo();
+		OperationBasedResult<AllSource,Target> ret = new OperationBasedResult<AllSource,Target>(this.function, newSources, newMetaInfo);
+		return ret;
 	}
 
 }

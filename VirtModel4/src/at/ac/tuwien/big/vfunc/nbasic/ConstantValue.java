@@ -80,5 +80,10 @@ public class ConstantValue<Target> implements BasicResult<Target> {
 		setValue(newValue);
 	}
 
+	@Override
+	public Object evaluateNew(Replacer replacer, boolean[] changed) {
+		return this;
+	}
+
 
 }

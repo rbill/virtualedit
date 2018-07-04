@@ -1,5 +1,6 @@
 package at.ac.tuwien.big.vfunc.nbasic;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public class AbstractFunc<Src,Target, QR extends QueryResult<Src, Target>> {
@@ -24,8 +25,16 @@ public class AbstractFunc<Src,Target, QR extends QueryResult<Src, Target>> {
 		if (result instanceof BasicQueryResult) {
 			BasicQueryResult<Src, Target> bqr = (BasicQueryResult)result;
 			BasicResult<Target> br = bqr.getResult();
-			
-		}
+			Target oldValue = br.value();
+			if (!Objects.equals(oldValue, newValue)) {
+				br.setValueRaw(newValue);
+				br.notifyChanged(oldValue, newValue);
+			}
+		} 
+	}
+	
+	public QueryResult<Src, Target> evaluate(Src src) {
+		return this.cache.get(src);
 	}
 	
 }

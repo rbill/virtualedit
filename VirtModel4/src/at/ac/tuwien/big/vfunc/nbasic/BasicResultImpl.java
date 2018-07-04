@@ -16,6 +16,10 @@ public abstract class BasicResultImpl<Target> implements BasicResult<Target> {
 		this.metaInfo = mi;
 	}
 	
+	protected void changeMetaInfo(MetaInfo mi) {
+		this.metaInfo = mi;
+	}
+	
 	@Override
 	public abstract Target calcValue();
 
