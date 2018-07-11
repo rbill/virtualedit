@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Target> {
 
-	private Function<? super List<? super AllSource>, ? extends Target> function;
+	private Function<? super List<AllSource>, ? extends Target> function;
 	private List<? extends BasicValuedChangeNotifyer<? extends AllSource>> sources;
 	private List<BasicListenable> listeners = new ArrayList<BasicListenable>();
 	
@@ -33,14 +33,14 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 		
 	}
 	
-	public OperationBasedResult(Function<? super List<? super AllSource>, ? extends Target> function, List<? extends BasicValuedChangeNotifyer<? extends AllSource>> sources, MetaInfo mi) {
+	public OperationBasedResult(Function<? super List<AllSource>, ? extends Target> function, List<? extends BasicValuedChangeNotifyer<? extends AllSource>> sources, MetaInfo mi) {
 		super(mi);
 		this.function = function;
 		this.sources = sources;
 		setSources(sources);
 	}
 	
-	public OperationBasedResult(Function<? super List<? super AllSource>, ? extends Target> function, MetaInfo mi, BasicValuedChangeNotifyer<? extends AllSource>... sources) {
+	public OperationBasedResult(Function<? super List<AllSource>, ? extends Target> function, MetaInfo mi, BasicValuedChangeNotifyer<? extends AllSource>... sources) {
 		this(function,Arrays.asList(sources), mi);
 	}
 	
@@ -77,7 +77,7 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 		}
 	}
 	
-	public void setFunction(Function<? super List<? super AllSource>, ? extends Target> newFunction) {
+	public void setFunction(Function<? super List<AllSource>, ? extends Target> newFunction) {
 		this.function = newFunction;
 		refresh();
 	}
@@ -95,8 +95,8 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 
 	@Override
 	public Target calcValue() {
-		List<Object> vals = new ArrayList<>();
-		for (BasicValuedChangeNotifyer<?> bvc: sources) {
+		List<AllSource> vals = new ArrayList<>();
+		for (BasicValuedChangeNotifyer<? extends AllSource> bvc: sources) {
 			if (bvc.isDefined()) {
 				vals.add(bvc.value());
 			} else {
@@ -129,7 +129,7 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 				setSourcesNoRefresh(newResult.sources);
 			}
 			Target newValue = newResult.value();
-			checkNewValue(newValue);
+			setValue(newValue);
 		}
 	}
 	

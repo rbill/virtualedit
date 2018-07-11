@@ -1,9 +1,15 @@
 package at.ac.tuwien.big.vfunc.nbasic;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class AbstractFunc<Src,Target, QR extends QueryResult<Src, Target>> {
+import at.ac.tuwien.big.vfunc.basic.ChangeListenable;
+import at.ac.tuwien.big.vfunc.basic.Scope;
+
+public abstract class AbstractFunc<Src,Target, QR extends QueryResult<Src, Target>>{
 
 	
 	private QueryResultCache<Src,QueryResult<Src,Target>> cache;
@@ -11,6 +17,16 @@ public class AbstractFunc<Src,Target, QR extends QueryResult<Src, Target>> {
 	
 	
 	public AbstractFunc(Function<Src,BasicResult<Target>> func) {
+		init(func);
+	}
+	
+	//You need to call init!
+	@Deprecated
+	protected AbstractFunc() {
+		
+	}
+	
+	public void init(Function<Src,BasicResult<Target>> func) {
 		this.func = func;
 		Function<Src, BasicQueryResult<Src, Target>> sfunc = (src)->{
 			BasicResult<Target> result = this.func.apply(src);
@@ -33,8 +49,29 @@ public class AbstractFunc<Src,Target, QR extends QueryResult<Src, Target>> {
 		} 
 	}
 	
+	protected QueryResult<Src, Target> getCacheIfExists(Src src) {
+		return this.cache.getIfExists(src);
+	}
+	
 	public QueryResult<Src, Target> evaluate(Src src) {
 		return this.cache.get(src);
 	}
+	
+	public abstract Scope<Src> getScope();
+
+	public boolean contains(Src src) {
+		return getScope().contains(src);
+	}
+	
+	protected static<T> T ensure(Object o, Class<T> cl) {
+		if (cl.isInstance(o)) {
+			return (T)o;
+		}
+		throw new RuntimeException("Expected class "+cl+" for "+o+"!");
+	}
+	
+
+	
+
 	
 }

@@ -73,5 +73,10 @@ public class BasicQueryResult<Source,Target> extends WeakChangeFuncNotifyer<Basi
 	public void finalize() {
 		super.finalize();
 	}
+
+	@Override
+	public Object evaluateNew(Replacer replacer, boolean[] changed) {
+		return this;
+	}
 	
 }

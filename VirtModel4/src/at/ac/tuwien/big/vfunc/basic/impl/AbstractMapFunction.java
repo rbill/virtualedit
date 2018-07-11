@@ -242,6 +242,19 @@ public abstract class  AbstractMapFunction<Src,Target> implements FunctionNotify
 	}
 
 
+	@Override
+	public void notifyChanged(Src src, Target oldTarget, Target newTarget) {
+		FunctionNotifyer.super.notifyChanged(src,oldTarget,newTarget);
+		//TODO: ScopeChange
+		/*
+		if ((oldTarget == null) != (newTarget == null)) {
+			if (oldTarget == null) {
+				
+			} else {
+				
+			}
+		}*/
+	}
 
 
 	@Override

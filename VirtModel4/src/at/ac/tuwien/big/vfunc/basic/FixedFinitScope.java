@@ -35,5 +35,7 @@ public interface FixedFinitScope<Src> extends Scope<Src>, Iterable<Src> {
 	public default FilteredScope<Src> filter(Function<Src,Boolean> filter) {
 		return new FilteredFinitScope<>(filter, this);
 	}
+
+
 	
 }

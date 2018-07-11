@@ -18,6 +18,12 @@ public class BasicUnionScope<Src, CollectionType extends Scope<Src>> implements 
 
 	protected Collection<? extends CollectionType> scopes;
 	
+	private Class<Src> sourceClass;
+	
+	public BasicUnionScope(Class<Src> sourceClass) {
+		this.sourceClass = sourceClass;
+	}
+	
 	
 	private boolean notInAnyScopeOtherThan(Src added, Object excludedScope) {
 		for (CollectionType scope: scopes) {
@@ -116,6 +122,12 @@ public class BasicUnionScope<Src, CollectionType extends Scope<Src>> implements 
 	@Override
 	public List<WeakReference<ScopeChangeListenable<? super Scope<Src>, ? super Src>>> getChangeListeners() {
 		return changeListeners;
+	}
+
+
+	@Override
+	public Class<Src> getSourceClass() {
+		return sourceClass;
 	}
 
 }

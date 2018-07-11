@@ -5,6 +5,7 @@ import java.util.List;
 
 import at.ac.tuwien.big.vfunc.basic.impl.BasicChange;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyer;
+import at.ac.tuwien.big.vfunc.nbasic.NullChangeListener;
 
 public interface FunctionNotifyer<This extends FunctionNotifyer<This,Source,Target>, Source, Target> {
 	
@@ -31,5 +32,6 @@ public interface FunctionNotifyer<This extends FunctionNotifyer<This,Source,Targ
 		});
 		changeListeners.removeIf(x->x.get()==null);
 	}
+	
 
 }

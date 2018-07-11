@@ -16,10 +16,9 @@ public interface BasicResult<Target> extends ValueRefreshable<Target>,
 	public MetaInfo getMetaInfo();
 	
 	public void setValueRaw(Target newValue);
+		
 	
-
-	
-	public default void checkNewValue(Target newValue) {
+	public default void setValue(Target newValue) {
 		Target curValue = value();
 		if (!Objects.equals(curValue,newValue)) {
 			setNewValue(curValue,newValue);

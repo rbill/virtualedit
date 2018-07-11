@@ -16,6 +16,7 @@ public  abstract class AbstractScope<Src> implements Scope<Src> {
 	public List<WeakReference<ScopeChangeListenable<? super Scope<Src>, ? super Src>>> getChangeListeners() {
 		return changeListeners;
 	}
+	
 
 
 }
