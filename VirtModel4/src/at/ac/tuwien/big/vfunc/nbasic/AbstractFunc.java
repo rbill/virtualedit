@@ -70,8 +70,9 @@ public abstract class AbstractFunc<Src,Target, QR extends QueryResult<Src, Targe
 		throw new RuntimeException("Expected class "+cl+" for "+o+"!");
 	}
 	
-
-	
+	public FunctionModificator getModificator() {
+		return FunctionModificator.NO_MODIFICATOR;
+	}
 
 	
 }

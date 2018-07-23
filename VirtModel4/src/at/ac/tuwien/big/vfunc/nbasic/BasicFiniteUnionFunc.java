@@ -31,6 +31,7 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 	private Class<Src> sourceClass;
 	
 	private List<FixedFinitScope<Src>> subScopes = new ArrayList<>();
+	
 	private ScopeChangeListenable<Scope<Src>, Src> scl = new ScopeChangeListenable<Scope<Src>, Src>() {
 
 		@Override
