@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import at.ac.tuwien.big.util.Util;
@@ -21,27 +23,28 @@ import at.ac.tuwien.big.vfunc.basic.ScopeChangeListenable;
 import at.ac.tuwien.big.vfunc.basic.impl.BasicChange;
 import at.ac.tuwien.big.vfunc.basic.io.BasicStatement.CJmpStatement;
 
-public abstract class AbstractFunc<Src,Target, QR extends QueryResult<Src, Target>> implements Function<Src, Target>{
+public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Target>> implements Function<Src, Target> {
 
-	
-	private QueryResultCache<Src,QueryResult<Src,Target>> cache;
-	private Function<Src,BasicResult<Target>> func;
+	private QueryResultCache<Src, QueryResult<Src, Target>> cache;
+	private Function<Src, BasicResult<Target>> func;
+	private BiFunction<? super Src, ? super QueryResult<Src, Target>, ? extends Target> valueUpdater;
 	private CompleteChangeNotifyer globalChangeListener;
-	
+
 	private class CompleteChangeNotifyer extends AbstractFunctionNotifyer<CompleteChangeNotifyer, Src, Target> {
 
 		private Map<Src, QueryResult<Src, Target>> completeMap = new HashMap<>();
 		private Map<Src, NewValueListenable> vcnMap = new HashMap<Src, NewValueListenable>();
-		
-		private ChangeListenable<at.ac.tuwien.big.vfunc.basic.FunctionNotifyer<?, Src, Target>, Src, Target> cl = new ChangeListenable<at.ac.tuwien.big.vfunc.basic.FunctionNotifyer<?,Src,Target>, Src, Target>() {
+
+		private ChangeListenable<at.ac.tuwien.big.vfunc.basic.FunctionNotifyer<?, Src, Target>, Src, Target> cl = new ChangeListenable<at.ac.tuwien.big.vfunc.basic.FunctionNotifyer<?, Src, Target>, Src, Target>() {
 
 			@Override
-			public void changed(Change<? extends FunctionNotifyer<?, Src, Target>, ? extends Src, ? extends Target> change) {
+			public void changed(
+					Change<? extends FunctionNotifyer<?, Src, Target>, ? extends Src, ? extends Target> change) {
 				notifyChanged(change.source(), change.oldValue(), change.newValue());
 			}
 
 		};
-		
+
 		public CompleteChangeNotifyer() {
 			FixedFinitScope<Src> scope = Util.as(getScope(), FixedFinitScope.class);
 			ScopeChangeListenable<Scope<Src>, Src> scl = new ModifiedScopeChangeListenable<Scope<Src>, Src>() {
@@ -49,8 +52,8 @@ public abstract class AbstractFunc<Src,Target, QR extends QueryResult<Src, Targe
 				@Override
 				public void changeIterable(IterableScopeChange<? extends Scope<Src>, ? extends Src> fsc,
 						Iterable<? extends Src> added, Iterable<? extends Src> deleted) {
-					fsc.getAdded().forEach(x->addToScope(x));
-					fsc.getDeleted().forEach(x->deleteFromScope(x, null));
+					fsc.getAdded().forEach(x -> addToScope(x));
+					fsc.getDeleted().forEach(x -> deleteFromScope(x, null));
 				}
 
 				@Override
@@ -68,33 +71,33 @@ public abstract class AbstractFunc<Src,Target, QR extends QueryResult<Src, Targe
 			scope.addChangeListener(scl);
 			fullRefresh();
 		}
-		
-		protected void deleteFromScope(Src k, QueryResult<Src, Target> qr){
+
+		protected void deleteFromScope(Src k, QueryResult<Src, Target> qr) {
 			if (qr == null) {
 				qr = completeMap.get(k);
 			}
 			if (qr instanceof BasicQueryResult) {
-				BasicQueryResult<Src,Target> bqr = (BasicQueryResult<Src, Target>)qr;
+				BasicQueryResult<Src, Target> bqr = (BasicQueryResult<Src, Target>) qr;
 				bqr.removeChangeListener(cl);
 			} else if (qr instanceof ValueChangeNotifyer) {
-				ValueChangeNotifyer vcn = (ValueChangeNotifyer)qr;
+				ValueChangeNotifyer vcn = (ValueChangeNotifyer) qr;
 				NewValueListenable nvl = vcnMap.remove(k);
 				if (nvl != null) {
 					vcn.removeChangeListener(nvl);
 				}
 			} else {
-				//System.err.println("Not good!");
+				// System.err.println("Not good!");
 			}
-			//Bekommt er die Änderung mit? Ich denke schon
+			// Bekommt er die Änderung mit? Ich denke schon
 		}
 
 		private QueryResult<Src, Target> addToScope(Src src) {
 			QueryResult<Src, Target> qr = evaluate(src);
 			if (qr instanceof BasicQueryResult) {
-				BasicQueryResult<Src,Target> bqr = (BasicQueryResult<Src, Target>)qr;
+				BasicQueryResult<Src, Target> bqr = (BasicQueryResult<Src, Target>) qr;
 				bqr.addChangeListener(cl);
 			} else if (qr instanceof ValueChangeNotifyer) {
-				ValueChangeNotifyer<?, Target> vcn = (ValueChangeNotifyer)qr;
+				ValueChangeNotifyer<?, Target> vcn = (ValueChangeNotifyer) qr;
 				System.err.println("Not good (I think this will get deleted instantly!)");
 				NewValueListenable<Target> nvl = new NewValueListenable<Target>() {
 
@@ -111,11 +114,11 @@ public abstract class AbstractFunc<Src,Target, QR extends QueryResult<Src, Targe
 			notifyChanged(src, null, qr.value());
 			return qr;
 		}
-		
+
 		private void fullRefresh() {
 			Map<Src, QueryResult<Src, Target>> oldMap = new HashMap<>(completeMap);
 			FixedFinitScope<Src> scope = Util.as(getScope(), FixedFinitScope.class);
-			for (Src src: scope) {
+			for (Src src : scope) {
 				if (completeMap.containsKey(src)) {
 					oldMap.remove(src);
 					continue;
@@ -124,99 +127,113 @@ public abstract class AbstractFunc<Src,Target, QR extends QueryResult<Src, Targe
 				completeMap.put(src, qr);
 				oldMap.remove(src);
 			}
-			oldMap.forEach((k,qr)->{
+			oldMap.forEach((k, qr) -> {
 				deleteFromScope(k, qr);
 			});
 		}
-		
+
 		private void checkEmpty() {
 			if (changeListeners.isEmpty()) {
-				//Delete
+				// Delete
 				globalChangeListener = null;
 			}
 		}
-		
-		public void removeChangeListener(ChangeListenable<?,?,?> src) {
+
+		public void removeChangeListener(ChangeListenable<?, ?, ?> src) {
 			super.removeChangeListener(src);
 			checkEmpty();
 		}
-		
-		/**source == null: an undefined change occurred, have a more closer look*/
+
+		/**
+		 * source == null: an undefined change occurred, have a more closer look
+		 */
 		public void notifyChanged(Src source, Target oldValue, Target newValue) {
 			super.notifyChanged(source, oldValue, newValue);
 			checkEmpty();
 		}
-		
 
-		
 	}
-	
+
 	private CompleteChangeNotifyer createChangeNotifyer() {
-		//Go through the scope
-		//Add listener to everything
+		// Go through the scope
+		// Add listener to everything
 		return new CompleteChangeNotifyer();
 	}
-	
+
 	public AbstractFunctionNotifyer<?, Src, Target> getChangeNotifyer() {
 		if (globalChangeListener == null) {
 			globalChangeListener = createChangeNotifyer();
 		}
 		return globalChangeListener;
 	}
-	
-	
-	public AbstractFunc(Function<Src,BasicResult<Target>> func) {
-		init(func);
+
+	public AbstractFunc(Function<Src, BasicResult<Target>> func,
+			BiFunction<? super Src, ? super QueryResult<Src, Target>, ? extends Target> valueUpdater) {
+		init(func, valueUpdater);
+
 	}
-	
-	//You need to call init!
+
+	// You need to call init!
 	@Deprecated
 	protected AbstractFunc() {
-		
+
 	}
-	
-	public void init(Function<Src,BasicResult<Target>> func) {
+
+	public void init(Function<Src, BasicResult<Target>> func,
+			BiFunction<? super Src, ? super QueryResult<Src, Target>, ? extends Target> valueUpdater) {
 		this.func = func;
-		Function<Src, BasicQueryResult<Src, Target>> sfunc = (src)->{
+		Function<Src, BasicQueryResult<Src, Target>> sfunc = (src) -> {
 			BasicResult<Target> result = this.func.apply(src);
 			BasicQueryResult<Src, Target> queryResult = new BasicQueryResult<>(this.cache, src, result);
 			return queryResult;
 		};
-		this.cache = new QueryResultCache<Src,QueryResult<Src,Target>>(sfunc);
+		this.valueUpdater = valueUpdater;
+		BiConsumer<Src, QueryResult<Src, Target>> updater = null;
+		if (valueUpdater != null) {
+			updater = (src, qr) -> {
+				Target newVal = valueUpdater.apply(src, qr);
+				if (qr instanceof BasicQueryResult) {
+					BasicQueryResult<Src, Target> bqr = (BasicQueryResult) qr;
+					BasicResult<Target> result = bqr.getResult();
+					result.setValue(newVal);
+				}
+			};
+		}
+		this.cache = new QueryResultCache<Src, QueryResult<Src, Target>>(sfunc, updater);
 	}
-	
+
 	protected void updateCache(Src src, Target newValue) {
 		QueryResult<Src, Target> result = cache.getIfExists(src);
 		if (result instanceof BasicQueryResult) {
-			BasicQueryResult<Src, Target> bqr = (BasicQueryResult)result;
+			BasicQueryResult<Src, Target> bqr = (BasicQueryResult) result;
 			BasicResult<Target> br = bqr.getResult();
 			Target oldValue = br.value();
 			if (!Objects.equals(oldValue, newValue)) {
 				br.setValueRaw(newValue);
 				br.notifyChanged(oldValue, newValue);
 			}
-		} 
+		}
 	}
-	
+
 	protected QueryResult<Src, Target> getCacheIfExists(Src src) {
 		return this.cache.getIfExists(src);
 	}
-	
+
 	public QueryResult<Src, Target> evaluate(Src src) {
 		return this.cache.get(src);
 	}
-	
+
 	public abstract Scope<Src> getScope();
 
 	public boolean contains(Src src) {
 		return getScope().contains(src);
 	}
-	
-	protected static<T> T ensure(Object o, Class<T> cl) {
+
+	protected static <T> T ensure(Object o, Class<T> cl) {
 		if (cl.isInstance(o)) {
-			return (T)o;
+			return (T) o;
 		}
-		throw new RuntimeException("Expected class "+cl+" for "+o+"!");
+		throw new RuntimeException("Expected class " + cl + " for " + o + "!");
 	}
 
 	public Target evaluateBasic(Src src) {
@@ -230,7 +247,7 @@ public abstract class AbstractFunc<Src,Target, QR extends QueryResult<Src, Targe
 		}
 		return ret;
 	}
-	
+
 	public FunctionModificator getModificator() {
 		return FunctionModificator.NO_MODIFICATOR;
 	}
@@ -243,5 +260,4 @@ public abstract class AbstractFunc<Src,Target, QR extends QueryResult<Src, Targe
 		return evaluateBasic(src) == null;
 	}
 
-	
 }

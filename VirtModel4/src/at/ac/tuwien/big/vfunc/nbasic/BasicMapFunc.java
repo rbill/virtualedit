@@ -23,7 +23,7 @@ public class BasicMapFunc<Src, Target> extends AbstractFunc<Src, Target, QueryRe
 			} else {
 				return basicResult;
 			}
-		});
+		},null); //a direct initialization is possible
 	}
 	
 	private FixedFinitScope<Src> myScope = new AbstractFiniteScope<Src>() {

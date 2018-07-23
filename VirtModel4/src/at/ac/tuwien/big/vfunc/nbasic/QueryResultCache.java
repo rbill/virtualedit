@@ -3,15 +3,19 @@ package at.ac.tuwien.big.vfunc.nbasic;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class QueryResultCache<T, U extends WeakObject<T>> {
 	
 	private Map<T, WeakReference<U>> cacheMap = new HashMap<>();
 	private Function<? super T, ? extends U> calculator;
+	private BiConsumer<? super T, ? super U> valueUpdater;
 
-	public QueryResultCache(Function<? super T, ? extends U> calculator) {
+	public QueryResultCache(Function<? super T, ? extends U> calculator, BiConsumer<? super T, ? super U> valueUpdater) {
 		this.calculator = calculator;
+		this.valueUpdater = valueUpdater;
 	}
 	
 	public U getIfExists(T key) {
@@ -40,6 +44,9 @@ public class QueryResultCache<T, U extends WeakObject<T>> {
 		if (value != null) {
 			value.init(key, this);
 			cacheMap.put(key, new WeakReference<U>(value));
+			if (valueUpdater != null) {
+				valueUpdater.accept(key, value);
+			}
 		}
 		return value;
 	}

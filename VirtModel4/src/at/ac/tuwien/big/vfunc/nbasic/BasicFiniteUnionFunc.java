@@ -97,7 +97,8 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 			return createResult(src);
 
 		};
-		init(func);
+		//I think you can directly initialize that
+		init(func, null);
 	}
 	
 	private OperationBasedResult<Target, Target> createResult(Src src) {
