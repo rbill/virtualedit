@@ -189,9 +189,9 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 		};
 		this.valueUpdater = valueUpdater;
 		BiConsumer<Src, QueryResult<Src, Target>> updater = null;
-		if (valueUpdater != null) {
+		if (this.valueUpdater != null) {
 			updater = (src, qr) -> {
-				Target newVal = valueUpdater.apply(src, qr);
+				Target newVal = this.valueUpdater.apply(src, qr);
 				if (qr instanceof BasicQueryResult) {
 					BasicQueryResult<Src, Target> bqr = (BasicQueryResult) qr;
 					BasicResult<Target> result = bqr.getResult();

@@ -87,4 +87,14 @@ public class BasicMapFunc<Src, Target> extends AbstractFunc<Src, Target, QueryRe
 		return myScope;
 	}
 
+
+	public SetValueModificator<AbstractFunc<Src,Target,?>, Src, Target> getModificator() {
+		return new SetValueModificator<AbstractFunc<Src,Target,?>, Src, Target>() {
+
+			@Override
+			public void setValue(AbstractFunc<Src, Target, ?> func, Src src, Target newValue) {
+				putBasic(src, newValue);
+			}
+		};
+	}
 }

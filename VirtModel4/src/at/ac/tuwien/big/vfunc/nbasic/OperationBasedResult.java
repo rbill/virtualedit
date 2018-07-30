@@ -14,7 +14,7 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 	private List<? extends BasicValuedChangeNotifyer<? extends AllSource>> sources;
 	private List<BasicListenable> listeners = new ArrayList<BasicListenable>();
 	
-	public static<Trg> OperationBasedResult<Trg,Trg> getMergeOperation() {
+	/*public static<Trg> OperationBasedResult<Trg,Trg> getMergeOperation() {
 		static Function<? super List<? extends Trg>, Trg> source2Target = (list)->{
 			if (list.isEmpty()) {
 				return null;
@@ -31,7 +31,7 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 			return ret;
 		};
 		
-	}
+	}*/
 	
 	public OperationBasedResult(Function<? super List<AllSource>, ? extends Target> function, List<? extends BasicValuedChangeNotifyer<? extends AllSource>> sources, MetaInfo mi) {
 		super(mi);

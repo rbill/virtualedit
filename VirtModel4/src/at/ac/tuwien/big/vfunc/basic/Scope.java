@@ -301,5 +301,9 @@ public interface Scope<Src> extends ScopeNotifyer<Scope<Src>, Src> {
 		return new FilteredScope<>(filter, this);
 	}
 	
+	public default FunctionFilteredScope<Src> filteredFunc(AbstractFunc<Src, Boolean, ?> func) {
+		return new FunctionFilteredScope<Src>(func, this);
+	}
+	 
 	/**Leider brauche ich bald auch etwas, was keine 'normale', aber eine sich aendernde funktion als filter nimmt ...*/
 }
