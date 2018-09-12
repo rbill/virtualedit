@@ -15,7 +15,7 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 	private List<BasicListenable> listeners = new ArrayList<BasicListenable>();
 	
 	public static<Trg> OperationBasedResult<Trg,Trg> getMergeOperation() {
-		static Function<? super List<? extends Trg>, Trg> source2Target = (list)->{
+		Function<? super List<? extends Trg>, Trg> source2Target = (list)->{
 			if (list.isEmpty()) {
 				return null;
 			}
