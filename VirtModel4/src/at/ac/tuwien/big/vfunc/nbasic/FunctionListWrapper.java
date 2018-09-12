@@ -11,6 +11,8 @@ import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
+import org.eclipse.emf.common.util.EList;
+
 import at.ac.tuwien.big.util.Util;
 import at.ac.tuwien.big.vfunc.basic.FilteredScopeChange;
 import at.ac.tuwien.big.vfunc.basic.FixedFinitScope;
@@ -20,7 +22,7 @@ import at.ac.tuwien.big.vfunc.basic.Scope;
 import at.ac.tuwien.big.vfunc.basic.ScopeChange;
 import at.ac.tuwien.big.vfunc.basic.ScopeChangeListenable;
 
-public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg> extends AbstractList<Trg> {
+public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg> extends AbstractList<Trg> implements EList<Trg>{
 	
 	private Func func;
 	private TreeMap<Src, BasicEntry<Src, Trg>> map;
@@ -172,6 +174,35 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 	public void finalize() throws Throwable {
 		super.finalize();
 		this.func.getScope().removeChangeListener(myScopeListener);
+	}
+
+	@Override
+	public void move(int newPosition, Trg object) {
+		int idx = indexOf(object);
+		if (idx == -1) {
+			System.err.println("Can't move nonexistant object, adding ...?");
+			add(newPosition, object);
+		} else if (idx != newPosition) {
+			remove(idx);
+			if (newPosition>idx) {
+				--newPosition;
+			}
+			add(newPosition, object);
+		}
+		
+	}
+
+	@Override
+	public Trg move(int newPosition, int oldPosition) {
+		if (newPosition == oldPosition) {
+			return get(newPosition);
+		}
+		if (newPosition>oldPosition) {
+			--newPosition;
+		}
+		Trg ret = remove(oldPosition);
+		add(newPosition, ret);
+		return ret;
 	}
 
 }
