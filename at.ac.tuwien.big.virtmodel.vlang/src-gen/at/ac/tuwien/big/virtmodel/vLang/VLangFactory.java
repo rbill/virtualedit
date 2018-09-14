@@ -213,6 +213,15 @@ public interface VLangFactory extends EFactory
   FullFunctionAssignment createFullFunctionAssignment();
 
   /**
+   * Returns a new object of class '<em>Basic Expression</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Basic Expression</em>'.
+   * @generated
+   */
+  BasicExpression createBasicExpression();
+
+  /**
    * Returns a new object of class '<em>Expression</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->

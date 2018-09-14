@@ -89,10 +89,14 @@ FixedValue:
 ;
 
 FunctionAssignment:
-	FullFunctionAssignment | Expression;
+	FullFunctionAssignment | BasicExpression;
 
 FullFunctionAssignment:
-	(parameters=ParDef '->')? (expr = Expression)
+	parameters=ParDef '->' expr = BasicExpression
+;
+
+BasicExpression:
+	SingleValue | OclFunction | CalculatedValue
 ;
 
 Expression:
@@ -155,7 +159,7 @@ FunctionParDef:
 ;
 
 CalculatedValue:
-	FunctionCall | IfThenElse
+	JavaFunctionCall | FunctionCall | IfThenElse
 ;
 
 IfThenElse:

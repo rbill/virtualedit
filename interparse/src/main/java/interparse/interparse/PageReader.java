@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
@@ -86,6 +87,19 @@ public class PageReader {
 		url = GetPages.removeAnchorPar(url);
 		InputStream is = get(url);
 		return Jsoup.parse(is, "UTF-8", url);
+	}
+	
+	public JsonObject getAsJson(String url) throws IOException {
+		url = GetPages.removeAnchorPar(url);
+		InputStream is = get(url);
+		JsonParser parser = new JsonParser();
+		JsonElement obj = parser.parse(new InputStreamReader(is));
+		if (obj instanceof JsonObject) {
+			return ((JsonObject)obj);
+		} else {
+			System.err.println("Could not parse "+url+".meta as JsonObject!");
+		}
+		return null;
 	}
 	
 	public final long waitTime = 10000; //10 s

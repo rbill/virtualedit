@@ -25,7 +25,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  *
  * @generated
  */
-public class OclFunctionImpl extends ExpressionImpl implements OclFunction
+public class OclFunctionImpl extends BasicExpressionImpl implements OclFunction
 {
   /**
    * The default value of the '{@link #getOclFunc() <em>Ocl Func</em>}' attribute.

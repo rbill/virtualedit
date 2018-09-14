@@ -1,5 +1,7 @@
 package at.ac.tuwien.big.vfunc.nbasic;
 
+import java.lang.ref.WeakReference;
+
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +16,8 @@ import java.util.function.BiFunction;
 import org.eclipse.emf.common.util.EList;
 
 import at.ac.tuwien.big.util.Util;
+import at.ac.tuwien.big.vfunc.basic.Change;
+import at.ac.tuwien.big.vfunc.basic.ChangeListenable;
 import at.ac.tuwien.big.vfunc.basic.FilteredScopeChange;
 import at.ac.tuwien.big.vfunc.basic.FixedFinitScope;
 import at.ac.tuwien.big.vfunc.basic.IterableScopeChange;
@@ -21,24 +25,33 @@ import at.ac.tuwien.big.vfunc.basic.ModifiedScopeChangeListenable;
 import at.ac.tuwien.big.vfunc.basic.Scope;
 import at.ac.tuwien.big.vfunc.basic.ScopeChange;
 import at.ac.tuwien.big.vfunc.basic.ScopeChangeListenable;
+import at.ac.tuwien.big.virtmod.structure.ChangeListener;
 
-public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg> extends AbstractList<Trg> implements EList<Trg>{
+public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg> extends AbstractList<Trg> implements EList<Trg>, BasicChangeNotifyer {
 	
 	private Func func;
 	private TreeMap<Src, BasicEntry<Src, Trg>> map;
 	private List<BasicEntry<Src,Trg>> list = new ArrayList<>();
 	private BiFunction<? super Src, ? super Src, ? extends Src> newSourceCalculator;
 	private TriConsumer<? super Func,? super Src, ? super Trg> valueSetter;
+	private List<WeakReference<BasicListenable>> basicListeners = new ArrayList<>();
+	
 	private ModifiedScopeChangeListenable<Scope<Src>, Src> myScopeListener = new ModifiedScopeChangeListenable<Scope<Src>, Src>() {
 
 		@Override
 		public void changeIterable(IterableScopeChange<? extends Scope<Src>, ? extends Src> fsc,
 				Iterable<? extends Src> added, Iterable<? extends Src> deleted) {
+			boolean changed = false;
 			for (Src del: deleted) {
 				removeSource(del);
+				changed = true;
 			}
 			for (Src add: added) {
 				addSource(add);
+				changed = true;
+			}
+			if (changed) {
+				FunctionListWrapper.this.changed();
 			}
 		}
 
@@ -56,6 +69,17 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 
 
 	};
+	private ChangeListenable<?, Src, Trg> listener = (ChangeListenable<?, Src, Trg>) new ChangeListenable() {
+
+		@Override
+		public void changed(Change change) {
+			FunctionListWrapper.this.changed();
+		}
+	};
+	
+	public Func getFunc() {
+		return func;
+	}
 	
 	/**Creates an unmodifyable list*/
 	public FunctionListWrapper(Func func, Comparator<Src> comparator) {
@@ -90,6 +114,7 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 	}
 	
 	
+	
 	/**Creates a modifyable list*/
 	public FunctionListWrapper(Func func, Comparator<Src> comparator, BiFunction<? super Src, ? super Src, ? extends Src> newSourceCalculator, TriConsumer<? super Func,? super Src, ? super Trg> valueSetter) {
 		if (comparator == null) {
@@ -100,6 +125,8 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 		this.map = new TreeMap<>(comparator);
 		this.newSourceCalculator = newSourceCalculator;
 		this.valueSetter = valueSetter;
+		
+		func.getChangeNotifyer().addChangeListener((ChangeListenable)listener);
 		fullRecalc();
 	}
 	
@@ -127,6 +154,7 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 		map.forEach((src,val)->{
 			list.add(val);
 		});
+		changed();
 	}
 	
 	private Src getSrcOrNull(int positiveNumb) {
@@ -203,6 +231,11 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 		Trg ret = remove(oldPosition);
 		add(newPosition, ret);
 		return ret;
+	}
+
+	@Override
+	public List<WeakReference<BasicListenable>> getBasicChangeListeners() {
+		return basicListeners;
 	}
 
 }

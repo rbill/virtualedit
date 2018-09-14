@@ -17,10 +17,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.Random;
 import java.util.Set;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import interparse.interparse.Page.SimilarityType;
 import uk.ac.york.cs.ecss.fileutil.FilesManager;
@@ -35,16 +37,24 @@ import uk.ac.york.cs.ecss.ml.server.JobPriority;
 
 public class PageReaderManger implements Serializable {
 
-	private FinishingSet categorySet = new FinishingSet(new File("cache/categories"));
-	private FinishingSet pageSet = new FinishingSet(new File("cache/pages"));
+	private FinishingSet categorySet;
+	private FinishingSet pageSet;
 
 	private PageParseConfiguration ppc;
+	private String prefix;
+	private String category;
+	private File precat;
 
-	public PageReaderManger(File prmFile) {
+	public PageReaderManger(File prmFile, String prefix, String category) {
 		this.targetFile = prmFile;
+		this.prefix = prefix;
+		this.category = category;
 		this.ppc = new PageParseConfiguration(FilteredTokenizer.GERMAN_STEM(new BasicTokenizer()));
-
-		File precat = new File("cache/precat");
+		
+		File cacheFolder = prmFile.getParentFile();
+		categorySet = new FinishingSet(new File(cacheFolder.getAbsolutePath()+File.separator+"categories"));
+		pageSet = new FinishingSet(new File(cacheFolder.getAbsolutePath()+File.separator+"pages"));
+		precat = new File(cacheFolder.getAbsolutePath()+File.separator+"precat");
 		if (precat.exists()) {
 			try {
 				List<String> strings = Files.readAllLines(precat.toPath());
@@ -113,7 +123,7 @@ public class PageReaderManger implements Serializable {
 		return ppc;
 	}
 
-	private Map<String, Page> pagesToPageUrl = new HashMap<>();
+	Map<String, Page> pagesToPageUrl = new HashMap<>();
 	private Map<String, Integer> numberContainingTerm = new HashMap<String, Integer>();
 	private Map<String, Integer> numberContainingTerm2gram = new HashMap<String, Integer>();
 	private Map<String, Integer> numberContainingTerm3gram = new HashMap<String, Integer>();
@@ -245,7 +255,7 @@ public class PageReaderManger implements Serializable {
 	public void addCategory(String categoryUrl) {
 		if (!categorySet.contains(categoryUrl) && !categoryPreSet.containsKey(categoryUrl)) {
 			synchronized (categoryPreSet) {
-				File outputFile = new File("cache/precat");
+				File outputFile = precat;
 				try {
 					FileOutputStream fos = new FileOutputStream(outputFile, true);
 					categoryPreSet.put(categoryUrl, Decision.UNKNOWN);
@@ -269,7 +279,7 @@ public class PageReaderManger implements Serializable {
 	public void processCategory(String url) {
 		System.out.println("Processing category " + url);
 		url = GetPages.removeAnchorPar(url);
-		List<String> list = GetPages.getContentLinks(url);
+		List<String> list = getContentLinks(url);
 		for (String str : list) {
 			String root = GetPages.getRoot(str);
 			String[] namespaces = root.split(":");
@@ -362,7 +372,7 @@ public class PageReaderManger implements Serializable {
 					nextSerialization[0] = new java.util.Date().getTime() + 300000;
 				}
 			}
-			File outputFile = new File("cache/precat");
+			File outputFile = precat;
 			try {
 				FileOutputStream fos = new FileOutputStream(outputFile, true);
 				categoryPreSet.forEach((k, v) -> {
@@ -482,16 +492,20 @@ public class PageReaderManger implements Serializable {
 	public Map<String, Page> getPages() {
 		return pagesToPageUrl;
 	}
+	
+	
 
 	public void useCategory(String url, Boolean use) {
-		if (use) {
-			categoryPreSet.put(url, Decision.YES);
-			addCategoryReal(url);
-		} else {
-			categoryPreSet.put(url, Decision.NO);
-			categorySet.remove(url);
+		synchronized(categoryPreSet) {
+			if (use) {
+				categoryPreSet.put(url, Decision.YES);
+				addCategoryReal(url);
+			} else {
+				categoryPreSet.put(url, Decision.NO);
+				categorySet.remove(url);
+			}
 		}
-		File outputFile = new File("cache/precat");
+		File outputFile = precat;
 		try {
 			Decision decision = use ? Decision.YES : Decision.NO;
 			FileOutputStream fos = new FileOutputStream(outputFile, true);
@@ -509,7 +523,8 @@ public class PageReaderManger implements Serializable {
 			SimilarityType.TWOGRAMCOS, SimilarityType.THREEGRAMCOS };
 
 	
-	private static boolean suspend;
+	static boolean suspend;
+	protected static boolean running = false;
 	
 	public SingleAlgorithmResult getSimilarities(Page page, SimilarityType st) {
 		Map<String, SingleLinkResult> similarities = new HashMap<String, SingleLinkResult>();
@@ -546,45 +561,60 @@ public class PageReaderManger implements Serializable {
 	public WekaInterface getWeka(SimilarityType type) {
 		return mlInfos.get(type).sv;
 	}
+	
+	
+	
+	
+
+	public List<String> getLinks(String url) {
+		try {
+			return GetPages.getLinks(PageReader.instance().getHtml(url), url);
+		} catch (IOException e) {
+			System.err.println("Could not get URL " + url + ": " + e.getMessage());
+			return Collections.emptyList();
+		}
+	}
+
+	public List<String> getContentLinks(String url) {
+		try {
+			return getContentLinks(PageReader.instance().getHtml(url), url);
+		} catch (IOException e) {
+			System.err.println("Could not get URL " + url + ": " + e.getMessage());
+			return Collections.emptyList();
+		}
+	}
+	
+
+	private Function<String, Boolean> mainFilter = (url) -> {
+		String root = GetPages.getRoot(url);
+		String[] spl = root.split(":");
+		for (int i = 0; i < spl.length-1; ++i) {
+			if (!category.equals(spl[i].trim())) {
+				return false;
+			}
+		}
+		if (!url.startsWith("https://") && !url.startsWith("http://"+prefix)) {
+			return false;
+		}
+		return true;
+	};
+
+	public List<String> getContentLinks(Document doc, String url ) {
+		Element contentId = doc.getElementById("mw-content-text");
+		return GetPages.getLinks(contentId, url, mainFilter);
+	}
+	
 
 	public static void main(String[] args) {
 		Object test = JobManager.INSTANCE;
-		new File("cache").mkdirs();
-		File prmFile = new File("cache/prm");
-		PageReaderManger prm = null;
-		if (prmFile.exists()) {
-			try {
-				FileInputStream fis = new FileInputStream(prmFile);
-				ObjectInputStream ois = new ObjectInputStream(fis);
-				prm = (PageReaderManger) ois.readObject();
-				ois.close();
-				fis.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.err.println("Could not read prm: " + e.getMessage());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				System.err.println("Could not create class: " + e.getMessage());
-			} catch (StackOverflowError e) {
-				e.printStackTrace();
-				System.err.println("Could not create class: " + e.getMessage());
-			}
-			if (prm == null) {
-				prm = new PageReaderManger(prmFile);
-			}
-		} else {
-			prm = new PageReaderManger(prmFile);
-		}
+		running = false;
 		try {
-			new CustomServer(prm).start();
+			new CustomServer().start();
+			running = true;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		prm.addCategoryReal("https://de.wikipedia.org/wiki/Kategorie:Politische_Partei");
-		prm.processAll();
-		PageReaderManger fprm = prm;
-		Map<SimilarityType, double[]> similarityRecalls = new HashMap<Page.SimilarityType, double[]>();
-		/*for (SimilarityType type : SimilarityType.values()) {
+		boolean frunning = running;		/*for (SimilarityType type : SimilarityType.values()) {
 			if (!type.name().endsWith("COS")) {
 				System.out.println("Calculating similarity for " + type);
 				double[] ar = new double[3];
@@ -603,76 +633,7 @@ public class PageReaderManger implements Serializable {
 			double variance = v[0] / v[2] - avgRecall * avgRecall;
 			System.out.println("Recall for " + k + ": " + avgRecall + " +/- " + variance);
 		});*/
-		new Thread(() -> {
-
-			Arrays.asList(SimilarityType.values()).parallelStream().forEach((type) -> {
-				System.out.println("Calculating similarity for " + type);
-				double[] ar = new double[3];
-				List<Page> pages = new ArrayList<>();
-				synchronized (similarityRecalls) {
-					similarityRecalls.put(type, ar);
-					pages = new ArrayList<>(fprm.pagesToPageUrl.values());
-				}
-				Collections.shuffle(pages);
-				for (Page page : pages) {
-					while (suspend) {
-						try {
-							Thread.sleep(10000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					double recall = page.getRecall(type, fprm);
-					double weight = page.getRecallWeight();
-					ar[0] += recall * recall * weight;
-					ar[1] += recall * weight;
-					ar[2] += weight;
-				}
-			});
-			try (FileOutputStream fos = new FileOutputStream("similarityOutput.csv",true)) {
-			similarityRecalls.forEach((k, v) -> {
-				double avgRecall = v[1] / v[2];
-				double variance = v[0] / v[2] - avgRecall * avgRecall;
-				String str = "Recall for " + k + ": " + avgRecall + " +/- " + variance;
-				System.out.println(str);
-				try {
-					fos.write((str+"\n").getBytes());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			});
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} 
-			Arrays.asList(SimilarityType.values()).parallelStream().forEach((type) -> {
-				if (type.name().endsWith("COS")) {return;}
-				double[] ar = new double[3];
-				List<Page> pages = new ArrayList<>();
-				synchronized (similarityRecalls) {
-					similarityRecalls.put(type, ar);
-					pages = new ArrayList<>(fprm.pagesToPageUrl.values());
-				}
-				Collections.shuffle(pages);
-				for (Page page : pages) {
-					while (suspend) {
-						try {
-							Thread.sleep(10000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					double recall = page.refreshRecall(type, fprm);
-					double weight = page.getRecallWeight();
-					ar[0] += recall * recall * weight;
-					ar[1] += recall * weight;
-					ar[2] += weight;
-				}
-			});
-		}).start();
+		
 
 	}
 

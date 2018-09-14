@@ -1334,11 +1334,11 @@ ruleFunctionAssignment returns [EObject current=null]
 			/* */
 		}
 		{
-			newCompositeNode(grammarAccess.getFunctionAssignmentAccess().getExpressionParserRuleCall_1());
+			newCompositeNode(grammarAccess.getFunctionAssignmentAccess().getBasicExpressionParserRuleCall_1());
 		}
-		this_Expression_1=ruleExpression
+		this_BasicExpression_1=ruleBasicExpression
 		{
-			$current = $this_Expression_1.current;
+			$current = $this_BasicExpression_1.current;
 			afterParserOrEnumRuleCall();
 		}
 	)
@@ -1362,35 +1362,33 @@ ruleFullFunctionAssignment returns [EObject current=null]
 	(
 		(
 			(
-				(
-					{
-						newCompositeNode(grammarAccess.getFullFunctionAssignmentAccess().getParametersParDefParserRuleCall_0_0_0());
+				{
+					newCompositeNode(grammarAccess.getFullFunctionAssignmentAccess().getParametersParDefParserRuleCall_0_0());
+				}
+				lv_parameters_0_0=ruleParDef
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getFullFunctionAssignmentRule());
 					}
-					lv_parameters_0_0=ruleParDef
-					{
-						if ($current==null) {
-							$current = createModelElementForParent(grammarAccess.getFullFunctionAssignmentRule());
-						}
-						set(
-							$current,
-							"parameters",
-							lv_parameters_0_0,
-							"at.ac.tuwien.big.virtmodel.VLang.ParDef");
-						afterParserOrEnumRuleCall();
-					}
-				)
+					set(
+						$current,
+						"parameters",
+						lv_parameters_0_0,
+						"at.ac.tuwien.big.virtmodel.VLang.ParDef");
+					afterParserOrEnumRuleCall();
+				}
 			)
-			otherlv_1='->'
-			{
-				newLeafNode(otherlv_1, grammarAccess.getFullFunctionAssignmentAccess().getHyphenMinusGreaterThanSignKeyword_0_1());
-			}
-		)?
+		)
+		otherlv_1='->'
+		{
+			newLeafNode(otherlv_1, grammarAccess.getFullFunctionAssignmentAccess().getHyphenMinusGreaterThanSignKeyword_1());
+		}
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getFullFunctionAssignmentAccess().getExprExpressionParserRuleCall_1_0());
+					newCompositeNode(grammarAccess.getFullFunctionAssignmentAccess().getExprBasicExpressionParserRuleCall_2_0());
 				}
-				lv_expr_2_0=ruleExpression
+				lv_expr_2_0=ruleBasicExpression
 				{
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getFullFunctionAssignmentRule());
@@ -1399,7 +1397,7 @@ ruleFullFunctionAssignment returns [EObject current=null]
 						$current,
 						"expr",
 						lv_expr_2_0,
-						"at.ac.tuwien.big.virtmodel.VLang.Expression");
+						"at.ac.tuwien.big.virtmodel.VLang.BasicExpression");
 					afterParserOrEnumRuleCall();
 				}
 			)
@@ -1407,15 +1405,15 @@ ruleFullFunctionAssignment returns [EObject current=null]
 	)
 ;
 
-// Entry rule entryRuleExpression
-entryRuleExpression returns [EObject current=null]:
-	{ newCompositeNode(grammarAccess.getExpressionRule()); }
-	iv_ruleExpression=ruleExpression
-	{ $current=$iv_ruleExpression.current; }
+// Entry rule entryRuleBasicExpression
+entryRuleBasicExpression returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getBasicExpressionRule()); }
+	iv_ruleBasicExpression=ruleBasicExpression
+	{ $current=$iv_ruleBasicExpression.current; }
 	EOF;
 
-// Rule Expression
-ruleExpression returns [EObject current=null]
+// Rule BasicExpression
+ruleBasicExpression returns [EObject current=null]
 @init {
 	enterRule();
 }
@@ -1427,7 +1425,7 @@ ruleExpression returns [EObject current=null]
 			/* */
 		}
 		{
-			newCompositeNode(grammarAccess.getExpressionAccess().getSingleValueParserRuleCall_0());
+			newCompositeNode(grammarAccess.getBasicExpressionAccess().getSingleValueParserRuleCall_0());
 		}
 		this_SingleValue_0=ruleSingleValue
 		{
@@ -1439,11 +1437,11 @@ ruleExpression returns [EObject current=null]
 			/* */
 		}
 		{
-			newCompositeNode(grammarAccess.getExpressionAccess().getFullFunctionParserRuleCall_1());
+			newCompositeNode(grammarAccess.getBasicExpressionAccess().getOclFunctionParserRuleCall_1());
 		}
-		this_FullFunction_1=ruleFullFunction
+		this_OclFunction_1=ruleOclFunction
 		{
-			$current = $this_FullFunction_1.current;
+			$current = $this_OclFunction_1.current;
 			afterParserOrEnumRuleCall();
 		}
 		    |
@@ -1451,11 +1449,11 @@ ruleExpression returns [EObject current=null]
 			/* */
 		}
 		{
-			newCompositeNode(grammarAccess.getExpressionAccess().getOclFunctionParserRuleCall_2());
+			newCompositeNode(grammarAccess.getBasicExpressionAccess().getCalculatedValueParserRuleCall_2());
 		}
-		this_OclFunction_2=ruleOclFunction
+		this_CalculatedValue_2=ruleCalculatedValue
 		{
-			$current = $this_OclFunction_2.current;
+			$current = $this_CalculatedValue_2.current;
 			afterParserOrEnumRuleCall();
 		}
 	)
@@ -2298,11 +2296,11 @@ ruleCalculatedValue returns [EObject current=null]
 			/* */
 		}
 		{
-			newCompositeNode(grammarAccess.getCalculatedValueAccess().getFunctionCallParserRuleCall_0());
+			newCompositeNode(grammarAccess.getCalculatedValueAccess().getJavaFunctionCallParserRuleCall_0());
 		}
-		this_FunctionCall_0=ruleFunctionCall
+		this_JavaFunctionCall_0=ruleJavaFunctionCall
 		{
-			$current = $this_FunctionCall_0.current;
+			$current = $this_JavaFunctionCall_0.current;
 			afterParserOrEnumRuleCall();
 		}
 		    |
@@ -2310,11 +2308,23 @@ ruleCalculatedValue returns [EObject current=null]
 			/* */
 		}
 		{
-			newCompositeNode(grammarAccess.getCalculatedValueAccess().getIfThenElseParserRuleCall_1());
+			newCompositeNode(grammarAccess.getCalculatedValueAccess().getFunctionCallParserRuleCall_1());
 		}
-		this_IfThenElse_1=ruleIfThenElse
+		this_FunctionCall_1=ruleFunctionCall
 		{
-			$current = $this_IfThenElse_1.current;
+			$current = $this_FunctionCall_1.current;
+			afterParserOrEnumRuleCall();
+		}
+		    |
+		{
+			/* */
+		}
+		{
+			newCompositeNode(grammarAccess.getCalculatedValueAccess().getIfThenElseParserRuleCall_2());
+		}
+		this_IfThenElse_2=ruleIfThenElse
+		{
+			$current = $this_IfThenElse_2.current;
 			afterParserOrEnumRuleCall();
 		}
 	)

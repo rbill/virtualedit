@@ -210,6 +210,7 @@ public class VLangSwitch<T> extends Switch<T>
       {
         SingleValue singleValue = (SingleValue)theEObject;
         T result = caseSingleValue(singleValue);
+        if (result == null) result = caseBasicExpression(singleValue);
         if (result == null) result = caseExpression(singleValue);
         if (result == null) result = caseFunctionPar(singleValue);
         if (result == null) result = caseFunctionAssignment(singleValue);
@@ -222,6 +223,7 @@ public class VLangSwitch<T> extends Switch<T>
         FixedValue fixedValue = (FixedValue)theEObject;
         T result = caseFixedValue(fixedValue);
         if (result == null) result = caseSingleValue(fixedValue);
+        if (result == null) result = caseBasicExpression(fixedValue);
         if (result == null) result = caseExpression(fixedValue);
         if (result == null) result = caseFunctionPar(fixedValue);
         if (result == null) result = caseFunctionAssignment(fixedValue);
@@ -246,12 +248,19 @@ public class VLangSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
+      case VLangPackage.BASIC_EXPRESSION:
+      {
+        BasicExpression basicExpression = (BasicExpression)theEObject;
+        T result = caseBasicExpression(basicExpression);
+        if (result == null) result = caseFunctionAssignment(basicExpression);
+        if (result == null) result = caseFilter(basicExpression);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
       case VLangPackage.EXPRESSION:
       {
         Expression expression = (Expression)theEObject;
         T result = caseExpression(expression);
-        if (result == null) result = caseFunctionAssignment(expression);
-        if (result == null) result = caseFilter(expression);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -259,6 +268,7 @@ public class VLangSwitch<T> extends Switch<T>
       {
         OclFunction oclFunction = (OclFunction)theEObject;
         T result = caseOclFunction(oclFunction);
+        if (result == null) result = caseBasicExpression(oclFunction);
         if (result == null) result = caseExpression(oclFunction);
         if (result == null) result = caseFunctionAssignment(oclFunction);
         if (result == null) result = caseFilter(oclFunction);
@@ -270,8 +280,6 @@ public class VLangSwitch<T> extends Switch<T>
         FullFunction fullFunction = (FullFunction)theEObject;
         T result = caseFullFunction(fullFunction);
         if (result == null) result = caseExpression(fullFunction);
-        if (result == null) result = caseFunctionAssignment(fullFunction);
-        if (result == null) result = caseFilter(fullFunction);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -282,8 +290,6 @@ public class VLangSwitch<T> extends Switch<T>
         if (result == null) result = caseFullFunction(block);
         if (result == null) result = caseSingleStatement(block);
         if (result == null) result = caseExpression(block);
-        if (result == null) result = caseFunctionAssignment(block);
-        if (result == null) result = caseFilter(block);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -362,6 +368,7 @@ public class VLangSwitch<T> extends Switch<T>
         CalculatedValue calculatedValue = (CalculatedValue)theEObject;
         T result = caseCalculatedValue(calculatedValue);
         if (result == null) result = caseSingleValue(calculatedValue);
+        if (result == null) result = caseBasicExpression(calculatedValue);
         if (result == null) result = caseExpression(calculatedValue);
         if (result == null) result = caseFunctionPar(calculatedValue);
         if (result == null) result = caseFunctionAssignment(calculatedValue);
@@ -375,6 +382,7 @@ public class VLangSwitch<T> extends Switch<T>
         T result = caseIfThenElse(ifThenElse);
         if (result == null) result = caseCalculatedValue(ifThenElse);
         if (result == null) result = caseSingleValue(ifThenElse);
+        if (result == null) result = caseBasicExpression(ifThenElse);
         if (result == null) result = caseExpression(ifThenElse);
         if (result == null) result = caseFunctionPar(ifThenElse);
         if (result == null) result = caseFunctionAssignment(ifThenElse);
@@ -389,6 +397,7 @@ public class VLangSwitch<T> extends Switch<T>
         if (result == null) result = caseCalculatedValue(functionCall);
         if (result == null) result = caseFunctionPars(functionCall);
         if (result == null) result = caseSingleValue(functionCall);
+        if (result == null) result = caseBasicExpression(functionCall);
         if (result == null) result = caseExpression(functionCall);
         if (result == null) result = caseFunctionPar(functionCall);
         if (result == null) result = caseFunctionAssignment(functionCall);
@@ -400,7 +409,14 @@ public class VLangSwitch<T> extends Switch<T>
       {
         JavaFunctionCall javaFunctionCall = (JavaFunctionCall)theEObject;
         T result = caseJavaFunctionCall(javaFunctionCall);
+        if (result == null) result = caseCalculatedValue(javaFunctionCall);
         if (result == null) result = caseFunctionPars(javaFunctionCall);
+        if (result == null) result = caseSingleValue(javaFunctionCall);
+        if (result == null) result = caseBasicExpression(javaFunctionCall);
+        if (result == null) result = caseExpression(javaFunctionCall);
+        if (result == null) result = caseFunctionPar(javaFunctionCall);
+        if (result == null) result = caseFunctionAssignment(javaFunctionCall);
+        if (result == null) result = caseFilter(javaFunctionCall);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -768,6 +784,22 @@ public class VLangSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseFullFunctionAssignment(FullFunctionAssignment object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Basic Expression</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Basic Expression</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseBasicExpression(BasicExpression object)
   {
     return null;
   }

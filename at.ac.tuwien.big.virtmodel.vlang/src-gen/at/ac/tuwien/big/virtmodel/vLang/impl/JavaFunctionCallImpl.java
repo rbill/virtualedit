@@ -3,16 +3,26 @@
  */
 package at.ac.tuwien.big.virtmodel.vLang.impl;
 
+import at.ac.tuwien.big.virtmodel.vLang.FunctionPar;
+import at.ac.tuwien.big.virtmodel.vLang.FunctionPars;
 import at.ac.tuwien.big.virtmodel.vLang.JavaFunctionCall;
 import at.ac.tuwien.big.virtmodel.vLang.JavaFunctionDef;
 import at.ac.tuwien.big.virtmodel.vLang.VLangPackage;
 
+import java.util.Collection;
+
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.NotificationChain;
+
+import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.InternalEList;
 
 /**
  * <!-- begin-user-doc -->
@@ -22,13 +32,24 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link at.ac.tuwien.big.virtmodel.vLang.impl.JavaFunctionCallImpl#getParams <em>Params</em>}</li>
  *   <li>{@link at.ac.tuwien.big.virtmodel.vLang.impl.JavaFunctionCallImpl#getFunction <em>Function</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class JavaFunctionCallImpl extends FunctionParsImpl implements JavaFunctionCall
+public class JavaFunctionCallImpl extends CalculatedValueImpl implements JavaFunctionCall
 {
+  /**
+   * The cached value of the '{@link #getParams() <em>Params</em>}' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getParams()
+   * @generated
+   * @ordered
+   */
+  protected EList<FunctionPar> params;
+
   /**
    * The cached value of the '{@link #getFunction() <em>Function</em>}' reference.
    * <!-- begin-user-doc -->
@@ -58,6 +79,20 @@ public class JavaFunctionCallImpl extends FunctionParsImpl implements JavaFuncti
   protected EClass eStaticClass()
   {
     return VLangPackage.Literals.JAVA_FUNCTION_CALL;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public EList<FunctionPar> getParams()
+  {
+    if (params == null)
+    {
+      params = new EObjectContainmentEList<FunctionPar>(FunctionPar.class, this, VLangPackage.JAVA_FUNCTION_CALL__PARAMS);
+    }
+    return params;
   }
 
   /**
@@ -109,10 +144,28 @@ public class JavaFunctionCallImpl extends FunctionParsImpl implements JavaFuncti
    * @generated
    */
   @Override
+  public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
+  {
+    switch (featureID)
+    {
+      case VLangPackage.JAVA_FUNCTION_CALL__PARAMS:
+        return ((InternalEList<?>)getParams()).basicRemove(otherEnd, msgs);
+    }
+    return super.eInverseRemove(otherEnd, featureID, msgs);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
   public Object eGet(int featureID, boolean resolve, boolean coreType)
   {
     switch (featureID)
     {
+      case VLangPackage.JAVA_FUNCTION_CALL__PARAMS:
+        return getParams();
       case VLangPackage.JAVA_FUNCTION_CALL__FUNCTION:
         if (resolve) return getFunction();
         return basicGetFunction();
@@ -125,11 +178,16 @@ public class JavaFunctionCallImpl extends FunctionParsImpl implements JavaFuncti
    * <!-- end-user-doc -->
    * @generated
    */
+  @SuppressWarnings("unchecked")
   @Override
   public void eSet(int featureID, Object newValue)
   {
     switch (featureID)
     {
+      case VLangPackage.JAVA_FUNCTION_CALL__PARAMS:
+        getParams().clear();
+        getParams().addAll((Collection<? extends FunctionPar>)newValue);
+        return;
       case VLangPackage.JAVA_FUNCTION_CALL__FUNCTION:
         setFunction((JavaFunctionDef)newValue);
         return;
@@ -147,6 +205,9 @@ public class JavaFunctionCallImpl extends FunctionParsImpl implements JavaFuncti
   {
     switch (featureID)
     {
+      case VLangPackage.JAVA_FUNCTION_CALL__PARAMS:
+        getParams().clear();
+        return;
       case VLangPackage.JAVA_FUNCTION_CALL__FUNCTION:
         setFunction((JavaFunctionDef)null);
         return;
@@ -164,10 +225,50 @@ public class JavaFunctionCallImpl extends FunctionParsImpl implements JavaFuncti
   {
     switch (featureID)
     {
+      case VLangPackage.JAVA_FUNCTION_CALL__PARAMS:
+        return params != null && !params.isEmpty();
       case VLangPackage.JAVA_FUNCTION_CALL__FUNCTION:
         return function != null;
     }
     return super.eIsSet(featureID);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public int eBaseStructuralFeatureID(int derivedFeatureID, Class<?> baseClass)
+  {
+    if (baseClass == FunctionPars.class)
+    {
+      switch (derivedFeatureID)
+      {
+        case VLangPackage.JAVA_FUNCTION_CALL__PARAMS: return VLangPackage.FUNCTION_PARS__PARAMS;
+        default: return -1;
+      }
+    }
+    return super.eBaseStructuralFeatureID(derivedFeatureID, baseClass);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public int eDerivedStructuralFeatureID(int baseFeatureID, Class<?> baseClass)
+  {
+    if (baseClass == FunctionPars.class)
+    {
+      switch (baseFeatureID)
+      {
+        case VLangPackage.FUNCTION_PARS__PARAMS: return VLangPackage.JAVA_FUNCTION_CALL__PARAMS;
+        default: return -1;
+      }
+    }
+    return super.eDerivedStructuralFeatureID(baseFeatureID, baseClass);
   }
 
 } //JavaFunctionCallImpl

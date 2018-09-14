@@ -9,7 +9,7 @@ public class ValueFilteredFunction<Src,Target, QR extends QueryResult<Src,Target
 	private AbstractFunc<Target, Boolean, ? extends QueryResult<Target,Boolean>> filter;
 	
 	private AbstractFunc<Src, Boolean, QueryResult<Src,Boolean>> metaFilter;
-	private AbstractFunc<Src, Target, QueryResult<Src,Target>> chainedFunc;
+	//private AbstractFunc<Src, Target, QueryResult<Src,Target>> chainedFunc;
 	
 	private Scope<Src> filteredScope;
 

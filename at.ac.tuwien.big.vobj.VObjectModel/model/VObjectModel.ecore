@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="VObjectModel" nsURI="http://www.example.org/VObjectModel" nsPrefix="VObjectModel">
+  <eClassifiers xsi:type="ecore:EClass" name="Identifier">
+    <eOperations name="hashCode" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eOperations name="equals" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
+      <eParameters name="id" eType="#//Identifier"/>
+    </eOperations>
+    <eOperations name="init"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifierreforcmp" upperBound="-1"
+        eType="#//AnyValue" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="creatorid" eType="#//CreatorId"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="hc" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IdentifierRefOrCmp" eSuperTypes="#//AnyValue">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifier" eType="#//Identifier"
+        derived="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IdentifierRef" eSuperTypes="#//IdentifierRefOrCmp">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifierreforcmp" eType="#//IdentifierRefOrCmp"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="s_identifier" eType="#//Identifier"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IdentifierCmp" eSuperTypes="#//IdentifierRefOrCmp">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="s_identifier" eType="#//Identifier"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CreatorId">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="namespace" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AnyValue"/>
+  <eClassifiers xsi:type="ecore:EClass" name="JavaValue" eSuperTypes="#//AnyValue">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+  </eClassifiers>
+</ecore:EPackage>

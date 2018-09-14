@@ -1,0 +1,161 @@
+/**
+ */
+package VObjectModel.impl;
+
+import VObjectModel.*;
+
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
+
+import org.eclipse.emf.ecore.impl.EFactoryImpl;
+
+import org.eclipse.emf.ecore.plugin.EcorePlugin;
+
+/**
+ * <!-- begin-user-doc -->
+ * An implementation of the model <b>Factory</b>.
+ * <!-- end-user-doc -->
+ * @generated
+ */
+public class VObjectModelFactoryImpl extends EFactoryImpl implements VObjectModelFactory {
+	/**
+	 * Creates the default factory implementation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public static VObjectModelFactory init() {
+		try {
+			VObjectModelFactory theVObjectModelFactory = (VObjectModelFactory)EPackage.Registry.INSTANCE.getEFactory(VObjectModelPackage.eNS_URI);
+			if (theVObjectModelFactory != null) {
+				return theVObjectModelFactory;
+			}
+		}
+		catch (Exception exception) {
+			EcorePlugin.INSTANCE.log(exception);
+		}
+		return new VObjectModelFactoryImpl();
+	}
+
+	/**
+	 * Creates an instance of the factory.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public VObjectModelFactoryImpl() {
+		super();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public EObject create(EClass eClass) {
+		switch (eClass.getClassifierID()) {
+			case VObjectModelPackage.IDENTIFIER: return createIdentifier();
+			case VObjectModelPackage.IDENTIFIER_REF_OR_CMP: return createIdentifierRefOrCmp();
+			case VObjectModelPackage.IDENTIFIER_REF: return createIdentifierRef();
+			case VObjectModelPackage.IDENTIFIER_CMP: return createIdentifierCmp();
+			case VObjectModelPackage.CREATOR_ID: return createCreatorId();
+			case VObjectModelPackage.ANY_VALUE: return createAnyValue();
+			case VObjectModelPackage.JAVA_VALUE: return createJavaValue();
+			default:
+				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Identifier createIdentifier() {
+		IdentifierImpl identifier = new IdentifierImpl();
+		return identifier;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IdentifierRefOrCmp createIdentifierRefOrCmp() {
+		IdentifierRefOrCmpImpl identifierRefOrCmp = new IdentifierRefOrCmpImpl();
+		return identifierRefOrCmp;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IdentifierRef createIdentifierRef() {
+		IdentifierRefImpl identifierRef = new IdentifierRefImpl();
+		return identifierRef;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IdentifierCmp createIdentifierCmp() {
+		IdentifierCmpImpl identifierCmp = new IdentifierCmpImpl();
+		return identifierCmp;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public CreatorId createCreatorId() {
+		CreatorIdImpl creatorId = new CreatorIdImpl();
+		return creatorId;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public AnyValue createAnyValue() {
+		AnyValueImpl anyValue = new AnyValueImpl();
+		return anyValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public JavaValue createJavaValue() {
+		JavaValueImpl javaValue = new JavaValueImpl();
+		return javaValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public VObjectModelPackage getVObjectModelPackage() {
+		return (VObjectModelPackage)getEPackage();
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @deprecated
+	 * @generated
+	 */
+	@Deprecated
+	public static VObjectModelPackage getPackage() {
+		return VObjectModelPackage.eINSTANCE;
+	}
+
+} //VObjectModelFactoryImpl

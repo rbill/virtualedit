@@ -39,6 +39,7 @@ public class VLangParser extends AbstractContentAssistParser {
 					put(grammarAccess.getSingleValueAccess().getAlternatives(), "rule__SingleValue__Alternatives");
 					put(grammarAccess.getFixedValueAccess().getAlternatives(), "rule__FixedValue__Alternatives");
 					put(grammarAccess.getFunctionAssignmentAccess().getAlternatives(), "rule__FunctionAssignment__Alternatives");
+					put(grammarAccess.getBasicExpressionAccess().getAlternatives(), "rule__BasicExpression__Alternatives");
 					put(grammarAccess.getExpressionAccess().getAlternatives(), "rule__Expression__Alternatives");
 					put(grammarAccess.getBlockAccess().getAlternatives_2(), "rule__Block__Alternatives_2");
 					put(grammarAccess.getSingleStatementAccess().getAlternatives(), "rule__SingleStatement__Alternatives");
@@ -66,7 +67,6 @@ public class VLangParser extends AbstractContentAssistParser {
 					put(grammarAccess.getFunctionDomainScopeAccess().getGroup(), "rule__FunctionDomainScope__Group__0");
 					put(grammarAccess.getSetScopeAccess().getGroup(), "rule__SetScope__Group__0");
 					put(grammarAccess.getFullFunctionAssignmentAccess().getGroup(), "rule__FullFunctionAssignment__Group__0");
-					put(grammarAccess.getFullFunctionAssignmentAccess().getGroup_0(), "rule__FullFunctionAssignment__Group_0__0");
 					put(grammarAccess.getOclFunctionAccess().getGroup(), "rule__OclFunction__Group__0");
 					put(grammarAccess.getBlockAccess().getGroup(), "rule__Block__Group__0");
 					put(grammarAccess.getBlockAccess().getGroup_2_0(), "rule__Block__Group_2_0__0");
@@ -128,8 +128,8 @@ public class VLangParser extends AbstractContentAssistParser {
 					put(grammarAccess.getFixedValueAccess().getNumberAssignment_0(), "rule__FixedValue__NumberAssignment_0");
 					put(grammarAccess.getFixedValueAccess().getStringAssignment_1(), "rule__FixedValue__StringAssignment_1");
 					put(grammarAccess.getFixedValueAccess().getObjidAssignment_2(), "rule__FixedValue__ObjidAssignment_2");
-					put(grammarAccess.getFullFunctionAssignmentAccess().getParametersAssignment_0_0(), "rule__FullFunctionAssignment__ParametersAssignment_0_0");
-					put(grammarAccess.getFullFunctionAssignmentAccess().getExprAssignment_1(), "rule__FullFunctionAssignment__ExprAssignment_1");
+					put(grammarAccess.getFullFunctionAssignmentAccess().getParametersAssignment_0(), "rule__FullFunctionAssignment__ParametersAssignment_0");
+					put(grammarAccess.getFullFunctionAssignmentAccess().getExprAssignment_2(), "rule__FullFunctionAssignment__ExprAssignment_2");
 					put(grammarAccess.getOclFunctionAccess().getOclFuncAssignment_1(), "rule__OclFunction__OclFuncAssignment_1");
 					put(grammarAccess.getBlockAccess().getStatementsAssignment_2_0_0(), "rule__Block__StatementsAssignment_2_0_0");
 					put(grammarAccess.getBlockAccess().getStatementsAssignment_2_1(), "rule__Block__StatementsAssignment_2_1");

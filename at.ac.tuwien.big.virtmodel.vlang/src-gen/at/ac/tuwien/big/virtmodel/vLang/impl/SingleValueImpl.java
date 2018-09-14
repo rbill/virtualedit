@@ -15,7 +15,7 @@ import org.eclipse.emf.ecore.EClass;
  *
  * @generated
  */
-public class SingleValueImpl extends ExpressionImpl implements SingleValue
+public class SingleValueImpl extends BasicExpressionImpl implements SingleValue
 {
   /**
    * <!-- begin-user-doc -->

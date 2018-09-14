@@ -3,7 +3,7 @@
  */
 package at.ac.tuwien.big.virtmodel.vLang.impl;
 
-import at.ac.tuwien.big.virtmodel.vLang.Expression;
+import at.ac.tuwien.big.virtmodel.vLang.BasicExpression;
 import at.ac.tuwien.big.virtmodel.vLang.FullFunctionAssignment;
 import at.ac.tuwien.big.virtmodel.vLang.ParDef;
 import at.ac.tuwien.big.virtmodel.vLang.VLangPackage;
@@ -50,7 +50,7 @@ public class FullFunctionAssignmentImpl extends FunctionAssignmentImpl implement
    * @generated
    * @ordered
    */
-  protected Expression expr;
+  protected BasicExpression expr;
 
   /**
    * <!-- begin-user-doc -->
@@ -126,7 +126,7 @@ public class FullFunctionAssignmentImpl extends FunctionAssignmentImpl implement
    * <!-- end-user-doc -->
    * @generated
    */
-  public Expression getExpr()
+  public BasicExpression getExpr()
   {
     return expr;
   }
@@ -136,9 +136,9 @@ public class FullFunctionAssignmentImpl extends FunctionAssignmentImpl implement
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetExpr(Expression newExpr, NotificationChain msgs)
+  public NotificationChain basicSetExpr(BasicExpression newExpr, NotificationChain msgs)
   {
-    Expression oldExpr = expr;
+    BasicExpression oldExpr = expr;
     expr = newExpr;
     if (eNotificationRequired())
     {
@@ -153,7 +153,7 @@ public class FullFunctionAssignmentImpl extends FunctionAssignmentImpl implement
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setExpr(Expression newExpr)
+  public void setExpr(BasicExpression newExpr)
   {
     if (newExpr != expr)
     {
@@ -219,7 +219,7 @@ public class FullFunctionAssignmentImpl extends FunctionAssignmentImpl implement
         setParameters((ParDef)newValue);
         return;
       case VLangPackage.FULL_FUNCTION_ASSIGNMENT__EXPR:
-        setExpr((Expression)newValue);
+        setExpr((BasicExpression)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -239,7 +239,7 @@ public class FullFunctionAssignmentImpl extends FunctionAssignmentImpl implement
         setParameters((ParDef)null);
         return;
       case VLangPackage.FULL_FUNCTION_ASSIGNMENT__EXPR:
-        setExpr((Expression)null);
+        setExpr((BasicExpression)null);
         return;
     }
     super.eUnset(featureID);

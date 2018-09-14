@@ -58,12 +58,12 @@ public interface FullFunctionAssignment extends FunctionAssignment
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Expr</em>' containment reference.
-   * @see #setExpr(Expression)
+   * @see #setExpr(BasicExpression)
    * @see at.ac.tuwien.big.virtmodel.vLang.VLangPackage#getFullFunctionAssignment_Expr()
    * @model containment="true"
    * @generated
    */
-  Expression getExpr();
+  BasicExpression getExpr();
 
   /**
    * Sets the value of the '{@link at.ac.tuwien.big.virtmodel.vLang.FullFunctionAssignment#getExpr <em>Expr</em>}' containment reference.
@@ -73,6 +73,6 @@ public interface FullFunctionAssignment extends FunctionAssignment
    * @see #getExpr()
    * @generated
    */
-  void setExpr(Expression value);
+  void setExpr(BasicExpression value);
 
 } // FullFunctionAssignment

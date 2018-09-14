@@ -1,5 +1,6 @@
 package at.ac.tuwien.big.virtmod.basic.col.impl;
 
+import java.lang.ref.WeakReference;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,10 +10,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.function.Function;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
+import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyer;
+import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import at.ac.tuwien.big.virtmod.basic.col.Converter;
 import at.ac.tuwien.big.virtmod.basic.col.ConvertingCollection;
 import at.ac.tuwien.big.virtmod.basic.col.ConvertingList;
@@ -23,18 +27,19 @@ import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.DerivationStatus;
 import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.ExactDerivationStatus;
 import at.ac.tuwien.big.vmodel.ecore.FakeInternalEList;
 
-public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements ConvertingList<E, F>, InternalEList<E> {
+public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements ConvertingList<E, F>, InternalEList<E>, BasicChangeNotifyer {
 
 	private Converter<E,F> toDelegate;
 	private Converter<F,E> fromDelegate;
 	private List<F> delegate;
 	private List<E> basicList;
 	
+	private List<WeakReference<BasicListenable>> changeListeners = new ArrayList<>();
 	
 	
-	public ConvertingListImpl(List<F> delegate, Converter<E,F> toDelegate, Converter<F,E> fromDelegate) {
-		this.toDelegate = toDelegate;
-		this.fromDelegate = fromDelegate;
+	public ConvertingListImpl(List<F> delegate, Function<E,F> toDelegate, Function<F,E> fromDelegate) {
+		this.toDelegate = Converter.from(toDelegate);
+		this.fromDelegate = Converter.from(fromDelegate);
 		this.delegate = delegate;
 		if (delegate instanceof InternalEList && ((InternalEList) delegate).basicList() != delegate) {			
 			basicList = new ConvertingListImpl(((InternalEList) delegate).basicList(), toDelegate, fromDelegate);
@@ -108,6 +113,7 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 			@Override
 			public void remove() {
 				sub.remove();
+				changed();
 			}
 		};
 	}
@@ -125,6 +131,7 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 	@Override
 	public void clear() {
 		ConvertingList.super.clear();
+		changed();
 	}
 
 	@Override
@@ -134,12 +141,20 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 	
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		return ConvertingList.super.removeAll(c);
+		boolean ret = ConvertingList.super.removeAll(c);
+		if (ret) {
+			changed();
+		}
+		return ret;
 	}	
 	
 	@Override
 	public boolean remove(Object c) {
-		return ConvertingList.super.remove(c);
+		boolean ret = ConvertingList.super.remove(c);
+		if (ret) {
+			changed();
+		}
+		return ret;
 	}
 
 	@Override
@@ -167,12 +182,17 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 
 	@Override
 	public boolean add(E element) {
-		return getDelegate().add(convertE(element));
+		boolean ret = getDelegate().add(convertE(element));
+		if (ret) {
+			changed();
+		}
+		return ret;
 	}
 
 	@Override
 	public void add(int index, E element) {
 		getDelegate().add(index, convertE(element));
+		changed();
 	}
 
 	
@@ -182,7 +202,11 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 		for (E e: c) {
 			newList.add(convertE(e));
 		}
-		return getDelegate().addAll(newList);
+		boolean ret = getDelegate().addAll(newList);
+		if (ret) {
+			changed();
+		}
+		return ret;
 	}
 
 	@Override
@@ -207,14 +231,24 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 			return -1;
 		}
 	}
+	
 	@Override
 	public  E remove(int index) {
-		return convertF(getDelegate().remove(index));
+		E ret = convertF(getDelegate().remove(index));
+		changed();
+		return ret;
+	}
+	
+	private  E removeNoChange(int index) {
+		E ret = convertF(getDelegate().remove(index));
+		return ret;
 	}
 
 	@Override
 	public  E set(int index, E element) {
-		return convertF(getDelegate().set(index, convertE(element)));
+		E ret = convertF(getDelegate().set(index, convertE(element)));
+		changed();
+		return ret;
 	}
 
 	@Override
@@ -264,12 +298,20 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 
 	@Override
 	public E move(int newPosition, int oldPosition) {
-		E ret = remove(oldPosition);
+		if (oldPosition == newPosition) {
+			return get(newPosition);
+		}
+		E ret = removeNoChange(oldPosition);
 		if (oldPosition < newPosition) {
 			--newPosition;
 		}
 		add(newPosition,ret);
 		return ret;
+	}
+
+	@Override
+	public List<WeakReference<BasicListenable>> getBasicChangeListeners() {
+		return changeListeners;
 	}
 	
 }

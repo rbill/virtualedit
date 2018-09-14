@@ -707,23 +707,23 @@ public interface VLangPackage extends EPackage
   int FUNCTION_ASSIGNMENT_FEATURE_COUNT = FILTER_FEATURE_COUNT + 0;
 
   /**
-   * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.ExpressionImpl <em>Expression</em>}' class.
+   * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.BasicExpressionImpl <em>Basic Expression</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see at.ac.tuwien.big.virtmodel.vLang.impl.ExpressionImpl
-   * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getExpression()
+   * @see at.ac.tuwien.big.virtmodel.vLang.impl.BasicExpressionImpl
+   * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getBasicExpression()
    * @generated
    */
-  int EXPRESSION = 21;
+  int BASIC_EXPRESSION = 21;
 
   /**
-   * The number of structural features of the '<em>Expression</em>' class.
+   * The number of structural features of the '<em>Basic Expression</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int EXPRESSION_FEATURE_COUNT = FUNCTION_ASSIGNMENT_FEATURE_COUNT + 0;
+  int BASIC_EXPRESSION_FEATURE_COUNT = FUNCTION_ASSIGNMENT_FEATURE_COUNT + 0;
 
   /**
    * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.SingleValueImpl <em>Single Value</em>}' class.
@@ -742,7 +742,7 @@ public interface VLangPackage extends EPackage
    * @generated
    * @ordered
    */
-  int SINGLE_VALUE_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 0;
+  int SINGLE_VALUE_FEATURE_COUNT = BASIC_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
    * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.FixedValueImpl <em>Fixed Value</em>}' class.
@@ -828,6 +828,25 @@ public interface VLangPackage extends EPackage
   int FULL_FUNCTION_ASSIGNMENT_FEATURE_COUNT = FUNCTION_ASSIGNMENT_FEATURE_COUNT + 2;
 
   /**
+   * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.ExpressionImpl <em>Expression</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see at.ac.tuwien.big.virtmodel.vLang.impl.ExpressionImpl
+   * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getExpression()
+   * @generated
+   */
+  int EXPRESSION = 22;
+
+  /**
+   * The number of structural features of the '<em>Expression</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int EXPRESSION_FEATURE_COUNT = 0;
+
+  /**
    * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.OclFunctionImpl <em>Ocl Function</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -835,7 +854,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getOclFunction()
    * @generated
    */
-  int OCL_FUNCTION = 22;
+  int OCL_FUNCTION = 23;
 
   /**
    * The feature id for the '<em><b>Ocl Func</b></em>' attribute.
@@ -844,7 +863,7 @@ public interface VLangPackage extends EPackage
    * @generated
    * @ordered
    */
-  int OCL_FUNCTION__OCL_FUNC = EXPRESSION_FEATURE_COUNT + 0;
+  int OCL_FUNCTION__OCL_FUNC = BASIC_EXPRESSION_FEATURE_COUNT + 0;
 
   /**
    * The number of structural features of the '<em>Ocl Function</em>' class.
@@ -853,7 +872,7 @@ public interface VLangPackage extends EPackage
    * @generated
    * @ordered
    */
-  int OCL_FUNCTION_FEATURE_COUNT = EXPRESSION_FEATURE_COUNT + 1;
+  int OCL_FUNCTION_FEATURE_COUNT = BASIC_EXPRESSION_FEATURE_COUNT + 1;
 
   /**
    * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.FullFunctionImpl <em>Full Function</em>}' class.
@@ -863,7 +882,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getFullFunction()
    * @generated
    */
-  int FULL_FUNCTION = 23;
+  int FULL_FUNCTION = 24;
 
   /**
    * The number of structural features of the '<em>Full Function</em>' class.
@@ -882,7 +901,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getBlock()
    * @generated
    */
-  int BLOCK = 24;
+  int BLOCK = 25;
 
   /**
    * The feature id for the '<em><b>Statements</b></em>' containment reference list.
@@ -910,7 +929,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getSingleStatement()
    * @generated
    */
-  int SINGLE_STATEMENT = 25;
+  int SINGLE_STATEMENT = 26;
 
   /**
    * The number of structural features of the '<em>Single Statement</em>' class.
@@ -929,7 +948,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getLetStatement()
    * @generated
    */
-  int LET_STATEMENT = 26;
+  int LET_STATEMENT = 27;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' containment reference.
@@ -966,7 +985,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getReturnStatement()
    * @generated
    */
-  int RETURN_STATEMENT = 27;
+  int RETURN_STATEMENT = 28;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' containment reference.
@@ -994,7 +1013,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getIfStatement()
    * @generated
    */
-  int IF_STATEMENT = 28;
+  int IF_STATEMENT = 29;
 
   /**
    * The feature id for the '<em><b>Condition</b></em>' containment reference.
@@ -1040,7 +1059,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getForStatement()
    * @generated
    */
-  int FOR_STATEMENT = 29;
+  int FOR_STATEMENT = 30;
 
   /**
    * The feature id for the '<em><b>Init Var</b></em>' containment reference.
@@ -1095,7 +1114,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getForLoopStatement()
    * @generated
    */
-  int FOR_LOOP_STATEMENT = 30;
+  int FOR_LOOP_STATEMENT = 31;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1141,7 +1160,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getMaybeValue()
    * @generated
    */
-  int MAYBE_VALUE = 31;
+  int MAYBE_VALUE = 32;
 
   /**
    * The feature id for the '<em><b>Value</b></em>' containment reference.
@@ -1169,7 +1188,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getParDef()
    * @generated
    */
-  int PAR_DEF = 32;
+  int PAR_DEF = 33;
 
   /**
    * The feature id for the '<em><b>Params</b></em>' containment reference list.
@@ -1197,7 +1216,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getFunctionParDef()
    * @generated
    */
-  int FUNCTION_PAR_DEF = 33;
+  int FUNCTION_PAR_DEF = 34;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1234,7 +1253,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getCalculatedValue()
    * @generated
    */
-  int CALCULATED_VALUE = 34;
+  int CALCULATED_VALUE = 35;
 
   /**
    * The number of structural features of the '<em>Calculated Value</em>' class.
@@ -1253,7 +1272,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getIfThenElse()
    * @generated
    */
-  int IF_THEN_ELSE = 35;
+  int IF_THEN_ELSE = 36;
 
   /**
    * The feature id for the '<em><b>Condition</b></em>' containment reference.
@@ -1299,7 +1318,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getFunctionCall()
    * @generated
    */
-  int FUNCTION_CALL = 36;
+  int FUNCTION_CALL = 37;
 
   /**
    * The feature id for the '<em><b>Params</b></em>' containment reference list.
@@ -1329,6 +1348,43 @@ public interface VLangPackage extends EPackage
   int FUNCTION_CALL_FEATURE_COUNT = CALCULATED_VALUE_FEATURE_COUNT + 2;
 
   /**
+   * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.JavaFunctionCallImpl <em>Java Function Call</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see at.ac.tuwien.big.virtmodel.vLang.impl.JavaFunctionCallImpl
+   * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getJavaFunctionCall()
+   * @generated
+   */
+  int JAVA_FUNCTION_CALL = 38;
+
+  /**
+   * The feature id for the '<em><b>Params</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int JAVA_FUNCTION_CALL__PARAMS = CALCULATED_VALUE_FEATURE_COUNT + 0;
+
+  /**
+   * The feature id for the '<em><b>Function</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int JAVA_FUNCTION_CALL__FUNCTION = CALCULATED_VALUE_FEATURE_COUNT + 1;
+
+  /**
+   * The number of structural features of the '<em>Java Function Call</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int JAVA_FUNCTION_CALL_FEATURE_COUNT = CALCULATED_VALUE_FEATURE_COUNT + 2;
+
+  /**
    * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.FunctionParsImpl <em>Function Pars</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1336,7 +1392,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getFunctionPars()
    * @generated
    */
-  int FUNCTION_PARS = 38;
+  int FUNCTION_PARS = 39;
 
   /**
    * The feature id for the '<em><b>Params</b></em>' containment reference list.
@@ -1357,43 +1413,6 @@ public interface VLangPackage extends EPackage
   int FUNCTION_PARS_FEATURE_COUNT = 1;
 
   /**
-   * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.JavaFunctionCallImpl <em>Java Function Call</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see at.ac.tuwien.big.virtmodel.vLang.impl.JavaFunctionCallImpl
-   * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getJavaFunctionCall()
-   * @generated
-   */
-  int JAVA_FUNCTION_CALL = 37;
-
-  /**
-   * The feature id for the '<em><b>Params</b></em>' containment reference list.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int JAVA_FUNCTION_CALL__PARAMS = FUNCTION_PARS__PARAMS;
-
-  /**
-   * The feature id for the '<em><b>Function</b></em>' reference.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int JAVA_FUNCTION_CALL__FUNCTION = FUNCTION_PARS_FEATURE_COUNT + 0;
-
-  /**
-   * The number of structural features of the '<em>Java Function Call</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int JAVA_FUNCTION_CALL_FEATURE_COUNT = FUNCTION_PARS_FEATURE_COUNT + 1;
-
-  /**
    * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.FunctionParImpl <em>Function Par</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1401,7 +1420,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getFunctionPar()
    * @generated
    */
-  int FUNCTION_PAR = 39;
+  int FUNCTION_PAR = 40;
 
   /**
    * The number of structural features of the '<em>Function Par</em>' class.
@@ -1420,7 +1439,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getObjId()
    * @generated
    */
-  int OBJ_ID = 40;
+  int OBJ_ID = 41;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -1457,7 +1476,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getObjParam()
    * @generated
    */
-  int OBJ_PARAM = 41;
+  int OBJ_PARAM = 42;
 
   /**
    * The feature id for the '<em><b>Number</b></em>' attribute.
@@ -1512,7 +1531,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getFunctionType()
    * @generated
    */
-  int FUNCTION_TYPE = 42;
+  int FUNCTION_TYPE = 43;
 
   /**
    * The meta object id for the '{@link at.ac.tuwien.big.virtmodel.vLang.JavaFunctionType <em>Java Function Type</em>}' enum.
@@ -1522,7 +1541,7 @@ public interface VLangPackage extends EPackage
    * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getJavaFunctionType()
    * @generated
    */
-  int JAVA_FUNCTION_TYPE = 43;
+  int JAVA_FUNCTION_TYPE = 44;
 
 
   /**
@@ -2086,6 +2105,16 @@ public interface VLangPackage extends EPackage
    * @generated
    */
   EReference getFullFunctionAssignment_Expr();
+
+  /**
+   * Returns the meta object for class '{@link at.ac.tuwien.big.virtmodel.vLang.BasicExpression <em>Basic Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Basic Expression</em>'.
+   * @see at.ac.tuwien.big.virtmodel.vLang.BasicExpression
+   * @generated
+   */
+  EClass getBasicExpression();
 
   /**
    * Returns the meta object for class '{@link at.ac.tuwien.big.virtmodel.vLang.Expression <em>Expression</em>}'.
@@ -3124,6 +3153,16 @@ public interface VLangPackage extends EPackage
      * @generated
      */
     EReference FULL_FUNCTION_ASSIGNMENT__EXPR = eINSTANCE.getFullFunctionAssignment_Expr();
+
+    /**
+     * The meta object literal for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.BasicExpressionImpl <em>Basic Expression</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see at.ac.tuwien.big.virtmodel.vLang.impl.BasicExpressionImpl
+     * @see at.ac.tuwien.big.virtmodel.vLang.impl.VLangPackageImpl#getBasicExpression()
+     * @generated
+     */
+    EClass BASIC_EXPRESSION = eINSTANCE.getBasicExpression();
 
     /**
      * The meta object literal for the '{@link at.ac.tuwien.big.virtmodel.vLang.impl.ExpressionImpl <em>Expression</em>}' class.

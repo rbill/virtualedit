@@ -20,7 +20,7 @@ package at.ac.tuwien.big.virtmodel.vLang;
  * @model
  * @generated
  */
-public interface OclFunction extends Expression
+public interface OclFunction extends BasicExpression, Expression
 {
   /**
    * Returns the value of the '<em><b>Ocl Func</b></em>' attribute.

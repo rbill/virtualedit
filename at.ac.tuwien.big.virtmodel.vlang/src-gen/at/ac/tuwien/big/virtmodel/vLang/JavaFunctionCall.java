@@ -20,7 +20,7 @@ package at.ac.tuwien.big.virtmodel.vLang;
  * @model
  * @generated
  */
-public interface JavaFunctionCall extends FunctionPars
+public interface JavaFunctionCall extends CalculatedValue, FunctionPars
 {
   /**
    * Returns the value of the '<em><b>Function</b></em>' reference.

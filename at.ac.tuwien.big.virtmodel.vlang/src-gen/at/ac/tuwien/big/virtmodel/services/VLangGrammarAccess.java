@@ -709,55 +709,74 @@ public class VLangGrammarAccess extends AbstractGrammarElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "at.ac.tuwien.big.virtmodel.VLang.FunctionAssignment");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
 		private final RuleCall cFullFunctionAssignmentParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
-		private final RuleCall cExpressionParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		private final RuleCall cBasicExpressionParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
 		
 		//FunctionAssignment:
-		//	FullFunctionAssignment | Expression;
+		//	FullFunctionAssignment | BasicExpression;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//FullFunctionAssignment | Expression
+		//FullFunctionAssignment | BasicExpression
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
 		//FullFunctionAssignment
 		public RuleCall getFullFunctionAssignmentParserRuleCall_0() { return cFullFunctionAssignmentParserRuleCall_0; }
 		
-		//Expression
-		public RuleCall getExpressionParserRuleCall_1() { return cExpressionParserRuleCall_1; }
+		//BasicExpression
+		public RuleCall getBasicExpressionParserRuleCall_1() { return cBasicExpressionParserRuleCall_1; }
 	}
 	public class FullFunctionAssignmentElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "at.ac.tuwien.big.virtmodel.VLang.FullFunctionAssignment");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Group cGroup_0 = (Group)cGroup.eContents().get(0);
-		private final Assignment cParametersAssignment_0_0 = (Assignment)cGroup_0.eContents().get(0);
-		private final RuleCall cParametersParDefParserRuleCall_0_0_0 = (RuleCall)cParametersAssignment_0_0.eContents().get(0);
-		private final Keyword cHyphenMinusGreaterThanSignKeyword_0_1 = (Keyword)cGroup_0.eContents().get(1);
-		private final Assignment cExprAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cExprExpressionParserRuleCall_1_0 = (RuleCall)cExprAssignment_1.eContents().get(0);
+		private final Assignment cParametersAssignment_0 = (Assignment)cGroup.eContents().get(0);
+		private final RuleCall cParametersParDefParserRuleCall_0_0 = (RuleCall)cParametersAssignment_0.eContents().get(0);
+		private final Keyword cHyphenMinusGreaterThanSignKeyword_1 = (Keyword)cGroup.eContents().get(1);
+		private final Assignment cExprAssignment_2 = (Assignment)cGroup.eContents().get(2);
+		private final RuleCall cExprBasicExpressionParserRuleCall_2_0 = (RuleCall)cExprAssignment_2.eContents().get(0);
 		
 		//FullFunctionAssignment:
-		//	(parameters=ParDef '->')? expr=Expression;
+		//	parameters=ParDef '->' expr=BasicExpression;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//(parameters=ParDef '->')? expr=Expression
+		//parameters=ParDef '->' expr=BasicExpression
 		public Group getGroup() { return cGroup; }
 		
-		//(parameters=ParDef '->')?
-		public Group getGroup_0() { return cGroup_0; }
-		
 		//parameters=ParDef
-		public Assignment getParametersAssignment_0_0() { return cParametersAssignment_0_0; }
+		public Assignment getParametersAssignment_0() { return cParametersAssignment_0; }
 		
 		//ParDef
-		public RuleCall getParametersParDefParserRuleCall_0_0_0() { return cParametersParDefParserRuleCall_0_0_0; }
+		public RuleCall getParametersParDefParserRuleCall_0_0() { return cParametersParDefParserRuleCall_0_0; }
 		
 		//'->'
-		public Keyword getHyphenMinusGreaterThanSignKeyword_0_1() { return cHyphenMinusGreaterThanSignKeyword_0_1; }
+		public Keyword getHyphenMinusGreaterThanSignKeyword_1() { return cHyphenMinusGreaterThanSignKeyword_1; }
 		
-		//expr=Expression
-		public Assignment getExprAssignment_1() { return cExprAssignment_1; }
+		//expr=BasicExpression
+		public Assignment getExprAssignment_2() { return cExprAssignment_2; }
 		
-		//Expression
-		public RuleCall getExprExpressionParserRuleCall_1_0() { return cExprExpressionParserRuleCall_1_0; }
+		//BasicExpression
+		public RuleCall getExprBasicExpressionParserRuleCall_2_0() { return cExprBasicExpressionParserRuleCall_2_0; }
+	}
+	public class BasicExpressionElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "at.ac.tuwien.big.virtmodel.VLang.BasicExpression");
+		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
+		private final RuleCall cSingleValueParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
+		private final RuleCall cOclFunctionParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		private final RuleCall cCalculatedValueParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
+		
+		//BasicExpression:
+		//	SingleValue | OclFunction | CalculatedValue;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//SingleValue | OclFunction | CalculatedValue
+		public Alternatives getAlternatives() { return cAlternatives; }
+		
+		//SingleValue
+		public RuleCall getSingleValueParserRuleCall_0() { return cSingleValueParserRuleCall_0; }
+		
+		//OclFunction
+		public RuleCall getOclFunctionParserRuleCall_1() { return cOclFunctionParserRuleCall_1; }
+		
+		//CalculatedValue
+		public RuleCall getCalculatedValueParserRuleCall_2() { return cCalculatedValueParserRuleCall_2; }
 	}
 	public class ExpressionElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "at.ac.tuwien.big.virtmodel.VLang.Expression");
@@ -1234,21 +1253,25 @@ public class VLangGrammarAccess extends AbstractGrammarElementFinder {
 	public class CalculatedValueElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "at.ac.tuwien.big.virtmodel.VLang.CalculatedValue");
 		private final Alternatives cAlternatives = (Alternatives)rule.eContents().get(1);
-		private final RuleCall cFunctionCallParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
-		private final RuleCall cIfThenElseParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		private final RuleCall cJavaFunctionCallParserRuleCall_0 = (RuleCall)cAlternatives.eContents().get(0);
+		private final RuleCall cFunctionCallParserRuleCall_1 = (RuleCall)cAlternatives.eContents().get(1);
+		private final RuleCall cIfThenElseParserRuleCall_2 = (RuleCall)cAlternatives.eContents().get(2);
 		
 		//CalculatedValue:
-		//	FunctionCall | IfThenElse;
+		//	JavaFunctionCall | FunctionCall | IfThenElse;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//FunctionCall | IfThenElse
+		//JavaFunctionCall | FunctionCall | IfThenElse
 		public Alternatives getAlternatives() { return cAlternatives; }
 		
+		//JavaFunctionCall
+		public RuleCall getJavaFunctionCallParserRuleCall_0() { return cJavaFunctionCallParserRuleCall_0; }
+		
 		//FunctionCall
-		public RuleCall getFunctionCallParserRuleCall_0() { return cFunctionCallParserRuleCall_0; }
+		public RuleCall getFunctionCallParserRuleCall_1() { return cFunctionCallParserRuleCall_1; }
 		
 		//IfThenElse
-		public RuleCall getIfThenElseParserRuleCall_1() { return cIfThenElseParserRuleCall_1; }
+		public RuleCall getIfThenElseParserRuleCall_2() { return cIfThenElseParserRuleCall_2; }
 	}
 	public class IfThenElseElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "at.ac.tuwien.big.virtmodel.VLang.IfThenElse");
@@ -1652,6 +1675,7 @@ public class VLangGrammarAccess extends AbstractGrammarElementFinder {
 	private final FixedValueElements pFixedValue;
 	private final FunctionAssignmentElements pFunctionAssignment;
 	private final FullFunctionAssignmentElements pFullFunctionAssignment;
+	private final BasicExpressionElements pBasicExpression;
 	private final ExpressionElements pExpression;
 	private final OclFunctionElements pOclFunction;
 	private final FullFunctionElements pFullFunction;
@@ -1707,6 +1731,7 @@ public class VLangGrammarAccess extends AbstractGrammarElementFinder {
 		this.pFixedValue = new FixedValueElements();
 		this.pFunctionAssignment = new FunctionAssignmentElements();
 		this.pFullFunctionAssignment = new FullFunctionAssignmentElements();
+		this.pBasicExpression = new BasicExpressionElements();
 		this.pExpression = new ExpressionElements();
 		this.pOclFunction = new OclFunctionElements();
 		this.pFullFunction = new FullFunctionElements();
@@ -1959,7 +1984,7 @@ public class VLangGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//FunctionAssignment:
-	//	FullFunctionAssignment | Expression;
+	//	FullFunctionAssignment | BasicExpression;
 	public FunctionAssignmentElements getFunctionAssignmentAccess() {
 		return pFunctionAssignment;
 	}
@@ -1969,13 +1994,23 @@ public class VLangGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//FullFunctionAssignment:
-	//	(parameters=ParDef '->')? expr=Expression;
+	//	parameters=ParDef '->' expr=BasicExpression;
 	public FullFunctionAssignmentElements getFullFunctionAssignmentAccess() {
 		return pFullFunctionAssignment;
 	}
 	
 	public ParserRule getFullFunctionAssignmentRule() {
 		return getFullFunctionAssignmentAccess().getRule();
+	}
+	
+	//BasicExpression:
+	//	SingleValue | OclFunction | CalculatedValue;
+	public BasicExpressionElements getBasicExpressionAccess() {
+		return pBasicExpression;
+	}
+	
+	public ParserRule getBasicExpressionRule() {
+		return getBasicExpressionAccess().getRule();
 	}
 	
 	//Expression:
@@ -2113,7 +2148,7 @@ public class VLangGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//CalculatedValue:
-	//	FunctionCall | IfThenElse;
+	//	JavaFunctionCall | FunctionCall | IfThenElse;
 	public CalculatedValueElements getCalculatedValueAccess() {
 		return pCalculatedValue;
 	}

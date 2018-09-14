@@ -119,7 +119,11 @@ public class Page implements Serializable {
 			ValueDescManager vdm = prm.getVDM(type);
 			//state.augmentVDM(vdm);
 			MyInputDesc input = state.getInput(vdm);
-			return prm.getWeka(type).guess(input)[0];
+			try {
+				return prm.getWeka(type).guess(input)[0];
+			} catch (NullPointerException e) {
+				return 0.0;
+			}
 		default:
 			System.err.println("Similarity type "+type+" NYI!");
 			return 0.0;
@@ -295,7 +299,7 @@ public class Page implements Serializable {
 		this.prm = prm;
 		Element mainContent = doc.getElementById("mw-content-text");
 		setCompleteContent(getContent(mainContent));
-		allLinks = GetPages.getContentLinks(doc, url);
+		allLinks = prm.getContentLinks(doc, url);
 		allLinks.removeIf(x->{
 			String root = GetPages.getRoot(x);
 			return root.contains(":"); 

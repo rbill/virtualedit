@@ -5,6 +5,7 @@ package at.ac.tuwien.big.virtmodel.vLang.impl;
 
 import at.ac.tuwien.big.virtmodel.vLang.AssignStatement;
 import at.ac.tuwien.big.virtmodel.vLang.BasicAction;
+import at.ac.tuwien.big.virtmodel.vLang.BasicExpression;
 import at.ac.tuwien.big.virtmodel.vLang.Block;
 import at.ac.tuwien.big.virtmodel.vLang.CalculatedValue;
 import at.ac.tuwien.big.virtmodel.vLang.DeleteAssignment;
@@ -212,6 +213,13 @@ public class VLangPackageImpl extends EPackageImpl implements VLangPackage
    * @generated
    */
   private EClass fullFunctionAssignmentEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass basicExpressionEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -972,6 +980,16 @@ public class VLangPackageImpl extends EPackageImpl implements VLangPackage
    * <!-- end-user-doc -->
    * @generated
    */
+  public EClass getBasicExpression()
+  {
+    return basicExpressionEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
   public EClass getExpression()
   {
     return expressionEClass;
@@ -1591,6 +1609,8 @@ public class VLangPackageImpl extends EPackageImpl implements VLangPackage
     createEReference(fullFunctionAssignmentEClass, FULL_FUNCTION_ASSIGNMENT__PARAMETERS);
     createEReference(fullFunctionAssignmentEClass, FULL_FUNCTION_ASSIGNMENT__EXPR);
 
+    basicExpressionEClass = createEClass(BASIC_EXPRESSION);
+
     expressionEClass = createEClass(EXPRESSION);
 
     oclFunctionEClass = createEClass(OCL_FUNCTION);
@@ -1708,12 +1728,14 @@ public class VLangPackageImpl extends EPackageImpl implements VLangPackage
     functionDomainScopeEClass.getESuperTypes().add(this.getFunctionScope());
     setScopeEClass.getESuperTypes().add(this.getFunctionScope());
     singleScopeEClass.getESuperTypes().add(this.getFunctionScope());
+    singleValueEClass.getESuperTypes().add(this.getBasicExpression());
     singleValueEClass.getESuperTypes().add(this.getExpression());
     singleValueEClass.getESuperTypes().add(this.getFunctionPar());
     fixedValueEClass.getESuperTypes().add(this.getSingleValue());
     functionAssignmentEClass.getESuperTypes().add(this.getFilter());
     fullFunctionAssignmentEClass.getESuperTypes().add(this.getFunctionAssignment());
-    expressionEClass.getESuperTypes().add(this.getFunctionAssignment());
+    basicExpressionEClass.getESuperTypes().add(this.getFunctionAssignment());
+    oclFunctionEClass.getESuperTypes().add(this.getBasicExpression());
     oclFunctionEClass.getESuperTypes().add(this.getExpression());
     fullFunctionEClass.getESuperTypes().add(this.getExpression());
     blockEClass.getESuperTypes().add(this.getFullFunction());
@@ -1729,6 +1751,7 @@ public class VLangPackageImpl extends EPackageImpl implements VLangPackage
     ifThenElseEClass.getESuperTypes().add(this.getCalculatedValue());
     functionCallEClass.getESuperTypes().add(this.getCalculatedValue());
     functionCallEClass.getESuperTypes().add(this.getFunctionPars());
+    javaFunctionCallEClass.getESuperTypes().add(this.getCalculatedValue());
     javaFunctionCallEClass.getESuperTypes().add(this.getFunctionPars());
 
     // Initialize classes and features; add operations and parameters
@@ -1804,7 +1827,9 @@ public class VLangPackageImpl extends EPackageImpl implements VLangPackage
 
     initEClass(fullFunctionAssignmentEClass, FullFunctionAssignment.class, "FullFunctionAssignment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getFullFunctionAssignment_Parameters(), this.getParDef(), null, "parameters", null, 0, 1, FullFunctionAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getFullFunctionAssignment_Expr(), this.getExpression(), null, "expr", null, 0, 1, FullFunctionAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getFullFunctionAssignment_Expr(), this.getBasicExpression(), null, "expr", null, 0, 1, FullFunctionAssignment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(basicExpressionEClass, BasicExpression.class, "BasicExpression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
     initEClass(expressionEClass, Expression.class, "Expression", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

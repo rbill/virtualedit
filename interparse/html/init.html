@@ -1,0 +1,39 @@
+<html>
+<head>
+<title>Update things</title>
+<script type="text/javascript">
+
+function submitThing() {
+	fetch("init?prefix="+encodeURIComponent(document.getElementById('prefix').value)+"&category="+encodeURIComponent(document.getElementById('category').value)+"&startcategories="+encodeURIComponent(document.getElementById('startcategories').value)
+	
+	, {'method': 'POST',
+	headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+	 'body': JSON.stringify({'prefix': document.getElementById('prefix').value, 'category': document.getElementById('category').value, 'startcategories': document.getElementById('startcategories').value})	
+	}).then((resp)=>resp.json()).then(json=>{
+		window.location = "index.html";
+	})
+}
+
+
+
+function trainThing() {
+	fetch("train", {'method': 'POST'}).then((resp)=>resp.json()).then(json=>{
+	})
+}
+</script>
+</head>
+<body>
+<form>
+<p>Required prefix: <input id="prefix" type="text" value="de.wikipedia.org/wiki/" ></p>
+<p>Category name: <input id="category" type="text" value="Kategorie" ></p>
+<p> Starting categories: <br>
+<textarea id="startcategories" style="width:50em; height:10em;">https://de.wikipedia.org/wiki/Kategorie:Politische_Partei</textarea></p>
+<p><button id="submitbutton" onclick="submitThing(); return false;">Submit</button></p>
+
+<p><button id="trainbutton" onclick="trainThing(); return false;">Start training</button></p>
+</form>
+</body>
+</html>

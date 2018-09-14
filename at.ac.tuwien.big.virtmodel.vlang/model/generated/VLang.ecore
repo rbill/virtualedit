@@ -71,7 +71,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//SingleValue"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="SingleValue" eSuperTypes="#//Expression #//FunctionPar"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SingleValue" eSuperTypes="#//BasicExpression #//Expression #//FunctionPar"/>
   <eClassifiers xsi:type="ecore:EClass" name="FixedValue" eSuperTypes="#//SingleValue">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="number" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="string" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -82,11 +82,12 @@
   <eClassifiers xsi:type="ecore:EClass" name="FullFunctionAssignment" eSuperTypes="#//FunctionAssignment">
     <eStructuralFeatures xsi:type="ecore:EReference" name="parameters" eType="#//ParDef"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="expr" eType="#//Expression"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expr" eType="#//BasicExpression"
         containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Expression" eSuperTypes="#//FunctionAssignment"/>
-  <eClassifiers xsi:type="ecore:EClass" name="OclFunction" eSuperTypes="#//Expression">
+  <eClassifiers xsi:type="ecore:EClass" name="BasicExpression" eSuperTypes="#//FunctionAssignment"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Expression"/>
+  <eClassifiers xsi:type="ecore:EClass" name="OclFunction" eSuperTypes="#//BasicExpression #//Expression">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="oclFunc" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FullFunction" eSuperTypes="#//Expression"/>
@@ -148,7 +149,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="FunctionCall" eSuperTypes="#//CalculatedValue #//FunctionPars">
     <eStructuralFeatures xsi:type="ecore:EReference" name="function" eType="#//FunctionDef"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="JavaFunctionCall" eSuperTypes="#//FunctionPars">
+  <eClassifiers xsi:type="ecore:EClass" name="JavaFunctionCall" eSuperTypes="#//CalculatedValue #//FunctionPars">
     <eStructuralFeatures xsi:type="ecore:EReference" name="function" eType="#//JavaFunctionDef"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FunctionPars">

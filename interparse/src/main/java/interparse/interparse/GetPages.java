@@ -23,42 +23,6 @@ public class GetPages {
 		return PageReader.instance().getHtml(url);
 	}
 
-	public static List<String> getLinks(String url) {
-		try {
-			return getLinks(PageReader.instance().getHtml(url), url);
-		} catch (IOException e) {
-			System.err.println("Could not get URL " + url + ": " + e.getMessage());
-			return Collections.emptyList();
-		}
-	}
-
-	public static List<String> getContentLinks(String url) {
-		try {
-			return getContentLinks(PageReader.instance().getHtml(url), url);
-		} catch (IOException e) {
-			System.err.println("Could not get URL " + url + ": " + e.getMessage());
-			return Collections.emptyList();
-		}
-	}
-
-	private static Function<String, Boolean> mainFilter = (url) -> {
-		String root = getRoot(url);
-		String[] spl = root.split(":");
-		for (int i = 0; i < spl.length-1; ++i) {
-			if (!"Kategorie".equals(spl[i].trim())) {
-				return false;
-			}
-		}
-		if (!url.startsWith("https://de.wikipedia.org/wiki/") && !url.startsWith("http://de.wikipedia.org/wiki/")) {
-			return false;
-		}
-		return true;
-	};
-
-	public static List<String> getContentLinks(Document doc, String url ) {
-		Element contentId = doc.getElementById("mw-content-text");
-		return getLinks(contentId, url, mainFilter);
-	}
 	
 	public static String getAbsolutePart(String url) {
 		url = removeAnchorPar(url);

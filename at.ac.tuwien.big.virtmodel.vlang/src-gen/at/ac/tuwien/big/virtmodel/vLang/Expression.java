@@ -3,6 +3,7 @@
  */
 package at.ac.tuwien.big.virtmodel.vLang;
 
+import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->
@@ -14,6 +15,6 @@ package at.ac.tuwien.big.virtmodel.vLang;
  * @model
  * @generated
  */
-public interface Expression extends FunctionAssignment
+public interface Expression extends EObject
 {
 } // Expression

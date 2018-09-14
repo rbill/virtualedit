@@ -85,6 +85,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VLang.ecore#//FullFunctionAssignment/parameters"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VLang.ecore#//FullFunctionAssignment/expr"/>
     </genClasses>
+    <genClasses ecoreClass="VLang.ecore#//BasicExpression"/>
     <genClasses ecoreClass="VLang.ecore#//Expression"/>
     <genClasses ecoreClass="VLang.ecore#//OclFunction">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VLang.ecore#//OclFunction/oclFunc"/>

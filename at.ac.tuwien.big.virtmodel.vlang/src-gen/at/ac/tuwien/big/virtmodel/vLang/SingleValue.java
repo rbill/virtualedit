@@ -14,6 +14,6 @@ package at.ac.tuwien.big.virtmodel.vLang;
  * @model
  * @generated
  */
-public interface SingleValue extends Expression, FunctionPar
+public interface SingleValue extends BasicExpression, Expression, FunctionPar
 {
 } // SingleValue

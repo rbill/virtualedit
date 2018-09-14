@@ -195,8 +195,6 @@ public class VLangSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 	
 	/**
 	 * Contexts:
-	 *     Filter returns Block
-	 *     FunctionAssignment returns Block
 	 *     Expression returns Block
 	 *     FullFunction returns Block
 	 *     Block returns Block
@@ -238,6 +236,7 @@ public class VLangSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 	 *     SingleValue returns FixedValue
 	 *     FixedValue returns FixedValue
 	 *     FunctionAssignment returns FixedValue
+	 *     BasicExpression returns FixedValue
 	 *     Expression returns FixedValue
 	 *     FunctionPar returns FixedValue
 	 *
@@ -309,10 +308,19 @@ public class VLangSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 	 *     FullFunctionAssignment returns FullFunctionAssignment
 	 *
 	 * Constraint:
-	 *     (parameters=ParDef? expr=Expression)
+	 *     (parameters=ParDef expr=BasicExpression)
 	 */
 	protected void sequence_FullFunctionAssignment(ISerializationContext context, FullFunctionAssignment semanticObject) {
-		genericSequencer.createSequence(context, semanticObject);
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, VLangPackage.Literals.FULL_FUNCTION_ASSIGNMENT__PARAMETERS) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, VLangPackage.Literals.FULL_FUNCTION_ASSIGNMENT__PARAMETERS));
+			if (transientValues.isValueTransient(semanticObject, VLangPackage.Literals.FULL_FUNCTION_ASSIGNMENT__EXPR) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, VLangPackage.Literals.FULL_FUNCTION_ASSIGNMENT__EXPR));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getFullFunctionAssignmentAccess().getParametersParDefParserRuleCall_0_0(), semanticObject.getParameters());
+		feeder.accept(grammarAccess.getFullFunctionAssignmentAccess().getExprBasicExpressionParserRuleCall_2_0(), semanticObject.getExpr());
+		feeder.finish();
 	}
 	
 	
@@ -321,6 +329,7 @@ public class VLangSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 	 *     Filter returns FunctionCall
 	 *     SingleValue returns FunctionCall
 	 *     FunctionAssignment returns FunctionCall
+	 *     BasicExpression returns FunctionCall
 	 *     Expression returns FunctionCall
 	 *     CalculatedValue returns FunctionCall
 	 *     FunctionCall returns FunctionCall
@@ -392,7 +401,14 @@ public class VLangSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 	
 	/**
 	 * Contexts:
+	 *     Filter returns JavaFunctionCall
+	 *     SingleValue returns JavaFunctionCall
+	 *     FunctionAssignment returns JavaFunctionCall
+	 *     BasicExpression returns JavaFunctionCall
+	 *     Expression returns JavaFunctionCall
+	 *     CalculatedValue returns JavaFunctionCall
 	 *     JavaFunctionCall returns JavaFunctionCall
+	 *     FunctionPar returns JavaFunctionCall
 	 *
 	 * Constraint:
 	 *     (function=[JavaFunctionDef|ID] (params+=FunctionPar params+=FunctionPar*)?)
@@ -456,6 +472,7 @@ public class VLangSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 	 *     Filter returns IfThenElse
 	 *     SingleValue returns IfThenElse
 	 *     FunctionAssignment returns IfThenElse
+	 *     BasicExpression returns IfThenElse
 	 *     Expression returns IfThenElse
 	 *     CalculatedValue returns IfThenElse
 	 *     IfThenElse returns IfThenElse
@@ -596,6 +613,7 @@ public class VLangSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 	 * Contexts:
 	 *     Filter returns OclFunction
 	 *     FunctionAssignment returns OclFunction
+	 *     BasicExpression returns OclFunction
 	 *     Expression returns OclFunction
 	 *     OclFunction returns OclFunction
 	 *

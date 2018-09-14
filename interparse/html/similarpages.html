@@ -128,10 +128,20 @@ function update() {
 	});
 
 }	
+
 	
 	
 	function short(url) {
 		return decodeURIComponent(url.indexOf('/')>=0?url.substr(url.lastIndexOf('/')+1):url);
+	}
+	
+	function myround(number) {
+		var ret = number.toPrecision(3);
+		if (ret.indexOf("0") == 0) {
+			return ret.substr(1);
+		} else {
+			return ret;
+		}
 	}
 	
 	function calcrecall() {
@@ -236,15 +246,15 @@ function update() {
 			var td1 = document.createElement("td");
 			td1.appendChild(document.createTextNode(recall1));
 			if (types[i] == 'real') {
-				latexText2_1 = "Recall 1 & "+recall1 + " "+ latexText2_1;
-				latexText2_2 = "Recall 2 & "+recall2 + " "+ latexText2_2; 
-				latexText2_3 = "Precision 1 & "+precision1 + " "+ latexText2_3;
-				latexText2_4 = "Precision 2 & "+precision2 + " "+ latexText2_4; 
+				latexText2_1 = "Recall 1 & "+myround(recall1) + " "+ latexText2_1;
+				latexText2_2 = "Recall 2 & "+myround(recall2) + " "+ latexText2_2; 
+				latexText2_3 = "Precision 1 & "+myround(precision1) + " "+ latexText2_3;
+				latexText2_4 = "Precision 2 & "+myround(precision2) + " "+ latexText2_4; 
 			} else {
-				latexText2_1 = latexText2_1+ " & "+recall1;
-				latexText2_2 = latexText2_2+ " & "+recall2;
-				latexText2_3 = latexText2_3+ " & "+precision1;
-				latexText2_4 = latexText2_4+ " & "+precision2;
+				latexText2_1 = latexText2_1+ " & "+myround(recall1);
+				latexText2_2 = latexText2_2+ " & "+myround(recall2);
+				latexText2_3 = latexText2_3+ " & "+myround(precision1);
+				latexText2_4 = latexText2_4+ " & "+myround(precision2);
 			}
 			tr1.appendChild(td1);
 			var td2 = document.createElement("td");

@@ -87,6 +87,7 @@ public class VLangFactoryImpl extends EFactoryImpl implements VLangFactory
       case VLangPackage.FIXED_VALUE: return createFixedValue();
       case VLangPackage.FUNCTION_ASSIGNMENT: return createFunctionAssignment();
       case VLangPackage.FULL_FUNCTION_ASSIGNMENT: return createFullFunctionAssignment();
+      case VLangPackage.BASIC_EXPRESSION: return createBasicExpression();
       case VLangPackage.EXPRESSION: return createExpression();
       case VLangPackage.OCL_FUNCTION: return createOclFunction();
       case VLangPackage.FULL_FUNCTION: return createFullFunction();
@@ -380,6 +381,17 @@ public class VLangFactoryImpl extends EFactoryImpl implements VLangFactory
   {
     FullFunctionAssignmentImpl fullFunctionAssignment = new FullFunctionAssignmentImpl();
     return fullFunctionAssignment;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public BasicExpression createBasicExpression()
+  {
+    BasicExpressionImpl basicExpression = new BasicExpressionImpl();
+    return basicExpression;
   }
 
   /**

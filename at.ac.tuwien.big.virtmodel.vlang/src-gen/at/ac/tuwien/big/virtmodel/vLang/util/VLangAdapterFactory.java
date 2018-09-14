@@ -181,6 +181,11 @@ public class VLangAdapterFactory extends AdapterFactoryImpl
         return createFullFunctionAssignmentAdapter();
       }
       @Override
+      public Adapter caseBasicExpression(BasicExpression object)
+      {
+        return createBasicExpressionAdapter();
+      }
+      @Override
       public Adapter caseExpression(Expression object)
       {
         return createExpressionAdapter();
@@ -618,6 +623,21 @@ public class VLangAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createFullFunctionAssignmentAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link at.ac.tuwien.big.virtmodel.vLang.BasicExpression <em>Basic Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see at.ac.tuwien.big.virtmodel.vLang.BasicExpression
+   * @generated
+   */
+  public Adapter createBasicExpressionAdapter()
   {
     return null;
   }

@@ -4,7 +4,7 @@
 <script type="text/javascript">
 
 function update() {
-	fetch("values").then((resp)=>resp.json()).then(json=>{
+	fetch("unknown").then((resp)=>resp.json()).then(json=>{
 		var table = document.getElementById('mainTable');
 		table.innerHTML = "<tr><td>Link</td><td>Yes</td><td>No</td></tr>";
 		for (let i = 0; i < json.length; ++i) {
@@ -16,7 +16,7 @@ function update() {
 }
 
 function makeUrl(url,value) {
-	fetch("values?url="+encodeURIComponent(url)+"&use="+value, {'method': 'POST'});
+	fetch("setstate?url="+encodeURIComponent(url)+"&type=usecategory&use="+value, {'method': 'POST'});
 }
 
 window.onload = update;
