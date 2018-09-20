@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: at.ac.tuwien.big.virtlang
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: at.ac.tuwien.big.virtlang; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib,
+ org.antlr.runtime,
+ org.eclipse.xtext.util,
+ org.eclipse.xtend.lib,
+ org.eclipse.emf.common
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: at.ac.tuwien.big.virtlang,
+ at.ac.tuwien.big.virtlang.services,
+ at.ac.tuwien.big.virtlang.virtLang,
+ at.ac.tuwien.big.virtlang.parser.antlr.internal,
+ at.ac.tuwien.big.virtlang.generator,
+ at.ac.tuwien.big.virtlang.virtLang.impl,
+ at.ac.tuwien.big.virtlang.validation,
+ at.ac.tuwien.big.virtlang.virtLang.util,
+ at.ac.tuwien.big.virtlang.serializer,
+ at.ac.tuwien.big.virtlang.parser.antlr,
+ at.ac.tuwien.big.virtlang.scoping
+Import-Package: org.apache.log4j

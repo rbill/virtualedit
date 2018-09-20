@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<school:School
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:school="http://www.example.org/school"
+    xsi:schemaLocation="http://www.example.org/school school.ecore">
+  <pupils name="Pupile 1"
+      inclass="">
+    <grades
+        course="//@courses.0"
+        grade="1"
+        year="2001"/>
+  </pupils>
+  <pupils name="Pupile 2"
+      inclass="2a">
+    <grades
+        course="//@courses.0"
+        grade="2"
+        year="2002"/>
+    <grades
+        course="//@courses.1"
+        grade="3"
+        year="2003"/>
+  </pupils>
+  <courses name="Course 1"/>
+  <courses name="Course "/>
+</school:School>

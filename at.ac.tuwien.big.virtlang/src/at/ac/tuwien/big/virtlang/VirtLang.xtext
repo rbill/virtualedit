@@ -1,0 +1,71 @@
+grammar at.ac.tuwien.big.virtlang.VirtLang with org.eclipse.xtext.common.Terminals
+
+generate virtLang "http://www.ac.at/tuwien/big/virtlang/VirtLang"
+
+VirtualModel:
+	(useModels+=UseModel ';')*
+	(objectCreators+= ObjectCreator)*;
+
+
+UseModel:
+	'use' url=STRING 'as' name=ID
+;
+
+fragment parameterTypes:
+	(pars+= ParameterType (',' pars+= ParameterType)*)?
+;
+
+ParameterType:
+	name=ID (':' type=ClassRef)?
+;
+	
+ObjectCreator:
+	'objects' name=ID '(' parameterTypes ')' ':' className=ClassRef '{'
+		(
+			((def+=Definition) |
+			 (fix+=Fixation) | 
+			(inv+= Invariant) |
+			(sel+= Selection)) ';'
+		)* 
+	'}'
+;
+
+ClassRef:
+	ns=[UseModel|ID] '::' classname=ID
+;
+
+Definition:
+	VarDefinition | FeatureAssignment
+;
+
+VarDefinition:
+	'var' name=ID '=' expr=Expression
+;
+
+FeatureAssignment:
+	name=ID ((isFixed?='=') | '+=') expr=Expression
+;
+
+Fixation:
+	'fix' feature=[FeatureAssignment|ID]
+;
+
+Invariant:
+	'inv' name=ID ':' expr=Expression
+;
+
+Selection:
+	'sel' name=ID ':' expr=Expression
+;
+
+Expression:
+	BasicOCLExpression | CreatingObjectOCLExpression  
+;
+
+BasicOCLExpression:
+	'ocl' expression=STRING
+;
+
+CreatingObjectOCLExpression:
+	'create' creator=[ObjectCreator|ID] '(' expr=Expression ')'
+;
