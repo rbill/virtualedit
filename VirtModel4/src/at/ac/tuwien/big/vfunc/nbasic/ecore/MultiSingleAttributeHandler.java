@@ -10,8 +10,10 @@ import org.eclipse.jdt.annotation.NonNull;
 
 import at.ac.tuwien.big.vfunc.basic.Change;
 import at.ac.tuwien.big.vfunc.basic.ChangeListenable;
+import at.ac.tuwien.big.vfunc.nbasic.AbstractFunc;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyerWithLocalImpl;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
+import at.ac.tuwien.big.vfunc.nbasic.QueryResult;
 
 public class MultiSingleAttributeHandler<T> implements SingleAttributeHandler<T> {
 	
@@ -25,33 +27,48 @@ public class MultiSingleAttributeHandler<T> implements SingleAttributeHandler<T>
 	}
 
 	@Override
-	public boolean isSet() {
-		return !list.isEmpty();
+	public T get() {
+		if (this.list.isEmpty()) {
+			return null;
+		}
+		return this.list.get(0);
 	}
 
 	@Override
-	public T get() {
-		if (list.isEmpty()) {
-			return null;
-		}
-		return list.get(0);
+	public List<WeakReference<BasicListenable>> getBasicChangeListeners() {
+		return this.multiHandler.getBasicChangeListeners();
+	}
+
+	@Override
+	public List<BasicListenable> getLocalBasicChangeListeners() {
+		return this.multiHandler.getLocalBasicChangeListeners();
+	}
+
+	@Override
+	public AbstractFunc<?, ?, ? extends QueryResult<?, ?>> getTreeposFuncOrNull() {
+		return this.multiHandler.getTreeposFuncOrNull();
+	}
+
+	@Override
+	public boolean isSet() {
+		return !this.list.isEmpty();
 	}
 
 	@Override
 	public void set(T newObj) {
 		if (newObj == null) {
 			//Clear
-			list.clear();
+			this.list.clear();
 		} else {
-			if (list.isEmpty()) {
-				list.add(newObj);
+			if (this.list.isEmpty()) {
+				this.list.add(newObj);
 			} else {
-				if (Objects.equals(list.get(0), newObj)) {
+				if (Objects.equals(this.list.get(0), newObj)) {
 					return;
 				} else {
-					if (list.contains(newObj)) {
+					if (this.list.contains(newObj)) {
 						//Remove everything except it
-						Iterator<T> iter = list.iterator();
+						Iterator<T> iter = this.list.iterator();
 						while (iter.hasNext()) {
 							if (!Objects.equals(iter.next(), newObj)) {
 								iter.remove();
@@ -62,7 +79,7 @@ public class MultiSingleAttributeHandler<T> implements SingleAttributeHandler<T>
 						}
 					} else {
 						//Replace an existing value
-						list.set(0, newObj);
+						this.list.set(0, newObj);
 					}
 				}
 			}
@@ -71,17 +88,7 @@ public class MultiSingleAttributeHandler<T> implements SingleAttributeHandler<T>
 
 	@Override
 	public void unset() {
-		multiHandler.unset();
-	}
-
-	@Override
-	public List<WeakReference<BasicListenable>> getBasicChangeListeners() {
-		return multiHandler.getBasicChangeListeners();
-	}
-
-	@Override
-	public List<BasicListenable> getLocalBasicChangeListeners() {
-		return multiHandler.getLocalBasicChangeListeners();
+		this.multiHandler.unset();
 	}
 
 }

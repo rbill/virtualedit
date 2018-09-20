@@ -15,17 +15,17 @@ public class BasicColScopeChange<This,Src> extends BasicScopeChange<This, Src> i
 	public BasicColScopeChange(This source, Iterable<? extends Src> added, Iterable<? extends Src> deleted) {
 		super(source);
 		this.added = added;
-		this.added = deleted;
+		this.deleted = deleted;
 	}
 
 	@Override
 	public Iterable<? extends Src> getAdded() {
-		return added;
+		return this.added;
 	}
 
 	@Override
 	public Iterable<? extends Src> getDeleted() {
-		return deleted;
+		return this.deleted;
 	}
 
 }

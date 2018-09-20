@@ -18,26 +18,6 @@ import at.ac.tuwien.big.xtext.util.IteratorUtils;
 
 public interface Scope<Src> extends ScopeNotifyer<Scope<Src>, Src> {
 
-	boolean contains(Src src);
-	
-
-	public default void notifyAdded(Src src) {
-		notifyChanged(Collections.singleton(src), Collections.emptyList());
-	}
-	
-	public default void notifyAdded(Src... src) {
-		notifyChanged(Arrays.asList(src), Collections.emptyList());
-	}
-	
-
-	public default void notifyDeleted(Src src) {
-		notifyChanged(Collections.emptyList(), Collections.singletonList(src));
-	}
-
-	public default void notifyDeleted(Src... src) {
-		notifyChanged(Collections.emptyList(), Arrays.asList(src));
-	}
-	
 	class FilteredScope<Src> implements Scope<Src>, ModifiedScopeChangeListenable<Scope<Src>, Src> {
 
 		protected final Function<Src,Boolean> filter;
@@ -52,19 +32,13 @@ public interface Scope<Src> extends ScopeNotifyer<Scope<Src>, Src> {
 		}
 		
 		@Override
-		public boolean contains(Src src) {
-			Boolean ret = filter.apply(src);
-			return ret != null && ret && baseScope.contains(src);
+		public void changedFiltered(FilteredScopeChange<? extends Scope<Src>, ? extends Src> fsc) {
+			notifyChanged(filter.andThen(x->fsc.wasAdded(x)), (y)->fsc.wasDeleted(y));
 		}
 
 		@Override
-		public Class<Src> getSourceClass() {
-			return baseScope.getSourceClass();
-		}
-
-		@Override
-		public List<WeakReference<ScopeChangeListenable<? super Scope<Src>, ? super Src>>> getChangeListeners() {
-			return changeListeners;
+		public void changedGeneric(ScopeChange<? extends Scope<Src>, ? extends Src> change) {
+			notifyChanged();
 		}
 
 		@Override
@@ -80,15 +54,12 @@ public interface Scope<Src> extends ScopeNotifyer<Scope<Src>, Src> {
 		}
 
 		@Override
-		public void changedFiltered(FilteredScopeChange<? extends Scope<Src>, ? extends Src> fsc) {
-			notifyChanged(filter.andThen(x->fsc.wasAdded(x)), (y)->fsc.wasDeleted(y));
+		public boolean contains(Src src) {
+			Boolean ret = filter.apply(src);
+			return ret != null && ret && baseScope.contains(src);
 		}
 
 		@Override
-		public void changedGeneric(ScopeChange<? extends Scope<Src>, ? extends Src> change) {
-			notifyChanged();
-		}
-		
 		public void finalize() throws Throwable {
 			super.finalize();
 			try {
@@ -100,10 +71,20 @@ public interface Scope<Src> extends ScopeNotifyer<Scope<Src>, Src> {
 			}
 		}
 
-	};
+		@Override
+		public List<WeakReference<ScopeChangeListenable<? super Scope<Src>, ? super Src>>> getChangeListeners() {
+			return changeListeners;
+		}
+		
+		@Override
+		public Class<Src> getSourceClass() {
+			return baseScope.getSourceClass();
+		}
+
+	}
 	
 
-	class FunctionFilteredScope<Src> implements Scope<Src>, ModifiedScopeChangeListenable<Scope<Src>, Src> {
+	class FunctionFilteredScope<Src> implements FixedFinitScope<Src>, ModifiedScopeChangeListenable<Scope<Src>, Src> {
 
 		protected final AbstractFunc<Src,Boolean,?> filter;
 		protected final Scope<Src> baseScope;
@@ -116,6 +97,18 @@ public interface Scope<Src> extends ScopeNotifyer<Scope<Src>, Src> {
 		//Das ist der Scope - er setzt nur fest, ob etwas hinzugefuegt oder entfernt wird, aber wenn hier etwas hinzugefuegt wird, kann es
 		//in wirklichkeit auch entfernt werden!
 		private ModifiedScopeChangeListenable<Scope<Src>, Src> filterChangeNotifyer = new ModifiedScopeChangeListenable<Scope<Src>, Src>() {
+
+			@Override
+			public void changedFiltered(FilteredScopeChange<? extends Scope<Src>, ? extends Src> fsc) {
+				FunctionFilteredScope.this.notifyChanged(
+						x->(baseScope.contains(x)?fsc.wasDeleted(x):filter.evaluateBasic(x, false)),
+						x->(baseScope.contains(x)?!filter.evaluateBasic(x, true):fsc.wasDeleted(x)));
+			}
+
+			@Override
+			public void changedGeneric(ScopeChange<? extends Scope<Src>, ? extends Src> change) {
+				FunctionFilteredScope.this.notifyChanged();
+			}
 
 			//If something was added, it is easy: Just check the base scope and filter
 			@Override
@@ -157,18 +150,6 @@ public interface Scope<Src> extends ScopeNotifyer<Scope<Src>, Src> {
 					}
 				}
 				FunctionFilteredScope.this.notifyChanged(newAdded, newDeleted);
-			}
-
-			@Override
-			public void changedFiltered(FilteredScopeChange<? extends Scope<Src>, ? extends Src> fsc) {
-				FunctionFilteredScope.this.notifyChanged(
-						x->(baseScope.contains(x)?fsc.wasDeleted(x):filter.evaluateBasic(x, false)),
-						x->(baseScope.contains(x)?!filter.evaluateBasic(x, true):fsc.wasDeleted(x)));
-			}
-
-			@Override
-			public void changedGeneric(ScopeChange<? extends Scope<Src>, ? extends Src> change) {
-				FunctionFilteredScope.this.notifyChanged();
 			}
 		};
 		
@@ -247,31 +228,6 @@ public interface Scope<Src> extends ScopeNotifyer<Scope<Src>, Src> {
 		}
 		
 		@Override
-		public boolean contains(Src src) {
-			Boolean ret = filter.evaluate(src).value();
-			return ret == null?baseScope.contains(src):ret;
-		}
-
-		@Override
-		public Class<Src> getSourceClass() {
-			return baseScope.getSourceClass();
-		}
-
-		@Override
-		public List<WeakReference<ScopeChangeListenable<? super Scope<Src>, ? super Src>>> getChangeListeners() {
-			return changeListeners;
-		}
-
-		
-		//Ich glaube da passt ewtas nicht
-		@Override
-		public void changeIterable(IterableScopeChange<? extends Scope<Src>, ? extends Src> fsc,
-				Iterable<? extends Src> added, Iterable<? extends Src> deleted) {
-			notifyChanged(IteratorUtils.filterType(added, x->filter.isUndef(x)),
-					IteratorUtils.filterType(deleted, x->filter.isUndef(x)));
-		}
-
-		@Override
 		public void changedFiltered(FilteredScopeChange<? extends Scope<Src>, ? extends Src> fsc) {
 			notifyChanged(x->filter.evaluate(x) == null && fsc.wasAdded(x), (y)->filter.evaluate(y) == null && fsc.wasDeleted(y));
 		}
@@ -280,7 +236,23 @@ public interface Scope<Src> extends ScopeNotifyer<Scope<Src>, Src> {
 		public void changedGeneric(ScopeChange<? extends Scope<Src>, ? extends Src> change) {
 			notifyChanged();
 		}
+
+		//Ich glaube da passt ewtas nicht
+		@Override
+		public void changeIterable(IterableScopeChange<? extends Scope<Src>, ? extends Src> fsc,
+				Iterable<? extends Src> added, Iterable<? extends Src> deleted) {
+			notifyChanged(IteratorUtils.<Src>filter(added, x->filter.isUndef(x)),
+					IteratorUtils.<Src>filter(deleted, x->filter.isUndef(x)));
+		}
+
 		
+		@Override
+		public boolean contains(Src src) {
+			Boolean ret = filter.evaluate(src).value();
+			return ret == null?baseScope.contains(src):ret;
+		}
+
+		@Override
 		public void finalize() throws Throwable {
 			super.finalize();
 			try {
@@ -295,14 +267,73 @@ public interface Scope<Src> extends ScopeNotifyer<Scope<Src>, Src> {
 			}
 		}
 
-	};
+		@Override
+		public List<WeakReference<ScopeChangeListenable<? super Scope<Src>, ? super Src>>> getChangeListeners() {
+			return changeListeners;
+		}
+		
+		@Override
+		public Class<Src> getSourceClass() {
+			return baseScope.getSourceClass();
+		}
+
+		@Override
+		public Iterator<Src> iterator() {
+			if (baseScope instanceof FixedFinitScope) {
+				Scope<?> filterScope = filter.getScope();
+				if (filterScope instanceof FixedFinitScope) {
+					FixedFinitScope<Src> fixedFilter = (FixedFinitScope<Src>)filterScope;
+					return IteratorUtils.multiSetIterator(
+							IteratorUtils.filter(((FixedFinitScope<Src>) baseScope), x->contains(x)).iterator(),
+							IteratorUtils.filter(fixedFilter.iterator(), x->filter.evaluateBasic(x, false))
+									);
+				} else {
+					System.err.println("not finit filter: "+filter);
+					//Ignore, assume only negative filter
+				return 
+						IteratorUtils.filter(((FixedFinitScope<Src>) baseScope), x->contains(x)
+								).iterator();
+				}
+			}
+			Scope<?> filterScope = filter.getScope();
+			if (filterScope instanceof FixedFinitScope) {
+				FixedFinitScope<Src> fixedFilter = (FixedFinitScope<Src>)filterScope;
+				//Well, better than nothing
+				System.err.println("not finit: "+baseScope);
+				return IteratorUtils.filter(fixedFilter.iterator(), x->filter.evaluateBasic(x, false));
+			}
+			System.err.println("These are not fixed finit: "+filter+", "+baseScope);
+			return Collections.emptyIterator();
+		}
+
+	}
 	
+	boolean contains(Src src);
+	
+
 	public default FilteredScope<Src> filter(Function<Src,Boolean> filter) {
 		return new FilteredScope<>(filter, this);
 	}
-	
+
 	public default FunctionFilteredScope<Src> filteredFunc(AbstractFunc<Src, Boolean, ?> func) {
-		return new FunctionFilteredScope<Src>(func, this);
+		return new FunctionFilteredScope<>(func, this);
+	}
+	
+	public default void notifyAdded(Src src) {
+		notifyChanged(Collections.singleton(src), Collections.emptyList());
+	};
+	
+
+	public default void notifyAdded(Src... src) {
+		notifyChanged(Arrays.asList(src), Collections.emptyList());
+	};
+	
+	public default void notifyDeleted(Src src) {
+		notifyChanged(Collections.emptyList(), Collections.singletonList(src));
+	}
+	
+	public default void notifyDeleted(Src... src) {
+		notifyChanged(Collections.emptyList(), Arrays.asList(src));
 	}
 	 
 	/**Leider brauche ich bald auch etwas, was keine 'normale', aber eine sich aendernde funktion als filter nimmt ...*/

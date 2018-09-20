@@ -1,25 +1,25 @@
 package at.ac.tuwien.big.virtmod.basic;
 
+import java.io.Serializable;
+
 import at.ac.tuwien.big.virtmod.basic.impl.SimpleTreeposValue;
 
-public interface TreeposValue {
+public interface TreeposValue extends Serializable {
 
-	public int value();
+	/**You may only compare the same indices against each other!*/
+	public default int compareTo(TreeposValue other) {
+		return Integer.compare(value(), other.value());
+	}
 		
 	public default boolean equalsTo(TreeposValue other) {
 		return value() == other.value();
 	 }
 	
 	
-	/**You may only compare the same indices against each other!*/
-	public default int compareTo(TreeposValue other) {
-		return Integer.compare(value(), other.value());
-	}
-	
 	public default int hashCodeV() {
 		return value();
 	}
-
+	
 	public default TreeposValue simpleMiddle(TreeposValue neighborSub) {
 		int cmp = compareTo(neighborSub);
 		if (cmp == 0) {
@@ -33,4 +33,6 @@ public interface TreeposValue {
 		return null;
 		
 	}
+
+	public int value();
 }

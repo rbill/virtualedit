@@ -3,13 +3,14 @@
 package VObjectModel.impl;
 
 import VObjectModel.Identifier;
+import VObjectModel.IdentifierCmp;
 import VObjectModel.IdentifierRef;
 import VObjectModel.IdentifierRefOrCmp;
 import VObjectModel.VObjectModelPackage;
 
-import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.notify.NotificationChain;
+import java.util.Objects;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
@@ -41,7 +42,7 @@ public class IdentifierRefImpl extends IdentifierRefOrCmpImpl implements Identif
 	protected IdentifierRefOrCmp identifierreforcmp;
 
 	/**
-	 * The cached value of the '{@link #getS_identifier() <em>Sidentifier</em>}' containment reference.
+	 * The cached value of the '{@link #getS_identifier() <em>Sidentifier</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getS_identifier()
@@ -64,35 +65,8 @@ public class IdentifierRefImpl extends IdentifierRefOrCmpImpl implements Identif
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	@Override
-	protected EClass eStaticClass() {
-		return VObjectModelPackage.Literals.IDENTIFIER_REF;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public IdentifierRefOrCmp getIdentifierreforcmp() {
-		if (identifierreforcmp != null && identifierreforcmp.eIsProxy()) {
-			InternalEObject oldIdentifierreforcmp = (InternalEObject)identifierreforcmp;
-			identifierreforcmp = (IdentifierRefOrCmp)eResolveProxy(oldIdentifierreforcmp);
-			if (identifierreforcmp != oldIdentifierreforcmp) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, VObjectModelPackage.IDENTIFIER_REF__IDENTIFIERREFORCMP, oldIdentifierreforcmp, identifierreforcmp));
-			}
-		}
-		return identifierreforcmp;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public IdentifierRefOrCmp basicGetIdentifierreforcmp() {
-		return identifierreforcmp;
+		return this.identifierreforcmp;
 	}
 
 	/**
@@ -100,68 +74,8 @@ public class IdentifierRefImpl extends IdentifierRefOrCmpImpl implements Identif
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setIdentifierreforcmp(IdentifierRefOrCmp newIdentifierreforcmp) {
-		IdentifierRefOrCmp oldIdentifierreforcmp = identifierreforcmp;
-		identifierreforcmp = newIdentifierreforcmp;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER_REF__IDENTIFIERREFORCMP, oldIdentifierreforcmp, identifierreforcmp));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public Identifier getS_identifier() {
-		return s_identifier;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public NotificationChain basicSetS_identifier(Identifier newS_identifier, NotificationChain msgs) {
-		Identifier oldS_identifier = s_identifier;
-		s_identifier = newS_identifier;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER_REF__SIDENTIFIER, oldS_identifier, newS_identifier);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setS_identifier(Identifier newS_identifier) {
-		if (newS_identifier != s_identifier) {
-			NotificationChain msgs = null;
-			if (s_identifier != null)
-				msgs = ((InternalEObject)s_identifier).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - VObjectModelPackage.IDENTIFIER_REF__SIDENTIFIER, null, msgs);
-			if (newS_identifier != null)
-				msgs = ((InternalEObject)newS_identifier).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - VObjectModelPackage.IDENTIFIER_REF__SIDENTIFIER, null, msgs);
-			msgs = basicSetS_identifier(newS_identifier, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER_REF__SIDENTIFIER, newS_identifier, newS_identifier));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case VObjectModelPackage.IDENTIFIER_REF__SIDENTIFIER:
-				return basicSetS_identifier(null, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
+	public Identifier basicGetS_identifier() {
+		return this.s_identifier;
 	}
 
 	/**
@@ -176,9 +90,39 @@ public class IdentifierRefImpl extends IdentifierRefOrCmpImpl implements Identif
 				if (resolve) return getIdentifierreforcmp();
 				return basicGetIdentifierreforcmp();
 			case VObjectModelPackage.IDENTIFIER_REF__SIDENTIFIER:
-				return getS_identifier();
+				if (resolve) return getS_identifier();
+				return basicGetS_identifier();
 		}
 		return super.eGet(featureID, resolve, coreType);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean eIsSet(int featureID) {
+		switch (featureID) {
+			case VObjectModelPackage.IDENTIFIER_REF__IDENTIFIERREFORCMP:
+				return this.identifierreforcmp != null;
+			case VObjectModelPackage.IDENTIFIER_REF__SIDENTIFIER:
+				return this.s_identifier != null;
+		}
+		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * @generated NOT
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof IdentifierRef) {
+			return Objects.equals(this.s_identifier, ((IdentifierRef)o).getS_identifier());
+		} else if (o instanceof IdentifierCmp) {
+			return Objects.equals(this.s_identifier, ((IdentifierRef)o).getS_identifier());
+		}
+		return false;
 	}
 
 	/**
@@ -205,6 +149,16 @@ public class IdentifierRefImpl extends IdentifierRefOrCmpImpl implements Identif
 	 * @generated
 	 */
 	@Override
+	protected EClass eStaticClass() {
+		return VObjectModelPackage.Literals.IDENTIFIER_REF;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case VObjectModelPackage.IDENTIFIER_REF__IDENTIFIERREFORCMP:
@@ -223,14 +177,81 @@ public class IdentifierRefImpl extends IdentifierRefOrCmpImpl implements Identif
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case VObjectModelPackage.IDENTIFIER_REF__IDENTIFIERREFORCMP:
-				return identifierreforcmp != null;
-			case VObjectModelPackage.IDENTIFIER_REF__SIDENTIFIER:
-				return s_identifier != null;
+	public IdentifierRefOrCmp getIdentifierreforcmp() {
+		if (this.identifierreforcmp != null && this.identifierreforcmp.eIsProxy()) {
+			InternalEObject oldIdentifierreforcmp = (InternalEObject)this.identifierreforcmp;
+			this.identifierreforcmp = (IdentifierRefOrCmp)eResolveProxy(oldIdentifierreforcmp);
+			if (this.identifierreforcmp != oldIdentifierreforcmp) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, VObjectModelPackage.IDENTIFIER_REF__IDENTIFIERREFORCMP, oldIdentifierreforcmp, this.identifierreforcmp));
+			}
 		}
-		return super.eIsSet(featureID);
+		return this.identifierreforcmp;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Identifier getS_identifier() {
+		if (this.s_identifier != null && this.s_identifier.eIsProxy()) {
+			InternalEObject oldS_identifier = (InternalEObject)this.s_identifier;
+			this.s_identifier = (Identifier)eResolveProxy(oldS_identifier);
+			if (this.s_identifier != oldS_identifier) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, VObjectModelPackage.IDENTIFIER_REF__SIDENTIFIER, oldS_identifier, this.s_identifier));
+			}
+		}
+		return this.s_identifier;
+	}
+
+	/**
+	 * @generated NOT
+	 */
+	@Override
+	public int hashCode() {
+		return (this.s_identifier==null)?0:this.s_identifier.hashCode();
+	}
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setIdentifierreforcmp(IdentifierRefOrCmp newIdentifierreforcmp) {
+		IdentifierRefOrCmp oldIdentifierreforcmp = this.identifierreforcmp;
+		this.identifierreforcmp = newIdentifierreforcmp;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER_REF__IDENTIFIERREFORCMP, oldIdentifierreforcmp, this.identifierreforcmp));
+	}
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setS_identifier(Identifier newS_identifier) {
+		Identifier oldS_identifier = this.s_identifier;
+		this.s_identifier = newS_identifier;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER_REF__SIDENTIFIER, oldS_identifier, this.s_identifier));
+	}
+	
+	/**
+	 * @generated NOT
+	 */
+	@Override
+	public String toString() {
+		Identifier s_identifier2 = getS_identifier();
+		if (s_identifier2.getName() != null) {
+			return "@"+s_identifier2.getName();
+		} else {
+			return String.valueOf(s_identifier2);
+		}
 	}
 
 } //IdentifierRefImpl

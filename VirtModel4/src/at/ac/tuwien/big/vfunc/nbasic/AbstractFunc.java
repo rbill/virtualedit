@@ -1,6 +1,7 @@
 package at.ac.tuwien.big.vfunc.nbasic;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,8 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 		}; 
 
 		public CompleteChangeNotifyer() {
-			FixedFinitScope<Src> scope = Util.as(getScope(), FixedFinitScope.class);
+			//FixedFinitScope<Src> scope = Util.as(getScope(), FixedFinitScope.class);
+			Scope<Src> scope = Util.as(getScope(), Scope.class);
 			ScopeChangeListenable<Scope<Src>, Src> scl = new ModifiedScopeChangeListenable<Scope<Src>, Src>() {
 
 				@Override
@@ -160,6 +162,7 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 	private Function<Src, BasicResult<Target>> func;
 	private BiFunction<? super Src, ? super QueryResult<Src, Target>, ? extends Target> valueUpdater;
 	private CompleteChangeNotifyer globalChangeListener;
+
 	private FunctionModificator modificator;
 
 	// You need to call init!
@@ -202,6 +205,20 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 		return new CompleteChangeNotifyer();
 	}
 
+	public Map<Src,Target> createValuesMap() {
+		Map<Src,Target> ret = new HashMap<>();
+		Scope<Src> scope = getScope();
+		if (scope instanceof FixedFinitScope) {
+			for (Src src: (FixedFinitScope<Src>)scope) {
+				ret.put(src, evaluateBasic(src));
+			}
+		} else {
+			System.err.println("Wrong scope type for "+this);
+			return Collections.emptyMap();	
+		}
+		return ret;
+	}
+
 	public QueryResult<Src, Target> evaluate(Src src) {
 		return this.cache.get(src);
 	}
@@ -217,7 +234,7 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 		}
 		return ret;
 	}
-
+	
 	protected QueryResult<Src, Target> getCacheIfExists(Src src) {
 		return this.cache.getIfExists(src);
 	}
@@ -229,10 +246,13 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 		return this.globalChangeListener;
 	}
 
+
 	public FunctionModificator getModificator() {
+		if (this.modificator != null) {
+			return this.modificator;
+		}
 		return FunctionModificator.NO_MODIFICATOR;
 	}
-
 
 	public abstract Scope<Src> getScope();
 
@@ -263,9 +283,14 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 		return evaluateBasic(src) == null;
 	}
 
+	public void refreshCache() {
+		this.cache.refreshCompletely();
+	}
+
 	protected void setModificator(FunctionModificator modificator) {
 		this.modificator = modificator;
 	}
+
 
 	protected void updateCache(Src src, Target newValue) {
 		QueryResult<Src, Target> result = this.cache.getIfExists(src);
@@ -279,5 +304,4 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 			}
 		}
 	}
-
 }

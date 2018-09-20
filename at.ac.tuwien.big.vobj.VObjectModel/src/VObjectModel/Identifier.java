@@ -69,26 +69,26 @@ public interface Identifier extends EObject {
 	void setName(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Creatorid</b></em>' reference.
+	 * Returns the value of the '<em><b>Creatorid</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Creatorid</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Creatorid</em>' reference.
+	 * @return the value of the '<em>Creatorid</em>' containment reference.
 	 * @see #setCreatorid(CreatorId)
 	 * @see VObjectModel.VObjectModelPackage#getIdentifier_Creatorid()
-	 * @model
+	 * @model containment="true"
 	 * @generated
 	 */
 	CreatorId getCreatorid();
 
 	/**
-	 * Sets the value of the '{@link VObjectModel.Identifier#getCreatorid <em>Creatorid</em>}' reference.
+	 * Sets the value of the '{@link VObjectModel.Identifier#getCreatorid <em>Creatorid</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Creatorid</em>' reference.
+	 * @param value the new value of the '<em>Creatorid</em>' containment reference.
 	 * @see #getCreatorid()
 	 * @generated
 	 */

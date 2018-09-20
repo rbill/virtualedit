@@ -7,6 +7,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import at.ac.tuwien.big.vfunc.basic.Refreshable;
+
 public class QueryResultCache<T, U extends WeakObject<T>> {
 	
 	private Map<T, WeakReference<U>> cacheMap = new HashMap<>();
@@ -18,17 +20,20 @@ public class QueryResultCache<T, U extends WeakObject<T>> {
 		this.valueUpdater = valueUpdater;
 	}
 	
-	public U getIfExists(T key) {
-		WeakReference<U> ret = cacheMap.get(key);
-		U realRet = null;
-		if (ret != null) {
-			realRet = ret.get();
+	public U create(T key) {
+		U value = this.calculator.apply(key);
+		if (value != null) {
+			value.init(key, this);
+			this.cacheMap.put(key, new WeakReference<>(value));
+			if (this.valueUpdater != null) {
+				this.valueUpdater.accept(key, value);
+			}
 		}
-		return realRet;
+		return value;
 	}
 	
 	public U get(T key) {
-		WeakReference<U> ret = cacheMap.get(key);
+		WeakReference<U> ret = this.cacheMap.get(key);
 		U realRet = null;
 		if (ret != null) {
 			realRet = ret.get();
@@ -39,20 +44,26 @@ public class QueryResultCache<T, U extends WeakObject<T>> {
 		return realRet;
 	}
 	
-	public U create(T key) {
-		U value = calculator.apply(key);
-		if (value != null) {
-			value.init(key, this);
-			cacheMap.put(key, new WeakReference<U>(value));
-			if (valueUpdater != null) {
-				valueUpdater.accept(key, value);
-			}
+	public U getIfExists(T key) {
+		WeakReference<U> ret = this.cacheMap.get(key);
+		U realRet = null;
+		if (ret != null) {
+			realRet = ret.get();
 		}
-		return value;
+		return realRet;
+	}
+
+	public void refreshCompletely() {
+		this.cacheMap.forEach((k,v)->{
+			U u = v.get();
+			if (u instanceof Refreshable) {
+				((Refreshable)u).refresh();
+			}
+		});
 	}
 
 	public void remove(T source) {
-		cacheMap.remove(source);
+		this.cacheMap.remove(source);
 	}
 
 }

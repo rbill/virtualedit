@@ -49,16 +49,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  */
 public class IdentifierImpl extends MinimalEObjectImpl.Container implements Identifier {
 	/**
-	 * The cached value of the '{@link #getIdentifierreforcmp() <em>Identifierreforcmp</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getIdentifierreforcmp()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList<AnyValue> identifierreforcmp;
-
-	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -67,6 +57,26 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * @ordered
 	 */
 	protected static final String NAME_EDEFAULT = null;
+
+	/**
+	 * The default value of the '{@link #getHc() <em>Hc</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getHc()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final int HC_EDEFAULT = 0;
+
+	/**
+	 * The cached value of the '{@link #getIdentifierreforcmp() <em>Identifierreforcmp</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getIdentifierreforcmp()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<AnyValue> identifierreforcmp;
 
 	/**
 	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
@@ -79,7 +89,7 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	protected String name = NAME_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getCreatorid() <em>Creatorid</em>}' reference.
+	 * The cached value of the '{@link #getCreatorid() <em>Creatorid</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getCreatorid()
@@ -87,16 +97,6 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * @ordered
 	 */
 	protected CreatorId creatorid;
-
-	/**
-	 * The default value of the '{@link #getHc() <em>Hc</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getHc()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final int HC_EDEFAULT = 0;
 
 	/**
 	 * The cached value of the '{@link #getHc() <em>Hc</em>}' attribute.
@@ -122,21 +122,34 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public NotificationChain basicSetCreatorid(CreatorId newCreatorid, NotificationChain msgs) {
+		CreatorId oldCreatorid = this.creatorid;
+		this.creatorid = newCreatorid;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__CREATORID, oldCreatorid, newCreatorid);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
+		}
+		return msgs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
-	protected EClass eStaticClass() {
-		return VObjectModelPackage.Literals.IDENTIFIER;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EList<AnyValue> getIdentifierreforcmp() {
-		if (identifierreforcmp == null) {
-			identifierreforcmp = new EObjectContainmentEList<AnyValue>(AnyValue.class, this, VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP);
+	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+		switch (featureID) {
+			case VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP:
+				return getIdentifierreforcmp();
+			case VObjectModelPackage.IDENTIFIER__NAME:
+				return getName();
+			case VObjectModelPackage.IDENTIFIER__CREATORID:
+				return getCreatorid();
+			case VObjectModelPackage.IDENTIFIER__HC:
+				return getHc();
 		}
-		return identifierreforcmp;
+		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
@@ -144,37 +157,15 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setName(String newName) {
-		String oldName = name;
-		name = newName;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__NAME, oldName, name));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public CreatorId getCreatorid() {
-		if (creatorid != null && creatorid.eIsProxy()) {
-			InternalEObject oldCreatorid = (InternalEObject)creatorid;
-			creatorid = (CreatorId)eResolveProxy(oldCreatorid);
-			if (creatorid != oldCreatorid) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, VObjectModelPackage.IDENTIFIER__CREATORID, oldCreatorid, creatorid));
-			}
+	@Override
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+			case VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP:
+				return ((InternalEList<?>)getIdentifierreforcmp()).basicRemove(otherEnd, msgs);
+			case VObjectModelPackage.IDENTIFIER__CREATORID:
+				return basicSetCreatorid(null, msgs);
 		}
-		return creatorid;
+		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
 
 	/**
@@ -182,8 +173,18 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public CreatorId basicGetCreatorid() {
-		return creatorid;
+	@Override
+	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
+		switch (operationID) {
+			case VObjectModelPackage.IDENTIFIER___HASH_CODE:
+				return hashCode();
+			case VObjectModelPackage.IDENTIFIER___EQUALS__IDENTIFIER:
+				return equals((Identifier)arguments.get(0));
+			case VObjectModelPackage.IDENTIFIER___INIT:
+				init();
+				return null;
+		}
+		return super.eInvoke(operationID, arguments);
 	}
 
 	/**
@@ -191,32 +192,19 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setCreatorid(CreatorId newCreatorid) {
-		CreatorId oldCreatorid = creatorid;
-		creatorid = newCreatorid;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__CREATORID, oldCreatorid, creatorid));
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public int getHc() {
-		return hc;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setHc(int newHc) {
-		int oldHc = hc;
-		hc = newHc;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__HC, oldHc, hc));
+	@Override
+	public boolean eIsSet(int featureID) {
+		switch (featureID) {
+			case VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP:
+				return this.identifierreforcmp != null && !this.identifierreforcmp.isEmpty();
+			case VObjectModelPackage.IDENTIFIER__NAME:
+				return NAME_EDEFAULT == null ? this.name != null : !NAME_EDEFAULT.equals(this.name);
+			case VObjectModelPackage.IDENTIFIER__CREATORID:
+				return this.creatorid != null;
+			case VObjectModelPackage.IDENTIFIER__HC:
+				return this.hc != HC_EDEFAULT;
+		}
+		return super.eIsSet(featureID);
 	}
 
 	/**
@@ -224,35 +212,27 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * <!-- end-user-doc -->
 	 * @generated NOT
 	 */
-	public int hashCode() {
-		return hc;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated NOT
-	 */
+	@Override
 	public boolean equals(Identifier id) {
 		if (this == id) {return true;}
-		if (hc != id.getHc()) {
+		if (this.hc != id.getHc()) {
 			return false;
 		}
-		if (creatorid != null) {
+		if (this.creatorid != null) {
 			CreatorId otherId = id.getCreatorid();
 			if (otherId == null) {
 				return false;
 			}
-			if (!Objects.equals(creatorid.getName(), otherId.getName()) || !Objects.equals(creatorid.getNamespace(), otherId.getNamespace())) {
+			if (!Objects.equals(this.creatorid.getName(), otherId.getName()) || !Objects.equals(this.creatorid.getNamespace(), otherId.getNamespace())) {
 				return false;
 			}
 		} else if (id.getCreatorid() != null) {
 			return false;
 		}
-		if (identifierreforcmp.size() != id.getIdentifierreforcmp().size()) {
+		if (this.identifierreforcmp.size() != id.getIdentifierreforcmp().size()) {
 			return false;
 		}
-		Iterator<AnyValue> thisIter = identifierreforcmp.iterator();
+		Iterator<AnyValue> thisIter = this.identifierreforcmp.iterator();
 		Iterator<AnyValue> otherIter = id.getIdentifierreforcmp().iterator();
 		while (thisIter.hasNext() && otherIter.hasNext()) {
 			AnyValue av = thisIter.next();
@@ -273,14 +253,14 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 				if (av instanceof IdentifierRef) {
 					first = ((IdentifierRef)av).getS_identifier();
 				} else if (av instanceof IdentifierCmp) {
-					first = ((IdentifierRef)av).getS_identifier();
+					first = ((IdentifierCmp)av).getS_identifier();
 				} else {
 					throw new UnsupportedOperationException("Don't know roc type "+ av);
 				}
 				if (ov instanceof IdentifierRef) {
 					second = ((IdentifierRef)ov).getS_identifier();
 				} else if (ov instanceof IdentifierCmp) {
-					second = ((IdentifierRef)ov).getS_identifier();
+					second = ((IdentifierCmp)ov).getS_identifier();
 				} else {
 					throw new UnsupportedOperationException("Don't know roc type "+ av);
 				}
@@ -297,7 +277,7 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 		}
 		return true;
 	}
-	
+
 	@Override
 	/**
 	 * @generated NOT
@@ -307,55 +287,6 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 			return equals((Identifier)obj);
 		}
 		return false;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated NOT
-	 */
-	public void init() {
-		if (creatorid != null) {
-			this.hc = Objects.hash(creatorid.getNamespace(),creatorid.getName(),identifierreforcmp);
-		} else {
-			this.hc = Objects.hash(identifierreforcmp);
-		}
-		
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
-		switch (featureID) {
-			case VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP:
-				return ((InternalEList<?>)getIdentifierreforcmp()).basicRemove(otherEnd, msgs);
-		}
-		return super.eInverseRemove(otherEnd, featureID, msgs);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
-		switch (featureID) {
-			case VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP:
-				return getIdentifierreforcmp();
-			case VObjectModelPackage.IDENTIFIER__NAME:
-				return getName();
-			case VObjectModelPackage.IDENTIFIER__CREATORID:
-				if (resolve) return getCreatorid();
-				return basicGetCreatorid();
-			case VObjectModelPackage.IDENTIFIER__HC:
-				return getHc();
-		}
-		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
@@ -390,6 +321,16 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * @generated
 	 */
 	@Override
+	protected EClass eStaticClass() {
+		return VObjectModelPackage.Literals.IDENTIFIER;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP:
@@ -407,25 +348,15 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 		}
 		super.eUnset(featureID);
 	}
-
+	
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP:
-				return identifierreforcmp != null && !identifierreforcmp.isEmpty();
-			case VObjectModelPackage.IDENTIFIER__NAME:
-				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
-			case VObjectModelPackage.IDENTIFIER__CREATORID:
-				return creatorid != null;
-			case VObjectModelPackage.IDENTIFIER__HC:
-				return hc != HC_EDEFAULT;
-		}
-		return super.eIsSet(featureID);
+	public CreatorId getCreatorid() {
+		return this.creatorid;
 	}
 
 	/**
@@ -434,34 +365,124 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * @generated
 	 */
 	@Override
-	public Object eInvoke(int operationID, EList<?> arguments) throws InvocationTargetException {
-		switch (operationID) {
-			case VObjectModelPackage.IDENTIFIER___HASH_CODE:
-				return hashCode();
-			case VObjectModelPackage.IDENTIFIER___EQUALS__IDENTIFIER:
-				return equals((Identifier)arguments.get(0));
-			case VObjectModelPackage.IDENTIFIER___INIT:
-				init();
-				return null;
-		}
-		return super.eInvoke(operationID, arguments);
+	public int getHc() {
+		return this.hc;
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
+	 */
+	@Override
+	public EList<AnyValue> getIdentifierreforcmp() {
+		if (this.identifierreforcmp == null) {
+			this.identifierreforcmp = new EObjectContainmentEList<>(AnyValue.class, this, VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP);
+		}
+		return this.identifierreforcmp;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	@Override
+	public int hashCode() {
+		return this.hc;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	@Override
+	public void init() {
+		if (this.creatorid != null) {
+			this.hc = Objects.hash(this.creatorid.getNamespace(),this.creatorid.getName(),this.identifierreforcmp);
+		} else {
+			this.hc = Objects.hash(this.identifierreforcmp);
+		}
+		
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setCreatorid(CreatorId newCreatorid) {
+		if (newCreatorid != this.creatorid) {
+			NotificationChain msgs = null;
+			if (this.creatorid != null)
+				msgs = ((InternalEObject)this.creatorid).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - VObjectModelPackage.IDENTIFIER__CREATORID, null, msgs);
+			if (newCreatorid != null)
+				msgs = ((InternalEObject)newCreatorid).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - VObjectModelPackage.IDENTIFIER__CREATORID, null, msgs);
+			msgs = basicSetCreatorid(newCreatorid, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__CREATORID, newCreatorid, newCreatorid));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setHc(int newHc) {
+		int oldHc = this.hc;
+		this.hc = newHc;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__HC, oldHc, this.hc));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setName(String newName) {
+		String oldName = this.name;
+		this.name = newName;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__NAME, oldName, this.name));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
 	 */
 	@Override
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (name: ");
-		result.append(name);
-		result.append(", hc: ");
-		result.append(hc);
-		result.append(')');
+		StringBuffer result = new StringBuffer();
+		result.append(this.creatorid);
+		result.append("(");
+		{
+			boolean first = true;
+			for (AnyValue s: getIdentifierreforcmp()) {
+				if (first) {first=false;} else {result.append(",");}
+				result.append(s);
+			}
+		}
+		result.append(")");
 		return result.toString();
 	}
 

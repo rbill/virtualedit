@@ -9,8 +9,10 @@ import java.util.function.Function;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
+import at.ac.tuwien.big.vfunc.nbasic.AbstractFunc;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyerWithLocalImpl;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
+import at.ac.tuwien.big.vfunc.nbasic.QueryResult;
 
 public class SingleESFAttributeHandler<T,U> extends BasicChangeNotifyerWithLocalImpl implements SingleAttributeHandler<T> {
 	
@@ -27,20 +29,25 @@ public class SingleESFAttributeHandler<T,U> extends BasicChangeNotifyerWithLocal
 	}
 
 	@Override
-	public boolean isSet() {
-		return base.eIsSet(feature);
+	public T get() {
+		return this.convertThere.apply((U)this.base.eGet(this.feature));
 	}
 
 	@Override
-	public T get() {
-		return convertThere.apply((U)base.eGet(feature));
+	public AbstractFunc<?, T, ? extends QueryResult<?, T>> getTreeposFuncOrNull() {
+		return null;
+	}
+
+	@Override
+	public boolean isSet() {
+		return this.base.eIsSet(this.feature);
 	}
 
 	@Override
 	public void set(T newObj) {
-		Object cur = base.eGet(feature);
+		Object cur = this.base.eGet(this.feature);
 		if (!Objects.equals(newObj, cur)) { 
-			base.eSet(feature, convertBack.apply(newObj));
+			this.base.eSet(this.feature, this.convertBack.apply(newObj));
 			changed();
 		}
 	}
@@ -48,7 +55,7 @@ public class SingleESFAttributeHandler<T,U> extends BasicChangeNotifyerWithLocal
 	@Override
 	public void unset() {
 		boolean wasSet = isSet();
-		base.eUnset(feature);
+		this.base.eUnset(this.feature);
 		if (wasSet) {
 			changed();
 		}

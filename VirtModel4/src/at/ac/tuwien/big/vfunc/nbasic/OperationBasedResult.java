@@ -18,10 +18,10 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 		ConstantValue<Integer> secondThing = new ConstantValue<>(2);
 		ConstantValue<Integer> thirdThing = new ConstantValue<>(1);
 		
-		OperationBasedResult<?,Integer> initMultThing = new OperationBasedResult<>(multFunction, new BasicMetaInfo(), firstThing, secondThing);
-		OperationBasedResult<?,Integer> basicSum = new OperationBasedResult<>(sumFunction, new BasicMetaInfo(), initMultThing, thirdThing);
+		OperationBasedResult<?,Integer> initMultThing = new OperationBasedResult<>(multFunction, new BasicMetaInfo(), false, firstThing, secondThing);
+		OperationBasedResult<?,Integer> basicSum = new OperationBasedResult<>(sumFunction, new BasicMetaInfo(), false,initMultThing, thirdThing);
 				
-		OperationBasedResult<?,Integer> constantMult = new OperationBasedResult<>(multFunction, new BasicMetaInfo(), new ConstantValue<>(2), basicSum);
+		OperationBasedResult<?,Integer> constantMult = new OperationBasedResult<>(multFunction, new BasicMetaInfo(), false,new ConstantValue<>(2), basicSum);
 		System.out.println("Initial: "+constantMult.value());
 		secondThing.setValue(0);
 		System.out.println("Set second value to 0");
@@ -56,25 +56,27 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 	}*/
 	
 	private List<BasicListenable> listeners = new ArrayList<>();
+	private boolean acceptUndefined;
 	
-	public OperationBasedResult(Function<? super List<AllSource>, ? extends Target> function, List<? extends BasicValuedChangeNotifyer<? extends AllSource>> sources, MetaInfo mi) {
+	public OperationBasedResult(Function<? super List<AllSource>, ? extends Target> function, List<? extends BasicValuedChangeNotifyer<? extends AllSource>> sources, MetaInfo mi, boolean acceptUndefined) {
 		super(mi);
 		this.function = function;
 		this.sources = sources;
 		setSources(sources);
+		this.acceptUndefined = acceptUndefined;
 	}
 	
 	
 	
-	public OperationBasedResult(Function<? super List<AllSource>, ? extends Target> function, MetaInfo mi, BasicValuedChangeNotifyer<? extends AllSource>... sources) {
-		this(function,Arrays.asList(sources), mi);
+	public OperationBasedResult(Function<? super List<AllSource>, ? extends Target> function, MetaInfo mi, boolean acceptUndefined, BasicValuedChangeNotifyer<? extends AllSource>... sources) {
+		this(function,Arrays.asList(sources), mi, acceptUndefined);
 	}
 	
 	@Override
 	public Target calcValue() {
 		List<AllSource> vals = new ArrayList<>();
 		for (BasicValuedChangeNotifyer<? extends AllSource> bvc: this.sources) {
-			if (bvc.isDefined()) {
+			if (this.acceptUndefined || bvc.isDefined()) {
 				vals.add(bvc.value());
 			} else {
 				return null;
@@ -114,7 +116,7 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 		}
 		//TODO: Implement creating new meta info
 		MetaInfo newMetaInfo = getMetaInfo();
-		OperationBasedResult<AllSource,Target> ret = new OperationBasedResult<>(this.function, newSources, newMetaInfo);
+		OperationBasedResult<AllSource,Target> ret = new OperationBasedResult<>(this.function, newSources, newMetaInfo, this.acceptUndefined);
 		return ret;
 	}
 

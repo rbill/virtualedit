@@ -1,8 +1,0 @@
-package asdf;
-
-saspect bla {
-	private  boolean Testclass/newbool
-	
-	pointcut test(): call(void x());
-	
-}

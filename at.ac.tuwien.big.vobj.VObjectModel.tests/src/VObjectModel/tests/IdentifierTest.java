@@ -19,6 +19,7 @@ import junit.textui.TestRunner;
  *   <li>{@link VObjectModel.Identifier#hashCode() <em>Hash Code</em>}</li>
  *   <li>{@link VObjectModel.Identifier#equals(VObjectModel.Identifier) <em>Equals</em>}</li>
  *   <li>{@link VObjectModel.Identifier#init() <em>Init</em>}</li>
+ *   <li>{@link VObjectModel.Identifier#recalcHash() <em>Recalc Hash</em>}</li>
  * </ul>
  * </p>
  * @generated
@@ -128,6 +129,19 @@ public class IdentifierTest extends TestCase {
 	 * @generated
 	 */
 	public void testInit() {
+		// TODO: implement this operation test method
+		// Ensure that you remove @generated or mark it @generated NOT
+		fail();
+	}
+
+	/**
+	 * Tests the '{@link VObjectModel.Identifier#recalcHash() <em>Recalc Hash</em>}' operation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see VObjectModel.Identifier#recalcHash()
+	 * @generated
+	 */
+	public void testRecalcHash() {
 		// TODO: implement this operation test method
 		// Ensure that you remove @generated or mark it @generated NOT
 		fail();

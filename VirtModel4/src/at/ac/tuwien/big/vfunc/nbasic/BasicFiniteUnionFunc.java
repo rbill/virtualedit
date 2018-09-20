@@ -23,29 +23,11 @@ import at.ac.tuwien.big.vfunc.basic.ScopeChangeListenable;
 import at.ac.tuwien.big.vfunc.basic.ScopeNotifyer;
 import at.ac.tuwien.big.vfunc.basic.impl.AbstractFiniteScope;
 import at.ac.tuwien.big.vfunc.basic.impl.AbstractScope;
+import at.ac.tuwien.big.virtmod.basic.Treepos;
+import at.ac.tuwien.big.virtmod.basic.ValueList;
 
 public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target, QueryResult<Src,Target>> {
 
-	private List<? extends AbstractFunc<Src, Target, ? extends QueryResult<Src,Target>>> baseFunc = new ArrayList<>(); 
-	
-	private Class<Src> sourceClass;
-	
-	private List<FixedFinitScope<Src>> subScopes = new ArrayList<>();
-	
-	private ScopeChangeListenable<Scope<Src>, Src> scl = new ScopeChangeListenable<Scope<Src>, Src>() {
-
-		@Override
-		public void changed(ScopeChange<? extends Scope<Src>, ? extends Src> change) {
-			if (change instanceof IterableScopeChange) {
-				IterableScopeChange<?, Src> isc = (IterableScopeChange)change;
-				myScope.apply(isc);
-			} else {
-				//This is really not good
-				throw new RuntimeException("For now, I can only parse iterablescopechanges");
-			}
-		}
-	};
-	
 	private class UnionChangeListenable implements ChangeListenable<FunctionNotifyer<?, Src, Target>,Src, Target> {
 		
 		@Override
@@ -56,83 +38,14 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 			}
 		}
 		
-	}
-	
-	private UnionChangeListenable myListenable = new UnionChangeListenable();
-	private Function<? super List<Target>, ? extends Target> mergeFunc;
-	
-	private static Function<List<Object>, Object> SIMPLE_MERGE_FUNC = (list)->{
-		Optional<Object> obj = list.stream().filter(x->x!=null).findAny();
-		if (obj.isPresent()) {
-			return obj.get();
-		}
-		return null;
-	};
-	
-	public static<Target> Function<List<Target>, Target> SIMPLE_MERGE_FUNC() {
-		return (Function)SIMPLE_MERGE_FUNC;
-	}
-	
-	public BasicFiniteUnionFunc(Class<Src> sourceClass, List<? extends AbstractFunc<Src, Target, ? extends QueryResult<Src, Target>>> baseFunc) {
-		this(sourceClass,baseFunc,SIMPLE_MERGE_FUNC());
-	}
-	
-	public BasicFiniteUnionFunc(Class<Src> sourceClass, List<? extends AbstractFunc<Src, Target, ? extends QueryResult<Src, Target>>> baseFunc, 
-			Function<? super List<Target>, ? extends Target> mergeFunc) {
-		this.baseFunc = baseFunc;
-		this.sourceClass = sourceClass;
-		this.mergeFunc = mergeFunc;
-		
-		for (AbstractFunc<Src, ? extends Target, ? extends QueryResult<Src,Target>> func: baseFunc) {
-			Scope<Src> subScope = func.getScope();
-			if (!(subScope instanceof FixedFinitScope))  {
-				throw new RuntimeException("Union can only be built from functions with finite scope");
-			}
-			FixedFinitScope<Src> ffs = (FixedFinitScope<Src>)subScope;
-			subScopes.add(ffs);
-			ffs.addChangeListener(scl);
-		}
-		
-		Function<Src, BasicResult<Target>> func = (src)->{
-			return createResult(src);
-
-		};
-		//I think you can directly initialize that
-		init(func, null);
-	}
-	
-	private OperationBasedResult<Target, Target> createResult(Src src) {
-		//TODO: Better meta info
-		MetaInfo mi = new BasicMetaInfo();
-		Function<? super List<Target>, ? extends Target> function = mergeFunc;
-		
-		List<BasicValuedChangeNotifyer<? extends Target>> sources = new ArrayList<BasicValuedChangeNotifyer<? extends Target>>();
-		
-		for (AbstractFunc<Src, Target, ? extends QueryResult<Src, Target>> s: baseFunc) {
-			//TODO: Eigentlich sollte es reichen, das von getScope zu benutzen
-			if (s.contains(src)) {
-				sources.add(s.evaluate(src));
-			}
-		}
-		
-		OperationBasedResult<Target, Target> ret = new OperationBasedResult<Target, Target>(function, sources, mi);
-		
-		return ret;
-	}
-
-	
-	private void recalcElement(Src src) {
-		BasicQueryResult<Src, Target> qr = ensure(getCacheIfExists(src),BasicQueryResult.class);
-		qr.setResult(createResult(src));
-	}
-	
+	} 
 	
 	private class UnionScope extends AbstractFiniteScope<Src> {
 		
 		Map<Src,Set<Object>> scopeNumb = new HashMap<>();
 		
 		private void add(Object source, Src src) {
-			Set<Object> cur = scopeNumb.computeIfAbsent(src,x->new HashSet<>());
+			Set<Object> cur = this.scopeNumb.computeIfAbsent(src,x->new HashSet<>());
 			if (cur.isEmpty()) {
 				if (cur.add(source)) {
 					recalcElement(src);
@@ -157,9 +70,24 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 		}
 
 
+		@Override
+		public boolean contains(Src src) {
+			return !this.scopeNumb.getOrDefault(src, Collections.emptySet()).isEmpty();
+		}
+		
+		@Override
+		public Class<Src> getSourceClass() {
+			return BasicFiniteUnionFunc.this.sourceClass;
+		}
+
+		@Override
+		public Iterator<Src> iterator() {
+			return this.scopeNumb.entrySet().stream().filter(x->!x.getValue().isEmpty()).map(x->x.getKey()).iterator();
+		}
+
 		private void remove(Object source, Src src) {
 			boolean[] removed = new boolean[]{false};
-			scopeNumb.computeIfPresent(src,(key,val)->{
+			this.scopeNumb.computeIfPresent(src,(key,val)->{
 				if (val.remove(key)) {
 					if (val.isEmpty()) {
 						removed[0]=true;
@@ -173,28 +101,125 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 				notifyDeleted(src);
 			}
 		}
-		
-		@Override
-		public boolean contains(Src src) {
-			return !scopeNumb.getOrDefault(src, Collections.emptySet()).isEmpty();
+	}
+	
+	private static Function<List<Object>, Object> SIMPLE_MERGE_FUNC = (list)->{
+		Optional<Object> obj = list.stream().filter(x->x!=null).findFirst();
+		if (obj.isPresent()) {
+			return obj.get();
 		}
+		return null;
+	};
+	
+	public static<Target> Function<List<Target>, Target> SIMPLE_MERGE_FUNC() {
+		return (Function)SIMPLE_MERGE_FUNC;
+	}
+	
+	private List<? extends AbstractFunc<Src, Target, ? extends QueryResult<Src,Target>>> baseFunc = new ArrayList<>();
+	
+	private Class<Src> sourceClass;
+	private List<FixedFinitScope<Src>> subScopes = new ArrayList<>();
+	
+	private ScopeChangeListenable<Scope<Src>, Src> scl = new ScopeChangeListenable<Scope<Src>, Src>() {
 
 		@Override
-		public Class<Src> getSourceClass() {
-			return sourceClass;
-		}
-
-		@Override
-		public Iterator<Src> iterator() {
-			return scopeNumb.entrySet().stream().filter(x->!x.getValue().isEmpty()).map(x->x.getKey()).iterator();
+		public void changed(ScopeChange<? extends Scope<Src>, ? extends Src> change) {
+			if (change instanceof IterableScopeChange) {
+				IterableScopeChange<?, Src> isc = (IterableScopeChange)change;
+				BasicFiniteUnionFunc.this.myScope.apply(isc);
+			} else {
+				//This is really not good
+				throw new RuntimeException("For now, I can only parse iterablescopechanges");
+			}
 		}
 	};
 	
+	private UnionChangeListenable myListenable = new UnionChangeListenable();
+	
+	private Function<? super List<Target>, ? extends Target> mergeFunc;
+	
 	private UnionScope myScope = new UnionScope();
+	
+	public BasicFiniteUnionFunc(Class<Src> sourceClass, List<? extends AbstractFunc<Src, Target, ? extends QueryResult<Src, Target>>> baseFunc) {
+		this(sourceClass,baseFunc,SIMPLE_MERGE_FUNC());
+	}
+
+	
+	public BasicFiniteUnionFunc(Class<Src> sourceClass, List<? extends AbstractFunc<Src, Target, ? extends QueryResult<Src, Target>>> baseFunc, 
+			Function<? super List<Target>, ? extends Target> mergeFunc) {
+		this.baseFunc = baseFunc;
+		this.sourceClass = sourceClass;
+		this.mergeFunc = mergeFunc;
+		
+		for (AbstractFunc<Src, ? extends Target, ? extends QueryResult<Src,Target>> func: baseFunc) {
+			addBaseNoRefresh(func);
+		}
+		
+		Function<Src, BasicResult<Target>> func = (src)->{
+			return createResult(src);
+
+		};
+		//I think you can directly initialize that
+		init(func, null);
+	}
+	
+	public void addBase(AbstractFunc<Src, ? extends Target, ? extends QueryResult<Src,Target>> func) {
+		FixedFinitScope<Src> ffs = addBaseNoRefresh(func);
+		((List)this.baseFunc).add(func);
+		ffs.forEach(x->{
+			this.myScope.add(ffs, x);
+		});
+	}
+	
+	private FixedFinitScope<Src> addBaseNoRefresh(AbstractFunc<Src, ? extends Target, ? extends QueryResult<Src,Target>> func) {
+		Scope<Src> subScope = func.getScope();
+		if (!(subScope instanceof FixedFinitScope))  {
+			throw new RuntimeException("Union can only be built from functions with finite scope");
+		}
+		FixedFinitScope<Src> ffs = (FixedFinitScope<Src>)subScope;
+		this.subScopes.add(ffs);
+		ffs.addChangeListener(this.scl);
+		return ffs;
+	}
+	
+	private OperationBasedResult<Target, Target> createResult(Src src) {
+		//TODO: Better meta info
+		MetaInfo mi = new BasicMetaInfo();
+		Function<? super List<Target>, ? extends Target> function = this.mergeFunc;
+		
+		List<BasicValuedChangeNotifyer<? extends Target>> sources = new ArrayList<>();
+		
+		for (AbstractFunc<Src, Target, ? extends QueryResult<Src, Target>> s: this.baseFunc) {
+			//TODO: Eigentlich sollte es reichen, das von getScope zu benutzen
+			
+			//Nimmt das nicht an, dass sich der Scope nicht ändert? - vermutlich egal, weil es recalct wird
+			if (s.contains(src)) {
+				sources.add(s.evaluate(src));
+			}
+		}
+		
+		OperationBasedResult<Target, Target> ret = new OperationBasedResult<>(function, sources, mi, true);
+		//ret.refresh();
+		return ret;
+	};
+	
+	public List<? extends AbstractFunc<Src, Target, ? extends QueryResult<Src,Target>>>  getBases() {
+		return this.baseFunc;
+	}
 	
 	@Override
 	public Scope<Src> getScope() {
-		return myScope;
+		return this.myScope;
+	}
+
+
+	private void recalcElement(Src src) {
+		QueryResult<Src, Target> cacheIfExists = getCacheIfExists(src);
+		if (cacheIfExists == null) {
+			return;
+		}
+		BasicQueryResult<Src, Target> qr = ensure(cacheIfExists,BasicQueryResult.class);
+		qr.setResult(createResult(src));
 	}
 
 }

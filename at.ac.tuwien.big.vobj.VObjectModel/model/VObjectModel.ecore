@@ -10,7 +10,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="identifierreforcmp" upperBound="-1"
         eType="#//AnyValue" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="creatorid" eType="#//CreatorId"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="creatorid" eType="#//CreatorId"
+        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="hc" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IdentifierRefOrCmp" eSuperTypes="#//AnyValue">
@@ -19,11 +20,11 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IdentifierRef" eSuperTypes="#//IdentifierRefOrCmp">
     <eStructuralFeatures xsi:type="ecore:EReference" name="identifierreforcmp" eType="#//IdentifierRefOrCmp"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="s_identifier" eType="#//Identifier"
-        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="s_identifier" eType="#//Identifier"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IdentifierCmp" eSuperTypes="#//IdentifierRefOrCmp">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="s_identifier" eType="#//Identifier"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="s_identifier" eType="#//Identifier"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CreatorId">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="namespace" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -32,5 +33,49 @@
   <eClassifiers xsi:type="ecore:EClass" name="AnyValue"/>
   <eClassifiers xsi:type="ecore:EClass" name="JavaValue" eSuperTypes="#//AnyValue">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="VObjDeltaModel">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="functions" upperBound="-1"
+        eType="#//Function" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="storedfuncs" upperBound="-1"
+        eType="#//StoredFuncs" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifiers" upperBound="-1"
+        eType="#//Identifier" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="BasicFunction" eSuperTypes="#//Function">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
+        eType="#//ValuePair" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Function" abstract="true" interface="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ValuePair">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="key" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EJavaObject"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifierValue" eType="#//Identifier"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FiniteUnionFunction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="baseFunc" upperBound="-1"
+        eType="#//Function"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DeltaFunction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="wrapped" eType="#//Function"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deltastore" eType="#//DeltaStore"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="StoredFuncs">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifier" eType="#//Identifier"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="featurefunc" upperBound="-1"
+        eType="#//FeatureFunc" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="FeatureFunc">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deltastore" eType="#//DeltaStore"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="classref" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="nsref" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DeltaStore">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="addMap" eType="#//BasicFunction"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="filterScope" eType="#//BasicFunction"/>
   </eClassifiers>
 </ecore:EPackage>

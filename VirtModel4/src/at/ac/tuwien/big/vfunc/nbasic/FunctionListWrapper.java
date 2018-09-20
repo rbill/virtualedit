@@ -29,14 +29,39 @@ import at.ac.tuwien.big.virtmod.structure.ChangeListener;
 
 public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg> extends AbstractList<Trg> implements EList<Trg>, BasicChangeNotifyer {
 	
+	private static class BasicEntry<Src,Trg> {
+		private Src src;
+		private QueryResult<Src, Trg> res;
+		
+		public BasicEntry(Src src, QueryResult<Src, Trg> res) {
+			this.src = src;
+			this.res = res;
+		}
+		
+		private Trg value() {
+			return (this.res==null)?null:this.res.value();
+		}
+	}
 	private Func func;
 	private TreeMap<Src, BasicEntry<Src, Trg>> map;
 	private List<BasicEntry<Src,Trg>> list = new ArrayList<>();
 	private BiFunction<? super Src, ? super Src, ? extends Src> newSourceCalculator;
 	private TriConsumer<? super Func,? super Src, ? super Trg> valueSetter;
-	private List<WeakReference<BasicListenable>> basicListeners = new ArrayList<>();
 	
+	private List<WeakReference<BasicListenable>> basicListeners = new ArrayList<>();
 	private ModifiedScopeChangeListenable<Scope<Src>, Src> myScopeListener = new ModifiedScopeChangeListenable<Scope<Src>, Src>() {
+
+		@Override
+		public void changedFiltered(FilteredScopeChange<? extends Scope<Src>, ? extends Src> fsc) {
+			System.err.println("FunctionListWrapper does only work if all changes are iterable!");
+			fullRecalc();
+		}
+
+		@Override
+		public void changedGeneric(ScopeChange<? extends Scope<Src>, ? extends Src> change) {
+			System.err.println("FunctionListWrapper does only work if all changes are iterable!");
+			fullRecalc();
+		}
 
 		@Override
 		public void changeIterable(IterableScopeChange<? extends Scope<Src>, ? extends Src> fsc,
@@ -55,115 +80,39 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 			}
 		}
 
-		@Override
-		public void changedFiltered(FilteredScopeChange<? extends Scope<Src>, ? extends Src> fsc) {
-			System.err.println("FunctionListWrapper does only work if all changes are iterable!");
-			fullRecalc();
-		}
-
-		@Override
-		public void changedGeneric(ScopeChange<? extends Scope<Src>, ? extends Src> change) {
-			System.err.println("FunctionListWrapper does only work if all changes are iterable!");
-			fullRecalc();
-		}
-
 
 	};
-	private ChangeListenable<?, Src, Trg> listener = (ChangeListenable<?, Src, Trg>) new ChangeListenable() {
+	
+	private ChangeListenable<?, Src, Trg> listener = new ChangeListenable() {
 
 		@Override
 		public void changed(Change change) {
-			FunctionListWrapper.this.changed();
+			//TODO: Das geht besser
+			
+			FunctionListWrapper.this.fullRecalc();
 		}
 	};
-	
-	public Func getFunc() {
-		return func;
-	}
 	
 	/**Creates an unmodifyable list*/
 	public FunctionListWrapper(Func func, Comparator<Src> comparator) {
 		this(func,comparator,null,null);
 	}
 	
-	/**I think I only must react to scope changes!*/
-	
-	private void removeSource(Src src) {
-		BasicEntry<Src, Trg> remObj = map.remove(src);
-		list.remove(remObj);
-	}
-	
-	private void addSource(Src src) {
-		Entry<Src, BasicEntry<Src, Trg>> fe = map.ceilingEntry(src);
-		BasicEntry<Src, Trg> be = new BasicEntry<>(src, func.evaluate(src));
-		if (fe == null) { //Last entry
-			list.add(be);
-		} else {
-			if (Objects.equals(fe.getKey(), src)) {
-				//Don't do anything
-			}  else {
-				map.put(src, be);
-				int idx = list.indexOf(fe.getValue());
-				if (idx == -1) {
-					throw new RuntimeException("Value "+fe.getValue()+" not found!");
-				}
-				list.add(idx, be);
-			}
-		}
-		
-	}
-	
-	
-	
 	/**Creates a modifyable list*/
 	public FunctionListWrapper(Func func, Comparator<Src> comparator, BiFunction<? super Src, ? super Src, ? extends Src> newSourceCalculator, TriConsumer<? super Func,? super Src, ? super Trg> valueSetter) {
 		if (comparator == null) {
-			comparator = (x,y)->((Comparable)x).compareTo((Comparable)y);
+			comparator = (x,y)->((Comparable)x).compareTo(y);
 		}
 		this.func = func;
-		this.func.getScope().addChangeListener(myScopeListener);
+		this.func.getScope().addChangeListener(this.myScopeListener);
 		this.map = new TreeMap<>(comparator);
 		this.newSourceCalculator = newSourceCalculator;
 		this.valueSetter = valueSetter;
 		
-		func.getChangeNotifyer().addChangeListener((ChangeListenable)listener);
+		func.getChangeNotifyer().addChangeListener((ChangeListenable)this.listener);
 		fullRecalc();
 	}
 	
-	private static class BasicEntry<Src,Trg> {
-		private Src src;
-		private QueryResult<Src, Trg> res;
-		
-		public BasicEntry(Src src, QueryResult<Src, Trg> res) {
-			this.src = src;
-			this.res = res;
-		}
-		
-		private Trg value() {
-			return (res==null)?null:res.value();
-		}
-	}
-	
-	private void fullRecalc() {
-		FixedFinitScope<Src> scope = Util.as(func.getScope(), FixedFinitScope.class);
-		map.clear();
-		for (Src src: scope) {
-			map.put(src, new BasicEntry<>(src, func.evaluate(src)));
-		}
-		list.clear();
-		map.forEach((src,val)->{
-			list.add(val);
-		});
-		changed();
-	}
-	
-	private Src getSrcOrNull(int positiveNumb) {
-		if (list.size() >= positiveNumb) {
-			return null;
-		}
-		return list.get(positiveNumb).src;
-	}
-
 	@Override
 	public void add(int index, Trg value) {
 		BiFunction<? super Src, ? super Src, ? extends Src> newSrcCalculator = Util.unsupportedIfNot(this.newSourceCalculator);
@@ -173,35 +122,79 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 		Util.unsupportedIfNot(this.valueSetter).consume(this.func, newSrc, value);
 	}
 	
-	@Override
-	public Trg remove(int index) {
-		BasicEntry<Src, Trg> be = list.get(index);
-		Trg ret = be.value();
-		Util.unsupportedIfNot(this.valueSetter).consume(this.func, be.src, null);
-		return ret;
+	
+	
+	private void addSource(Src src) {
+		Entry<Src, BasicEntry<Src, Trg>> fe = this.map.ceilingEntry(src);
+		BasicEntry<Src, Trg> be = new BasicEntry<>(src, this.func.evaluate(src));
+		if (fe == null) { //Last entry
+			this.list.add(be);
+		} else {
+			if (Objects.equals(fe.getKey(), src)) {
+				//Don't do anything
+			}  else {
+				this.map.put(src, be);
+				int idx = this.list.indexOf(fe.getValue());
+				if (idx == -1) {
+					throw new RuntimeException("Value "+fe.getValue()+" not found!");
+				}
+				this.list.add(idx, be);
+			}
+		}
+		
 	}
 	
 	@Override
-	public Trg set(int index, Trg value) {
-		BasicEntry<Src, Trg> be = list.get(index);
-		Trg ret = be.value();
-		Util.unsupportedIfNot(this.valueSetter).consume(this.func, be.src, value);
-		return ret;
+	public void finalize() throws Throwable {
+		super.finalize();
+		this.func.getScope().removeChangeListener(this.myScopeListener);
+	}
+	
+	private void fullRecalc() {
+		FixedFinitScope<Src> scope = Util.as(this.func.getScope(), FixedFinitScope.class);
+		this.map.clear();
+		for (Src src: scope) {
+			this.map.put(src, new BasicEntry<>(src, this.func.evaluate(src)));
+		}
+		this.list.clear();
+		this.map.forEach((src,val)->{
+			this.list.add(val);
+		});
+		changed();
 	}
 	
 	@Override
 	public Trg get(int index) {
-		return list.get(index).value();
+		return this.list.get(index).value();
 	}
 
 	@Override
-	public int size() {
-		return list.size();
+	public List<WeakReference<BasicListenable>> getBasicChangeListeners() {
+		return this.basicListeners;
 	}
 	
-	public void finalize() throws Throwable {
-		super.finalize();
-		this.func.getScope().removeChangeListener(myScopeListener);
+	public Func getFunc() {
+		return this.func;
+	}
+	
+	private Src getSrcOrNull(int positiveNumb) {
+		if (this.list.size() <= positiveNumb) {
+			return null;
+		}
+		return this.list.get(positiveNumb).src;
+	}
+	
+	@Override
+	public Trg move(int newPosition, int oldPosition) {
+		if (newPosition == oldPosition) {
+			return get(newPosition);
+		}
+		if (newPosition>oldPosition) {
+			--newPosition;
+		}
+		Trg ret = remove(oldPosition);
+		add(newPosition, ret);
+		return ret;
 	}
 
 	@Override
@@ -219,23 +212,33 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 		}
 		
 	}
+	
+	@Override
+	public Trg remove(int index) {
+		BasicEntry<Src, Trg> be = this.list.get(index);
+		Trg ret = be.value();
+		Util.unsupportedIfNot(this.valueSetter).consume(this.func, be.src, null);
+		return ret;
+	}
+
+	/**I think I only must react to scope changes!*/
+	
+	private void removeSource(Src src) {
+		BasicEntry<Src, Trg> remObj = this.map.remove(src);
+		this.list.remove(remObj);
+	}
 
 	@Override
-	public Trg move(int newPosition, int oldPosition) {
-		if (newPosition == oldPosition) {
-			return get(newPosition);
-		}
-		if (newPosition>oldPosition) {
-			--newPosition;
-		}
-		Trg ret = remove(oldPosition);
-		add(newPosition, ret);
+	public Trg set(int index, Trg value) {
+		BasicEntry<Src, Trg> be = this.list.get(index);
+		Trg ret = be.value();
+		Util.unsupportedIfNot(this.valueSetter).consume(this.func, be.src, value);
 		return ret;
 	}
 
 	@Override
-	public List<WeakReference<BasicListenable>> getBasicChangeListeners() {
-		return basicListeners;
+	public int size() {
+		return this.list.size();
 	}
 
 }

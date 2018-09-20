@@ -85,6 +85,78 @@ public interface VObjectModelFactory extends EFactory {
 	JavaValue createJavaValue();
 
 	/**
+	 * Returns a new object of class '<em>VObj Delta Model</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>VObj Delta Model</em>'.
+	 * @generated
+	 */
+	VObjDeltaModel createVObjDeltaModel();
+
+	/**
+	 * Returns a new object of class '<em>Basic Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Basic Function</em>'.
+	 * @generated
+	 */
+	BasicFunction createBasicFunction();
+
+	/**
+	 * Returns a new object of class '<em>Value Pair</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Value Pair</em>'.
+	 * @generated
+	 */
+	ValuePair createValuePair();
+
+	/**
+	 * Returns a new object of class '<em>Finite Union Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Finite Union Function</em>'.
+	 * @generated
+	 */
+	FiniteUnionFunction createFiniteUnionFunction();
+
+	/**
+	 * Returns a new object of class '<em>Delta Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Delta Function</em>'.
+	 * @generated
+	 */
+	DeltaFunction createDeltaFunction();
+
+	/**
+	 * Returns a new object of class '<em>Stored Funcs</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Stored Funcs</em>'.
+	 * @generated
+	 */
+	StoredFuncs createStoredFuncs();
+
+	/**
+	 * Returns a new object of class '<em>Feature Func</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Feature Func</em>'.
+	 * @generated
+	 */
+	FeatureFunc createFeatureFunc();
+
+	/**
+	 * Returns a new object of class '<em>Delta Store</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Delta Store</em>'.
+	 * @generated
+	 */
+	DeltaStore createDeltaStore();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

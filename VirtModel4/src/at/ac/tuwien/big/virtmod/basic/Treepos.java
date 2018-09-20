@@ -6,15 +6,81 @@ import at.ac.tuwien.big.virtmod.basic.impl.SimpleTreepos;
 import at.ac.tuwien.big.virtmod.basic.impl.SimpleTreeposValue;
 import at.ac.tuwien.big.virtmod.basic.impl.UnspecifiedTreeposValue;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public interface Treepos extends Comparable<Treepos> {
+public interface Treepos extends Comparable<Treepos>, Serializable {
 	
 
+	
+	public static Treepos augmentIndex(Treepos pos, int myIndex) {
+		if (pos.getLevelSize() == 0 || Math.abs(pos.getLevelValue(pos.getLevelSize()-1).value()) != myIndex) {
+			return pos.simpleAugment(myIndex);
+		}
+		return pos;
+	}
+	
+	public static Treepos FOR_PREFIX(int ind) {
+		return new SimpleTreepos(ind,0);
+	}
+	
+	public static Treepos ROOT() {
+		return new SimpleTreepos();
+	}
+	
+	public default Treepos after() {
+		return modified(1);
+	}
+	
+	public default Treepos before() {
+		return modified(-1);
+	}
+	
+	@Override
+	public default int compareTo(Treepos other) {
+		int bothLevel = Math.min(getLevelSize(), other.getLevelSize());
+		for (int i = 0; i < bothLevel; ++i) {
+			TreeposValue first = getLevelValue(i);
+			TreeposValue second = other.getLevelValue(i);
+			int ret = first.compareTo(second);
+			if (ret != 0) {
+				return ret;
+			}
+		}
+		for (int i = bothLevel; i < getLevelSize(); ++i) {
+			int ret = getLevelValue(i).value();
+			if (ret != 0) {
+				return ret;
+			}
+		}
+		for (int i = bothLevel; i < other.getLevelSize(); ++i) {
+			int ret = other.getLevelValue(i).value();
+			if (ret != 0) {
+				return -ret;
+			}
+		}
+		return 0;
+	}
+	
+	public default boolean equalTreepos(Treepos other) {
+		return compareTo(other)==0;
+	}
+	
+	public default boolean equalTreeposMap(Treepos other) {
+		return compareTo(other)==0;
+	}
+	
+	public default boolean equalTreeposValue(Treepos other) {
+		return compareTo(other)==0;
+	}
+	 
+	public int getLevelSize();
+	
+	public TreeposValue getLevelValue(int level);
 	
 	public default Treepos middle(Treepos neighbor, int myIndex) {		
 		int possiblyEqual = Math.min(getLevelSize(), neighbor.getLevelSize());
@@ -49,43 +115,6 @@ public interface Treepos extends Comparable<Treepos> {
 		return null;
 	}
 	
-	public default Treepos superAfter(int myIndex) {
-		return augmentIndex(topmost(1),myIndex);
-	}
-	
-	public default Treepos superBefore(int myIndex) {
-		return augmentIndex(topmost(-1),myIndex);
-	}
-	
-	public default Treepos simpleAugment(int myIndex) {
-		SimpleTreepos ret = new SimpleTreepos();
-		for (int i = 0; i  < getLevelSize(); ++i) {
-			ret.set(i, getLevelValue(i));
-		}
-		ret.set(getLevelSize(), new SimpleTreeposValue(myIndex));
-		return ret;
-	}
-	
-	public static Treepos augmentIndex(Treepos pos, int myIndex) {
-		if (pos.getLevelSize() == 0 || Math.abs(pos.getLevelValue(pos.getLevelSize()-1).value()) != myIndex) {
-			return pos.simpleAugment(myIndex);
-		}
-		return pos;
-	}
-	
-	public default SimpleTreepos topmost(int value) {
-		if (getLevelSize() == 0) {
-			SimpleTreepos ret = new SimpleTreepos();
-			ret.set(0, new SimpleTreeposValue(value));
-			return ret;
-		} else {
-			TreeposValue last = getLevelValue(0);
-			SimpleTreepos ret = new SimpleTreepos();
-			ret.set(0, new SimpleTreeposValue(last.value()+value));
-			return ret;
-		}
-	}
-	
 	public default Treepos modified(int value) {
 		if (getLevelSize() == 0) {
 			SimpleTreepos ret = new SimpleTreepos();
@@ -102,59 +131,35 @@ public interface Treepos extends Comparable<Treepos> {
 		}
 	}
 	
-	public default Treepos before() {
-		return modified(-1);
-	}
-	
-	public default Treepos after() {
-		return modified(1);
-	}
-	 
-	public int getLevelSize();
-	
-	public TreeposValue getLevelValue(int level);
-	
-	public static Treepos ROOT() {
-		return new SimpleTreepos();
-	}
-	
-	public default boolean equalTreeposValue(Treepos other) {
-		return compareTo(other)==0;
-	}
-	
-	public default boolean equalTreepos(Treepos other) {
-		return compareTo(other)==0;
-	}
-	
-	public default boolean equalTreeposMap(Treepos other) {
-		return compareTo(other)==0;
-	}
-	
-	@Override
-	public default int compareTo(Treepos other) {
-		int bothLevel = Math.min(getLevelSize(), other.getLevelSize());
-		for (int i = 0; i < bothLevel; ++i) {
-			TreeposValue first = getLevelValue(i);
-			TreeposValue second = other.getLevelValue(i);
-			int ret = first.compareTo(second);
-			if (ret != 0) {
-				return ret;
-			}
+	public default Treepos simpleAugment(int myIndex) {
+		SimpleTreepos ret = new SimpleTreepos();
+		for (int i = 0; i  < getLevelSize(); ++i) {
+			ret.set(i, getLevelValue(i));
 		}
-		for (int i = bothLevel; i < getLevelSize(); ++i) {
-			int ret = getLevelValue(i).value();
-			if (ret != 0) {
-				return ret;
-			}
-		}
-		for (int i = bothLevel; i < other.getLevelSize(); ++i) {
-			int ret = other.getLevelValue(i).value();
-			if (ret != 0) {
-				return -ret;
-			}
-		}
-		return 0;
+		ret.set(getLevelSize(), new SimpleTreeposValue(myIndex));
+		return ret;
+	}
+	
+	public Treepos subPos(int subPos);
+	
+	public default Treepos superAfter(int myIndex) {
+		return augmentIndex(topmost(1),myIndex);
+	}
+	
+	public default Treepos superBefore(int myIndex) {
+		return augmentIndex(topmost(-1),myIndex);
 	}
 
-	public Treepos subPos(int subPos);
+	public default SimpleTreepos topmost(int value) {
+		if (getLevelSize() == 0) {
+			SimpleTreepos ret = new SimpleTreepos();
+			ret.set(0, new SimpleTreeposValue(value));
+			return ret;
+		} else {
+			TreeposValue last = getLevelValue(0);
+			SimpleTreepos ret = new SimpleTreepos();
+			ret.set(0, new SimpleTreeposValue(last.value()+value));
+			return ret;
+		}
+	}
 }

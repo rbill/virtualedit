@@ -48,26 +48,26 @@ public interface IdentifierRef extends IdentifierRefOrCmp {
 	void setIdentifierreforcmp(IdentifierRefOrCmp value);
 
 	/**
-	 * Returns the value of the '<em><b>Sidentifier</b></em>' containment reference.
+	 * Returns the value of the '<em><b>Sidentifier</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Sidentifier</em>' containment reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Sidentifier</em>' containment reference.
+	 * @return the value of the '<em>Sidentifier</em>' reference.
 	 * @see #setS_identifier(Identifier)
 	 * @see VObjectModel.VObjectModelPackage#getIdentifierRef_S_identifier()
-	 * @model containment="true"
+	 * @model
 	 * @generated
 	 */
 	Identifier getS_identifier();
 
 	/**
-	 * Sets the value of the '{@link VObjectModel.IdentifierRef#getS_identifier <em>Sidentifier</em>}' containment reference.
+	 * Sets the value of the '{@link VObjectModel.IdentifierRef#getS_identifier <em>Sidentifier</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Sidentifier</em>' containment reference.
+	 * @param value the new value of the '<em>Sidentifier</em>' reference.
 	 * @see #getS_identifier()
 	 * @generated
 	 */

@@ -7,9 +7,9 @@
   <foreignModel>VObjectModel.ecore</foreignModel>
   <genPackages prefix="VObjectModel" disposableProviderFactory="true" ecorePackage="VObjectModel.ecore#/">
     <genClasses ecoreClass="VObjectModel.ecore#//Identifier">
-      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//Identifier/identifierreforcmp"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//Identifier/identifierreforcmp"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//Identifier/name"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//Identifier/creatorid"/>
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//Identifier/creatorid"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//Identifier/hc"/>
       <genOperations ecoreOperation="VObjectModel.ecore#//Identifier/hashCode"/>
       <genOperations ecoreOperation="VObjectModel.ecore#//Identifier/equals">
@@ -22,10 +22,10 @@
     </genClasses>
     <genClasses ecoreClass="VObjectModel.ecore#//IdentifierRef">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//IdentifierRef/identifierreforcmp"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//IdentifierRef/s_identifier"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference VObjectModel.ecore#//IdentifierRef/s_identifier"/>
     </genClasses>
     <genClasses ecoreClass="VObjectModel.ecore#//IdentifierCmp">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//IdentifierCmp/s_identifier"/>
+      <genFeatures children="true" createChild="true" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//IdentifierCmp/s_identifier"/>
     </genClasses>
     <genClasses ecoreClass="VObjectModel.ecore#//CreatorId">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//CreatorId/namespace"/>
@@ -34,6 +34,41 @@
     <genClasses ecoreClass="VObjectModel.ecore#//AnyValue"/>
     <genClasses ecoreClass="VObjectModel.ecore#//JavaValue">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//JavaValue/value"/>
+    </genClasses>
+    <genClasses ecoreClass="VObjectModel.ecore#//VObjDeltaModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//VObjDeltaModel/functions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//VObjDeltaModel/storedfuncs"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//VObjDeltaModel/identifiers"/>
+    </genClasses>
+    <genClasses ecoreClass="VObjectModel.ecore#//BasicFunction">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//BasicFunction/values"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="VObjectModel.ecore#//Function"/>
+    <genClasses ecoreClass="VObjectModel.ecore#//ValuePair">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//ValuePair/key"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//ValuePair/value"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//ValuePair/identifierValue"/>
+    </genClasses>
+    <genClasses ecoreClass="VObjectModel.ecore#//FiniteUnionFunction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//FiniteUnionFunction/baseFunc"/>
+    </genClasses>
+    <genClasses ecoreClass="VObjectModel.ecore#//DeltaFunction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//DeltaFunction/wrapped"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//DeltaFunction/deltastore"/>
+    </genClasses>
+    <genClasses ecoreClass="VObjectModel.ecore#//StoredFuncs">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//StoredFuncs/identifier"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//StoredFuncs/featurefunc"/>
+    </genClasses>
+    <genClasses ecoreClass="VObjectModel.ecore#//FeatureFunc">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//FeatureFunc/deltastore"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//FeatureFunc/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//FeatureFunc/classref"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//FeatureFunc/nsref"/>
+    </genClasses>
+    <genClasses ecoreClass="VObjectModel.ecore#//DeltaStore">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//DeltaStore/addMap"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//DeltaStore/filterScope"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

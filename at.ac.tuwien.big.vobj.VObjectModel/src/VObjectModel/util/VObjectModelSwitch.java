@@ -114,6 +114,61 @@ public class VObjectModelSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case VObjectModelPackage.VOBJ_DELTA_MODEL: {
+				VObjDeltaModel vObjDeltaModel = (VObjDeltaModel)theEObject;
+				T result = caseVObjDeltaModel(vObjDeltaModel);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.BASIC_FUNCTION: {
+				BasicFunction basicFunction = (BasicFunction)theEObject;
+				T result = caseBasicFunction(basicFunction);
+				if (result == null) result = caseFunction(basicFunction);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.FUNCTION: {
+				Function function = (Function)theEObject;
+				T result = caseFunction(function);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.VALUE_PAIR: {
+				ValuePair valuePair = (ValuePair)theEObject;
+				T result = caseValuePair(valuePair);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.FINITE_UNION_FUNCTION: {
+				FiniteUnionFunction finiteUnionFunction = (FiniteUnionFunction)theEObject;
+				T result = caseFiniteUnionFunction(finiteUnionFunction);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.DELTA_FUNCTION: {
+				DeltaFunction deltaFunction = (DeltaFunction)theEObject;
+				T result = caseDeltaFunction(deltaFunction);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.STORED_FUNCS: {
+				StoredFuncs storedFuncs = (StoredFuncs)theEObject;
+				T result = caseStoredFuncs(storedFuncs);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.FEATURE_FUNC: {
+				FeatureFunc featureFunc = (FeatureFunc)theEObject;
+				T result = caseFeatureFunc(featureFunc);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.DELTA_STORE: {
+				DeltaStore deltaStore = (DeltaStore)theEObject;
+				T result = caseDeltaStore(deltaStore);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -220,6 +275,141 @@ public class VObjectModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseJavaValue(JavaValue object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>VObj Delta Model</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>VObj Delta Model</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseVObjDeltaModel(VObjDeltaModel object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Basic Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Basic Function</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseBasicFunction(BasicFunction object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Function</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseFunction(Function object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Value Pair</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Value Pair</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseValuePair(ValuePair object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Finite Union Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Finite Union Function</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseFiniteUnionFunction(FiniteUnionFunction object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Delta Function</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Delta Function</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseDeltaFunction(DeltaFunction object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Stored Funcs</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Stored Funcs</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseStoredFuncs(StoredFuncs object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Feature Func</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Feature Func</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseFeatureFunc(FeatureFunc object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Delta Store</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Delta Store</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseDeltaStore(DeltaStore object) {
 		return null;
 	}
 

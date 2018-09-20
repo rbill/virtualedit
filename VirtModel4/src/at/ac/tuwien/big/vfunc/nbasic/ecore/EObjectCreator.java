@@ -1,10 +1,13 @@
 package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
+import VObjectModel.CreatorId;
+import VObjectModel.Identifier;
+
 public interface EObjectCreator {
 
 	
-	public VMEObject createEObject(Object... parameters);
+	public VMEObject createEObject(Identifier ide, Object... parameters);
 	
-	public String getName();
+	public CreatorId getName();
 	
 }

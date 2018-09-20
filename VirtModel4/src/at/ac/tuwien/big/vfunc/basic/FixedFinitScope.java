@@ -11,30 +11,31 @@ import at.ac.tuwien.big.xtext.util.IteratorUtils;
 
 public interface FixedFinitScope<Src> extends Scope<Src>, Iterable<Src> {
 
-	@Override
-	public Iterator<Src> iterator();
-
 	public static class FilteredFinitScope<Src> extends Scope.FilteredScope<Src> implements FixedFinitScope<Src> {
 
 		public FilteredFinitScope(Function<Src, Boolean> filter, FixedFinitScope<Src> baseScope) {
 			super(filter, baseScope);
 		}
 		
+		@Override
+		public Iterator<Src> iterator() {
+			return IteratorUtils.filterByFunc(scope().iterator(), filter);
+		}
+
 		private FixedFinitScope<Src> scope() {
 			return (FixedFinitScope<Src>)super.baseScope;
 		}
-
-		@Override
-		public Iterator<Src> iterator() {
-			return IteratorUtils.filterType(scope().iterator(), filter);
-		}
 		
 	}
-	
 
+	@Override
 	public default FilteredScope<Src> filter(Function<Src,Boolean> filter) {
 		return new FilteredFinitScope<>(filter, this);
 	}
+	
+
+	@Override
+	public Iterator<Src> iterator();
 
 
 	

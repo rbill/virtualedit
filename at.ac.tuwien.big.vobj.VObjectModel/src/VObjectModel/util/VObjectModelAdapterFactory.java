@@ -96,6 +96,42 @@ public class VObjectModelAdapterFactory extends AdapterFactoryImpl {
 				return createJavaValueAdapter();
 			}
 			@Override
+			public Adapter caseVObjDeltaModel(VObjDeltaModel object) {
+				return createVObjDeltaModelAdapter();
+			}
+			@Override
+			public Adapter caseBasicFunction(BasicFunction object) {
+				return createBasicFunctionAdapter();
+			}
+			@Override
+			public Adapter caseFunction(Function object) {
+				return createFunctionAdapter();
+			}
+			@Override
+			public Adapter caseValuePair(ValuePair object) {
+				return createValuePairAdapter();
+			}
+			@Override
+			public Adapter caseFiniteUnionFunction(FiniteUnionFunction object) {
+				return createFiniteUnionFunctionAdapter();
+			}
+			@Override
+			public Adapter caseDeltaFunction(DeltaFunction object) {
+				return createDeltaFunctionAdapter();
+			}
+			@Override
+			public Adapter caseStoredFuncs(StoredFuncs object) {
+				return createStoredFuncsAdapter();
+			}
+			@Override
+			public Adapter caseFeatureFunc(FeatureFunc object) {
+				return createFeatureFuncAdapter();
+			}
+			@Override
+			public Adapter caseDeltaStore(DeltaStore object) {
+				return createDeltaStoreAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -210,6 +246,132 @@ public class VObjectModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createJavaValueAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.VObjDeltaModel <em>VObj Delta Model</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.VObjDeltaModel
+	 * @generated
+	 */
+	public Adapter createVObjDeltaModelAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.BasicFunction <em>Basic Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.BasicFunction
+	 * @generated
+	 */
+	public Adapter createBasicFunctionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.Function <em>Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.Function
+	 * @generated
+	 */
+	public Adapter createFunctionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.ValuePair <em>Value Pair</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.ValuePair
+	 * @generated
+	 */
+	public Adapter createValuePairAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.FiniteUnionFunction <em>Finite Union Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.FiniteUnionFunction
+	 * @generated
+	 */
+	public Adapter createFiniteUnionFunctionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.DeltaFunction <em>Delta Function</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.DeltaFunction
+	 * @generated
+	 */
+	public Adapter createDeltaFunctionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.StoredFuncs <em>Stored Funcs</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.StoredFuncs
+	 * @generated
+	 */
+	public Adapter createStoredFuncsAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.FeatureFunc <em>Feature Func</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.FeatureFunc
+	 * @generated
+	 */
+	public Adapter createFeatureFuncAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.DeltaStore <em>Delta Store</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.DeltaStore
+	 * @generated
+	 */
+	public Adapter createDeltaStoreAdapter() {
 		return null;
 	}
 

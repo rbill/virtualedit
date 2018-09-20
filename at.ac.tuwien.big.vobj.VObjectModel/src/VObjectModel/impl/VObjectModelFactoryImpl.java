@@ -63,6 +63,14 @@ public class VObjectModelFactoryImpl extends EFactoryImpl implements VObjectMode
 			case VObjectModelPackage.CREATOR_ID: return createCreatorId();
 			case VObjectModelPackage.ANY_VALUE: return createAnyValue();
 			case VObjectModelPackage.JAVA_VALUE: return createJavaValue();
+			case VObjectModelPackage.VOBJ_DELTA_MODEL: return createVObjDeltaModel();
+			case VObjectModelPackage.BASIC_FUNCTION: return createBasicFunction();
+			case VObjectModelPackage.VALUE_PAIR: return createValuePair();
+			case VObjectModelPackage.FINITE_UNION_FUNCTION: return createFiniteUnionFunction();
+			case VObjectModelPackage.DELTA_FUNCTION: return createDeltaFunction();
+			case VObjectModelPackage.STORED_FUNCS: return createStoredFuncs();
+			case VObjectModelPackage.FEATURE_FUNC: return createFeatureFunc();
+			case VObjectModelPackage.DELTA_STORE: return createDeltaStore();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -136,6 +144,86 @@ public class VObjectModelFactoryImpl extends EFactoryImpl implements VObjectMode
 	public JavaValue createJavaValue() {
 		JavaValueImpl javaValue = new JavaValueImpl();
 		return javaValue;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public VObjDeltaModel createVObjDeltaModel() {
+		VObjDeltaModelImpl vObjDeltaModel = new VObjDeltaModelImpl();
+		return vObjDeltaModel;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public BasicFunction createBasicFunction() {
+		BasicFunctionImpl basicFunction = new BasicFunctionImpl();
+		return basicFunction;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ValuePair createValuePair() {
+		ValuePairImpl valuePair = new ValuePairImpl();
+		return valuePair;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public FiniteUnionFunction createFiniteUnionFunction() {
+		FiniteUnionFunctionImpl finiteUnionFunction = new FiniteUnionFunctionImpl();
+		return finiteUnionFunction;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public DeltaFunction createDeltaFunction() {
+		DeltaFunctionImpl deltaFunction = new DeltaFunctionImpl();
+		return deltaFunction;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public StoredFuncs createStoredFuncs() {
+		StoredFuncsImpl storedFuncs = new StoredFuncsImpl();
+		return storedFuncs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public FeatureFunc createFeatureFunc() {
+		FeatureFuncImpl featureFunc = new FeatureFuncImpl();
+		return featureFunc;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public DeltaStore createDeltaStore() {
+		DeltaStoreImpl deltaStore = new DeltaStoreImpl();
+		return deltaStore;
 	}
 
 	/**

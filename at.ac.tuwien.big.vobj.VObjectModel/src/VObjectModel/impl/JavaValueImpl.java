@@ -2,8 +2,12 @@
  */
 package VObjectModel.impl;
 
+import VObjectModel.IdentifierCmp;
+import VObjectModel.IdentifierRef;
 import VObjectModel.JavaValue;
 import VObjectModel.VObjectModelPackage;
+
+import java.util.Objects;
 
 import org.eclipse.emf.common.notify.Notification;
 
@@ -60,29 +64,12 @@ public class JavaValueImpl extends AnyValueImpl implements JavaValue {
 	 * @generated
 	 */
 	@Override
-	protected EClass eStaticClass() {
-		return VObjectModelPackage.Literals.JAVA_VALUE;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public Object getValue() {
-		return value;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public void setValue(Object newValue) {
-		Object oldValue = value;
-		value = newValue;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.JAVA_VALUE__VALUE, oldValue, value));
+	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+		switch (featureID) {
+			case VObjectModelPackage.JAVA_VALUE__VALUE:
+				return getValue();
+		}
+		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
@@ -91,12 +78,23 @@ public class JavaValueImpl extends AnyValueImpl implements JavaValue {
 	 * @generated
 	 */
 	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case VObjectModelPackage.JAVA_VALUE__VALUE:
-				return getValue();
+				return VALUE_EDEFAULT == null ? this.value != null : !VALUE_EDEFAULT.equals(this.value);
 		}
-		return super.eGet(featureID, resolve, coreType);
+		return super.eIsSet(featureID);
+	}
+
+	/**
+	 * @generated NOT
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof JavaValue) {
+			return Objects.equals(this.value, ((JavaValue)o).getValue());
+		} 
+		return false;
 	}
 
 	/**
@@ -120,6 +118,16 @@ public class JavaValueImpl extends AnyValueImpl implements JavaValue {
 	 * @generated
 	 */
 	@Override
+	protected EClass eStaticClass() {
+		return VObjectModelPackage.Literals.JAVA_VALUE;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
 			case VObjectModelPackage.JAVA_VALUE__VALUE:
@@ -135,27 +143,42 @@ public class JavaValueImpl extends AnyValueImpl implements JavaValue {
 	 * @generated
 	 */
 	@Override
-	public boolean eIsSet(int featureID) {
-		switch (featureID) {
-			case VObjectModelPackage.JAVA_VALUE__VALUE:
-				return VALUE_EDEFAULT == null ? value != null : !VALUE_EDEFAULT.equals(value);
-		}
-		return super.eIsSet(featureID);
+	public Object getValue() {
+		return this.value;
 	}
 
+	/**
+	 * @generated NOT
+	 */
+	@Override
+	public int hashCode() {
+		return (this.value==null)?0:this.value.hashCode();
+	}
+	
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
+	public void setValue(Object newValue) {
+		Object oldValue = this.value;
+		this.value = newValue;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.JAVA_VALUE__VALUE, oldValue, this.value));
+	}
+	
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated NOT
+	 */
+	@Override
 	public String toString() {
 		if (eIsProxy()) return super.toString();
 
-		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (value: ");
-		result.append(value);
-		result.append(')');
+		StringBuffer result = new StringBuffer();
+		result.append(this.value);
 		return result.toString();
 	}
 
