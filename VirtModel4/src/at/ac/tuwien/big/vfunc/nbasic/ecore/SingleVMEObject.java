@@ -2,6 +2,7 @@ package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import VObjectModel.Identifier;
+import VObjectModel.JavaValue;
 import at.ac.tuwien.big.vfunc.nbasic.AbstractFunc;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyer;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
@@ -45,7 +47,7 @@ public class SingleVMEObject extends AbstractVMEObject {
 	private EClass myClass;
 
 	public SingleVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id, EClass eclass) {
-		super(manager, creator, id);
+		super(manager, creator, id, Arrays.asList(((JavaValue)id.getIdentifierreforcmp().get(0)).getValue()));
 		this.myClass = eclass;
 	}
 

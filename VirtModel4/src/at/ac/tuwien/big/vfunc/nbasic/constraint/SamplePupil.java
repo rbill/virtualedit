@@ -1,6 +1,7 @@
 package at.ac.tuwien.big.vfunc.nbasic.constraint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -11,20 +12,35 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcoreFactory;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 
 import at.ac.tuwien.big.vfunc.nbasic.ConstantValue;
 import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import school.Pupil;
+import school.SchoolFactory;
+import school.SchoolPackage;
 
 public abstract class SamplePupil extends SampleEObject {
 
+	public static final ModelLoader modelLoader = new ModelLoader();
 
-	private static EClass $PUPIL_CLASS = EcoreFactory.eINSTANCE.createEClass();
-	private static EAttribute $NAME_FEATURE = EcoreFactory.eINSTANCE.createEAttribute();
-	private static EAttribute $INCLASS_FEATURE = EcoreFactory.eINSTANCE.createEAttribute();
-	private static EReference $GRADES_FEATURE = EcoreFactory.eINSTANCE.createEReference();
+	public static final EClass $PUPIL_CLASS = EcoreFactory.eINSTANCE.createEClass();
+	//oder?
+	//public static final EClass $PUPIL_CLASS = SchoolPackage.eINSTANCE.getPupil();
+	
+	public static final EAttribute $NAME_FEATURE = EcoreFactory.eINSTANCE.createEAttribute();
+	public static final EAttribute $INCLASS_FEATURE = EcoreFactory.eINSTANCE.createEAttribute();
+	public static final EReference $GRADES_FEATURE = EcoreFactory.eINSTANCE.createEReference();
+	static {
+		$NAME_FEATURE.setName("name");
+		$NAME_FEATURE.setEType(SchoolPackage.eINSTANCE.getCourse_Name().getEAttributeType());
+		$INCLASS_FEATURE.setName("inclass");
+		$INCLASS_FEATURE.setEType(SchoolPackage.eINSTANCE.getCourse_Name().getEAttributeType());
+		$PUPIL_CLASS.getEAttributes().addAll(Arrays.asList($NAME_FEATURE, $INCLASS_FEATURE));
+		$PUPIL_CLASS.getEReferences().addAll(Arrays.asList($GRADES_FEATURE));
+	}
 			
 
 	//Stored objects
@@ -108,6 +124,10 @@ public abstract class SamplePupil extends SampleEObject {
 
 	public void setName(String name) {
 		this.name.setValue(name);
+	}
+
+	public void initDerived() {
+		
 	}
 
 		

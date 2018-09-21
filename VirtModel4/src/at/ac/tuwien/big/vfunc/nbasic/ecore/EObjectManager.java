@@ -56,10 +56,9 @@ import at.ac.tuwien.big.xtext.equalizer.impl.MyEcoreUtilInstanceCreator;
 import at.ac.tuwien.big.xtext.util.MyEcoreUtil;
 import school.Grade;
 import school.SchoolPackage;
-import uk.ac.york.cs.ecss.ecss2xtext.ConvertToXmi;
  
 public class EObjectManager {
-	
+	 
 	//Creator --> Identifier --> EObject
 	
 	
@@ -76,7 +75,11 @@ public class EObjectManager {
 	public static void main(String[] args) throws IOException {
 		//EObjectManager mana
 		EObjectManager manager = new EObjectManager();
-		Resource r = ConvertToXmi.getXmiResource(new File("C:\\Users\\Robert\\Documents\\eclipse-modeling-neon-2-win32-x86_64\\eclipse\\workspacePatrickMaven\\at.ac.tuwien.big.virtlang.examples.school\\model\\School.xmi"));
+		File file = new File("C:\\Users\\Robert\\Documents\\eclipse-modeling-neon-2-win32-x86_64\\eclipse\\workspacePatrickMaven\\at.ac.tuwien.big.virtlang.examples.school\\model\\School.xmi");
+		if (!file.exists()) {
+			file =  new File("E:\\patrick\\virtualedit\\at.ac.tuwien.big.virtlang.examples.school\\model\\School.xmi");
+		}
+		Resource r = ConvertToXmi.getXmiResource(file);
 		manager.knowResource(r);
 		EPackage.Registry.INSTANCE.put(VObjectModelPackage.eINSTANCE.getNsURI(), VObjectModelPackage.eINSTANCE);
 		Resource delta = ConvertToXmi.getOrCreateXmiResource(new File("delta.xmi"));
@@ -324,15 +327,10 @@ public class EObjectManager {
 				cid.setNamespace(namespace);
 				if (namespace == null) {
 					//Maybe choose own
-					Map<String, EObjectCreator> map = this.eobjectCreators.getOrDefault(namespace, Collections.emptyMap());
-					EObjectCreator cr = map.get(name);
-					if (cr == null) {
-						String newNamespace = oel.getNamespace();
-						map = this.eobjectCreators.getOrDefault(namespace, Collections.emptyMap());
-						cr = map.get(name);
-						if (cr != null) {
-							cid.setName(newNamespace);
-						}
+					EObjectCreator cr = getBestCreatorOrNull(namespace, name, oel.getNamespace());
+					
+					if (cr != null) {
+						cid.setNamespace(cr.getName().getNamespace());
 					}
 				}
 			}
@@ -462,6 +460,27 @@ public class EObjectManager {
 		Set<Identifier> identifiers = getNoncomposite(model, Identifier.class);
 		model.getIdentifiers().addAll(identifiers);
 		
+	}
+
+
+	public EObjectCreator getBestCreatorOrNull(String namespace, String name) {
+		return getBestCreatorOrNull(namespace, name, null);
+	}
+			
+
+	public EObjectCreator getBestCreatorOrNull(String namespace, String name, String altNamespace) {
+		//Maybe choose own
+		Map<String, EObjectCreator> map = this.eobjectCreators.getOrDefault(namespace, Collections.emptyMap());
+		EObjectCreator cr = map.get(name);
+		if (cr == null) {
+			String newNamespace = altNamespace;
+			map = this.eobjectCreators.getOrDefault(newNamespace, Collections.emptyMap());
+			cr = map.get(name);
+			if (cr != null) {
+				return cr;
+			}
+		}
+		return cr;
 	}
 
 }

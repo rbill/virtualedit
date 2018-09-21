@@ -30,7 +30,6 @@ public class OclAssignment extends BasicResultImpl<Object> {
 	private boolean firstEval = true;
 	private List objectList;
 	
-	private Object valueRefresher;
 	
 	private BasicListenable refreshMyself = new BasicListenable() {
 

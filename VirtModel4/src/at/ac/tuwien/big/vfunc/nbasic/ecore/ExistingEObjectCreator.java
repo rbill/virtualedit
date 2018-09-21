@@ -1,7 +1,9 @@
 package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +43,7 @@ public class ExistingEObjectCreator implements EObjectCreator {
 		if (eobj == null) {
 			System.err.println("EObject with id "+id+" not found");
 		}
-		DeltaVMEObject ret = getVMEObject(ide, eobj);
+		DeltaVMEObject ret = getVMEObject(ide, eobj, Arrays.asList(parameters));
 		return ret;
 	}
 	
@@ -53,7 +55,7 @@ public class ExistingEObjectCreator implements EObjectCreator {
 		jv.setValue(name);
 		id.getIdentifierreforcmp().add(jv);
 		id.init();
-		VMEObject ret = getVMEObject(id, real);
+		VMEObject ret = getVMEObject(id, real, Arrays.asList(name));
 		return ret;
 	}
 	
@@ -64,7 +66,7 @@ public class ExistingEObjectCreator implements EObjectCreator {
 
 	public String getName(EObject x) {
 		return this.existingObjectsId.computeIfAbsent(x, z->{
-			//Man kann leider keine Annotations dazufügen ...
+			//Man kann leider keine Annotations dazufï¿½gen ...
 			String ecn = z.eClass().getName();
 			
 			String id = x.eResource().getURI().toString()+ecn+"_"+this.objectCount.computeIfAbsent(x.eResource(),a->new HashMap<>()).merge(ecn, 1, (a,b)->a+b);
@@ -79,10 +81,10 @@ public class ExistingEObjectCreator implements EObjectCreator {
 		return this.realObjects.get(identificator);
 	}
 	
-	private DeltaVMEObject getVMEObject(Identifier ide, EObject eeobj) {
+	private DeltaVMEObject getVMEObject(Identifier ide, EObject eeobj, List<?> parameters) {
 		return this.existingObjectMap.computeIfAbsent(eeobj, (eobj)->{ 
 		EClass ecl = eobj.eClass();
-		DeltaVMEObject ret = new DeltaVMEObject(this.manager, this, ide, ecl);
+		DeltaVMEObject ret = new DeltaVMEObject(this.manager, this, ide, ecl, parameters);
 		ecl.getEAllStructuralFeatures().forEach(esf->{
 			ret.addBasicSingletonFeature(esf, eobj, esf);
 		});

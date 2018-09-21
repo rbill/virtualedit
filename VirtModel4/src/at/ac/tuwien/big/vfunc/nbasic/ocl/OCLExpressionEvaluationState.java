@@ -172,7 +172,7 @@ public class OCLExpressionEvaluationState {
 		return ret;
 	}
 	
-	private EClassifier getEClassifier(Object value) {
+	public static EClassifier getEClassifier(Object value) {
 		if (value == null) {
 			//TODO???
 			return null;

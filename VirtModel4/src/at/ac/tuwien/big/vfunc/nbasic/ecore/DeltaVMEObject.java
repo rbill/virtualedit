@@ -80,12 +80,12 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		return ret;
 	};
 
-	public DeltaVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id, EClass eclass) {
-		this(manager,creator,id,eclass,manager.getDeltaStore(id));
+	public DeltaVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id, EClass eclass, List<?> parameters) {
+		this(manager,creator,id,eclass,manager.getDeltaStore(id), parameters);
 	}
 
-	public DeltaVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id, EClass eclass, DeltaVMEObjectStore store) {
-		super(manager, creator, id);
+	public DeltaVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id, EClass eclass, DeltaVMEObjectStore store, List<?> parameters) {
+		super(manager, creator, id, parameters);
 		this.myClass = eclass;
 		this.store = store;
 	}

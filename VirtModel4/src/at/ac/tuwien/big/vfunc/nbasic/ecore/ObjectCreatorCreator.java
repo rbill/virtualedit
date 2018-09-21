@@ -1,6 +1,7 @@
 package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,10 @@ public class ObjectCreatorCreator implements EObjectCreator {
 		this.creator = creator;
 		this.manager = manager;
 	}
+	
+	public ObjectCreator getCreator() {
+		return creator;
+	}
 
 	@Override
 	public VMEObject createEObject(Identifier ide, Object... parameters) {
@@ -67,7 +72,7 @@ public class ObjectCreatorCreator implements EObjectCreator {
 				System.err.println("Unknown "+def);
 			}
 		}
-		DeltaVMEObject targetObject = new DeltaVMEObject(this.manager, this, ide, ecl);
+		DeltaVMEObject targetObject = new DeltaVMEObject(this.manager, this, ide, ecl, Arrays.asList(parameters));
 		oclman.init(targetObject, valuesMap, assignments, this.creator.eResource());
 		oclman.evaluateAll();
 		return targetObject;

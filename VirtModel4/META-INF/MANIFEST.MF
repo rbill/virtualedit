@@ -4,6 +4,7 @@ Bundle-SymbolicName: VirtModel4
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: at.ac.tuwien.big.vmod.ecore.impl,
+ at.ac.tuwien.big.xmlintelledit.intelledit.ecore.util,
  junit.framework;version="4.12.0",
  org.eclipse.core.internal.resources,
  org.eclipse.emf.common.notify,
@@ -46,7 +47,8 @@ Export-Package: at.ac.tuwien.big.verocl.parameterdesc,
  at.ac.tuwien.big.vmodel.ecore,
  at.ac.tuwien.big.vmodel.ecore.impl,
  at.ac.tuwien.big.vmodel.general
-Require-Bundle: org.eclipse.emf.henshin.interpreter,
+Require-Bundle: intelledit;bundle-version="1.0.0";visibility:=reexport,
+ org.eclipse.emf.henshin.interpreter,
  org.eclipse.core.runtime,
  org.apache.commons.logging,
  org.eclipse.emf.compare,
@@ -62,5 +64,4 @@ Require-Bundle: org.eclipse.emf.henshin.interpreter,
  at.ac.tuwien.big.virtlang,
  org.eclipse.xtext,
  at.ac.tuwien.big.virtlang.examples.citizen,
- xmltext,
- intelledit;bundle-version="1.0.0"
+ org.eclipse.xtend;bundle-version="2.2.0"

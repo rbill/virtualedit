@@ -7,12 +7,16 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 
 import VObjectModel.Identifier;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
+import at.ac.tuwien.big.vfunc.nbasic.constraint.NotifyableEObject;
 
-public interface VMEObject extends Serializable, EObject {
+public interface VMEObject extends Serializable, NotifyableEObject {
 
-	public void addListener(EStructuralFeature resf, BasicListenable refreshMyself);
 	
 	public Identifier getIdentificator();
+		
+	public IdentifierInfo getIdentifierInfo();
 
 	public EObjectCreator getSourceOrNull();
+
+	public EObjectManager getManager();
 }

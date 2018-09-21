@@ -30,6 +30,12 @@ public abstract class AbstractVMEObject  extends MinimalEObjectImpl implements I
 	protected EObjectManager owner;
 	private int hashCode;
 	protected List<ContainmentThing> containments = new ArrayList<>();
+	private IdentifierInfo identifierInfo;
+	
+	@Override
+	public IdentifierInfo getIdentifierInfo() {
+		return identifierInfo;
+	}
 	
 	protected Function<EObject, EObject> convertToVirtual = (eobj)->{
 		if (eobj  instanceof VMEObject) {
@@ -47,11 +53,12 @@ public abstract class AbstractVMEObject  extends MinimalEObjectImpl implements I
 	};
 	
 
-	public AbstractVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id) {
+	public AbstractVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id, List<?> parametersUsed) {
 		this.creator = creator;
 		this.owner = manager;
 		this.identificator = id;
 		this.hashCode = Objects.hash(this.creator.getName(),this.identificator);
+		this.identifierInfo = new IdentifierInfo(creator, parametersUsed);
 	}
 	
 

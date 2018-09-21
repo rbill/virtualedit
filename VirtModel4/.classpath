@@ -14,5 +14,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/VirtModelPropApt"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/create-grammar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/at.ac.tuwien.big.virtmodel.vlang"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/intelledit"/>
+	<classpathentry kind="lib" path="lib/string-similarity-1.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
