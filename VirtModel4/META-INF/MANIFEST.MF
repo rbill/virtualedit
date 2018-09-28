@@ -64,4 +64,5 @@ Require-Bundle: intelledit;bundle-version="1.0.0";visibility:=reexport,
  at.ac.tuwien.big.virtlang,
  org.eclipse.xtext,
  at.ac.tuwien.big.virtlang.examples.citizen,
- org.eclipse.xtend;bundle-version="2.2.0"
+ org.eclipse.xtend;bundle-version="2.2.0",
+ xmltext

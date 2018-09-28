@@ -37,37 +37,21 @@ import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 
 public class OclDerivationEvaluableState extends BasicResultImpl<Object> implements EvaluationState<OclDerivationEvaluableState>, Refreshable {
 
+	private static final EcoreEnvironmentFactory fact = EcoreEnvironmentFactory.INSTANCE;
 	private OclDerivationEvaluable eval;
 	private EObject obj;
 	private RejectingFilterManager man;
 	private Map extents;
 	private EvaluationEnvironment env;
-	private static final EcoreEnvironmentFactory fact = EcoreEnvironmentFactory.INSTANCE;
 	private Map<String, Object> initParms = new HashMap<>();
 	private MyResource res;
 
-	public OclDerivationEvaluableState(MyResource res, OclDerivationEvaluable eval, EObject obj) {
-		super(new BasicMetaInfo());
-		this.eval = eval;
-		this.obj = obj;
-		this.res = res;
-	}
-	
-	public void initParam() {
-		man = new RejectingFilterManager();
-		man.initDefault();
-		
-		env = fact.createEvaluationEnvironment();
-		//Replace can always be called!
-		env.replace(Environment.SELF_VARIABLE_NAME, obj);
-		extents = env.createExtentMap(obj);
-	};
-
 	TracingEvaluationVisitor evalVisitor = null;
-	Object returnedValue = null;
+	
+	Object returnedValue = null;;
+
 	Double quality = null;
 	boolean fullEval = false;
-
 	private BasicListenable refreshMyself = new BasicListenable() {
 
 		@Override
@@ -76,17 +60,29 @@ public class OclDerivationEvaluableState extends BasicResultImpl<Object> impleme
 		}
 		
 	};
+	public OclDerivationEvaluableState(MyResource res, OclDerivationEvaluable eval, EObject obj) {
+		super(new BasicMetaInfo());
+		this.eval = eval;
+		this.obj = obj;
+		this.res = res;
+	}
+
+	@Override
+	public Object calcValue() {
+		return evaluateBasic();
+	}
 	
 	@Override
 	public Object evaluateBasic() {
+		try {
 		EvaluationVisitor ev = fact
-				.createEvaluationVisitor(fact.createEnvironment(), env, extents);			
-		evalVisitor = new TracingEvaluationVisitor(ev);
-		OCLExpression expr = eval.getExpression(obj);
-		Object ret = expr.accept(evalVisitor);
-		returnedValue = ret;
+				.createEvaluationVisitor(fact.createEnvironment(), this.env, this.extents);			
+		this.evalVisitor = new TracingEvaluationVisitor(ev);
+		OCLExpression expr = this.eval.getExpression(this.obj);
+		Object ret = expr.accept(this.evalVisitor);
+		this.returnedValue = ret;
 		
-		at.ac.tuwien.big.vfunc.nbasic.ocl.TracingEvaluationVisitor<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> refreshVisitor = new at.ac.tuwien.big.vfunc.nbasic.ocl.TracingEvaluationVisitor<>(evalVisitor);
+		at.ac.tuwien.big.vfunc.nbasic.ocl.TracingEvaluationVisitor<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?> refreshVisitor = new at.ac.tuwien.big.vfunc.nbasic.ocl.TracingEvaluationVisitor<>(this.evalVisitor);
 		expr.accept(refreshVisitor);
 		
 		//Ignore for now
@@ -119,51 +115,27 @@ public class OclDerivationEvaluableState extends BasicResultImpl<Object> impleme
 			}
 		}
 		return ret;
+		} catch (Exception e) {
+			System.err.println("Could not evaluate "+this.eval.getExpressionString()+": "+e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 
 	@Override
 	public Object evaluateFull() {
-		if (evalVisitor == null) {
+		if (this.evalVisitor == null) {
 			evaluateBasic();
 		}
 		/*if (eval.toString().contains("self.designSpeed.<=(self.providedBy.designSpeed).and(if self.type.=(serviceexample::ServiceType::IMPORTANT) then self.designSpeed.<=(self.providedBy.backup.designSpeed) else self.type.=(serviceexample::ServiceType::WEAKCONTRACT).or(self.providedBy.backup.<>(null)) endif)")) {
 			System.out.println("Expression!");
 		}*/
-		man.calculateEverything(res,evalVisitor.getTopResult());
-		fullEval = true;
-		return returnedValue;
+		this.man.calculateEverything(this.res,this.evalVisitor.getTopResult());
+		this.fullEval = true;
+		return this.returnedValue;
 	}
 
-
-	@Override
-	public EvalResult getResult() {
-		return evalVisitor.getTopResult();
-	}
-
-
-	@Override
-	public double getQuality() {
-		if (quality == null) {
-			try {
-				if (!fullEval) {
-					evaluateFull();
-				}
-				quality = man.calculateSingleQuality(getResult(), MakeTrueImpl.INSTANCE);
-			} catch (Exception e) {
-				return 0.0;
-			}
-		}
-		return quality;
-	}
-
-	@Override
-	public void reuseParam(OclDerivationEvaluableState from) {
-		man = from.man;
-		extents = from.extents;
-		env = fact.createEvaluationEnvironment();
-		env.add(Environment.SELF_VARIABLE_NAME, obj);		
-	}
 
 	@Override
 	public Object evaluateNew(Replacer replacer, boolean[] changed) {
@@ -172,8 +144,43 @@ public class OclDerivationEvaluableState extends BasicResultImpl<Object> impleme
 
 
 	@Override
-	public Object calcValue() {
-		return evaluateBasic();
+	public double getQuality() {
+		if (this.quality == null) {
+			try {
+				if (!this.fullEval) {
+					evaluateFull();
+				}
+				this.quality = this.man.calculateSingleQuality(getResult(), MakeTrueImpl.INSTANCE);
+			} catch (Exception e) {
+				return 0.0;
+			}
+		}
+		return this.quality;
+	}
+
+	@Override
+	public EvalResult getResult() {
+		return this.evalVisitor.getTopResult();
+	}
+
+	@Override
+	public void initParam() {
+		this.man = new RejectingFilterManager();
+		this.man.initDefault();
+		
+		this.env = fact.createEvaluationEnvironment();
+		//Replace can always be called!
+		this.env.replace(Environment.SELF_VARIABLE_NAME, this.obj);
+		this.extents = this.env.createExtentMap(this.obj);
+	}
+
+
+	@Override
+	public void reuseParam(OclDerivationEvaluableState from) {
+		this.man = from.man;
+		this.extents = from.extents;
+		this.env = fact.createEvaluationEnvironment();
+		this.env.add(Environment.SELF_VARIABLE_NAME, this.obj);		
 	}
 
 	

@@ -5,12 +5,14 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.util.EList;
+
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyer;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import at.ac.tuwien.big.vfunc.nbasic.ListChangeNotifyer;
 import at.ac.tuwien.big.vfunc.nbasic.ListListenable;
 
-public class NotifyingList<T> extends AbstractList<T> implements ListChangeNotifyer<T> {
+public class NotifyingList<T> extends AbstractList<T> implements ListChangeNotifyer<T>, EList<T> {
 
 	private List<T> delegate;
 	private List<WeakReference<BasicListenable>> changeListeners = new ArrayList<>();
@@ -45,9 +47,15 @@ public class NotifyingList<T> extends AbstractList<T> implements ListChangeNotif
 	}
 	
 	@Override
-	public T remove(int index) {
-		T ret = this.delegate.remove(index);
-		removed(index, ret);
+	public T move(int newPosition, int oldPosition) {
+		if (newPosition == oldPosition) {
+			return get(newPosition);
+		}
+		if (newPosition>oldPosition) {
+			--newPosition;
+		}
+		T ret = remove(oldPosition);
+		add(newPosition, ret);
 		return ret;
 	}
 	
@@ -55,12 +63,36 @@ public class NotifyingList<T> extends AbstractList<T> implements ListChangeNotif
 	
 
 	@Override
+	public void move(int newPosition, T object) {
+		int idx = indexOf(object);
+		if (idx == -1) {
+			System.err.println("Can't move nonexistant object, adding ...?");
+			add(newPosition, object);
+		} else if (idx != newPosition) {
+			remove(idx);
+			if (newPosition>idx) {
+				--newPosition;
+			}
+			add(newPosition, object);
+		}
+	}
+
+
+	@Override
+	public T remove(int index) {
+		T ret = this.delegate.remove(index);
+		removed(index, ret);
+		return ret;
+	}
+
+
+
+	@Override
 	public T set(int index, T obj) {
 		T old = this.delegate.set(index, obj);
 		changed(index, old, obj);
 		return old;
 	}
-
 
 	@Override
 	public int size() {

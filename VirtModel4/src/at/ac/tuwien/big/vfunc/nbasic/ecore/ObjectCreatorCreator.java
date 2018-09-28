@@ -25,7 +25,7 @@ import at.ac.tuwien.big.virtlang.virtLang.VarDefinition;
 
 public class ObjectCreatorCreator implements EObjectCreator {
 	
-	private static String getExprString(Expression expr) {
+	public static String getExprString(Expression expr) {
 		if (expr instanceof BasicOCLExpression) {
 			return ((BasicOCLExpression)expr).getExpression();
 		}
@@ -40,10 +40,6 @@ public class ObjectCreatorCreator implements EObjectCreator {
 		this.manager = manager;
 	}
 	
-	public ObjectCreator getCreator() {
-		return creator;
-	}
-
 	@Override
 	public VMEObject createEObject(Identifier ide, Object... parameters) {
 		Map<String,Object> valuesMap = new HashMap<>();
@@ -76,6 +72,10 @@ public class ObjectCreatorCreator implements EObjectCreator {
 		oclman.init(targetObject, valuesMap, assignments, this.creator.eResource());
 		oclman.evaluateAll();
 		return targetObject;
+	}
+
+	public ObjectCreator getCreator() {
+		return this.creator;
 	}
 
 	@Override

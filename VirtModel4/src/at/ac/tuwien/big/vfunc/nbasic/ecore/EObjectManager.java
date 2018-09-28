@@ -2,8 +2,10 @@ package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +34,7 @@ import org.eclipse.xtext.resource.XtextResourceSet;
 
 import com.google.inject.Injector;
 
+import Citizen.CitizenPackage;
 import VObjectModel.AnyValue;
 import VObjectModel.CreatorId;
 import VObjectModel.Identifier;
@@ -172,13 +175,7 @@ public class EObjectManager {
 	private Map<Identifier, DeltaVMEObjectStore> storeMap = new HashMap<>();
 	private Map<UseModel, EPackage> knownModels = new HashMap<>();
 	
-	private void addCreator(EObjectCreator creator) {
-		this.eobjectCreators.computeIfAbsent(creator.getName().getNamespace(), x->new HashMap<>()).
-			put(creator.getName().getName(), creator);
-		//Double-put
-		this.eobjectCreators.computeIfAbsent(null, x->new HashMap<>()).
-			put(creator.getName().getName(), creator);
-	}
+	private List<EPackage> knownPackages = new ArrayList<>();
 	
 	/*
 	public VMEObject getOrCreate(EObjectCreator creator, Object... params) {
@@ -193,8 +190,53 @@ public class EObjectManager {
 		return getOrCreate(creator, params);
 	}*/
 	
+	private Map<String, EPackage> knownPackageUris = new HashMap<>();
+	
+	private void addCreator(EObjectCreator creator) {
+		this.eobjectCreators.computeIfAbsent(creator.getName().getNamespace(), x->new HashMap<>()).
+			put(creator.getName().getName(), creator);
+		//Double-put
+		this.eobjectCreators.computeIfAbsent(null, x->new HashMap<>()).
+			put(creator.getName().getName(), creator);
+	}
+	
+	
+	//private Map<EObjectCreator, Map<Object[], VMEObject>> createdObjects = new HashMap<>();
+	
 	public void addCreator(String namespace, String name, EObjectCreator creator) {
 		this.eobjectCreators.computeIfAbsent(namespace, x->new HashMap<>()).put(name, creator);
+	}
+	
+	
+	public void addKnown(EPackage epkg) {
+		EPackage oldPkg = this.knownPackageUris.putIfAbsent(epkg.getNsURI(), epkg);
+		if (oldPkg == epkg) {
+			return;
+		}
+		//Check if there is an eINSTANCE field accessible from a class
+		int oldQuality = checkPackageQuality(oldPkg);
+		int newQuality = checkPackageQuality(epkg);
+		//If it was null, it was already associated
+		if (newQuality > oldQuality) {
+			if (oldPkg != null) {
+				this.knownPackageUris.put(epkg.getNsURI(), epkg);
+				this.knownPackages.remove(oldPkg);
+			}
+			this.knownPackages.add(epkg);
+		}
+	}
+	
+	private int checkPackageQuality(EPackage pkg) {
+		if (pkg == null) {
+			return -1;
+		}
+		boolean wasGood = false;
+		try {
+			Field field = pkg.getClass().getField("eINSTANCE");
+			return field==null?0:1;
+		} catch( Exception e) {
+			return 0;
+		}
 	}
 	
 	public Object convert(AnyValue val) {
@@ -217,9 +259,6 @@ public class EObjectManager {
 		throw new UnsupportedOperationException("Cannot convert "+val+"!");
 	}
 	
-	
-	//private Map<EObjectCreator, Map<Object[], VMEObject>> createdObjects = new HashMap<>();
-	
 	private <T> void getAllReferenced(EObject start, Set<T> functions, Class<T> type) {
 		start.eAllContents().forEachRemaining(x->{
 			for (EObject eobj: x.eCrossReferences()) {
@@ -230,6 +269,34 @@ public class EObjectManager {
 		});
 	}
 	
+	public EObjectCreator getBestCreatorOrNull(String namespace, String name) {
+		return getBestCreatorOrNull(namespace, name, null);
+	}
+	
+	public EObjectCreator getBestCreatorOrNull(String namespace, String name, String altNamespace) {
+		//Maybe choose own
+		Map<String, EObjectCreator> map = this.eobjectCreators.getOrDefault(namespace, Collections.emptyMap());
+		EObjectCreator cr = map.get(name);
+		if (cr == null) {
+			String newNamespace = altNamespace;
+			map = this.eobjectCreators.getOrDefault(newNamespace, Collections.emptyMap());
+			cr = map.get(name);
+			if (cr != null) {
+				return cr;
+			}
+		}
+		return cr;
+	}
+	
+	public Collection<ObjectCreator> getCreators() {
+		Set<ObjectCreator> ret = new HashSet<>();
+		this.eobjectCreators.values().forEach(x->x.values().forEach(y->{
+			if (y instanceof ObjectCreatorCreator) {
+				ret.add(((ObjectCreatorCreator)y).getCreator());
+			}
+		}));
+		return ret;
+	}
 	
 	/**Only for my things, is specific*/
 	
@@ -245,6 +312,7 @@ public class EObjectManager {
 		return getEClass(n, cn);
 	}
 	
+
 	public EClass getEClass(UseModel model, String name) {
 		EPackage epkg = this.knownModels.get(model);
 		if (epkg == null) {
@@ -258,13 +326,17 @@ public class EObjectManager {
 		return (EClass)ecl;
 	
 	}
-	
+
+	public Collection<EPackage> getEPackages() {
+		return this.knownPackages;
+	}
+
 	public VMEObject getFakeVirtual(EObject x) {
 		VMEObject ret = this.eobjReader.getFakeVirtual(x);
 		this.createdObjects.put(ret.getIdentificator(), ret);
 		return ret;
 	}
-	
+
 	public Identifier getIdentifier(String name, CreatorId cid, List<Object> values, OclEvaluationList oel) {
 		Identifier ret = vfact.createIdentifier();
 		ret.setName(name);
@@ -276,7 +348,7 @@ public class EObjectManager {
 		ret.init();
 		return ret;
 	}
-	
+		
 	public Identifier getIdentifier(TupleValue val, OclEvaluationList oel) {
 		return ((IdentifierCmp)getIdentifierRef(val, oel)).getS_identifier();
 	}
@@ -350,7 +422,7 @@ public class EObjectManager {
 	public EObject getInvVirtual(VMEObject virtObj) {
 		return getInvVirtual(virtObj, new HashMap<>());
 	}
-	
+
 	public EObject getInvVirtual(VMEObject virtObj, Map<EObject, EObject> addMap) {
 		EObject ret = this.eobjReader.getReal(virtObj.getIdentificator());
 		if (ret == null) {
@@ -373,7 +445,7 @@ public class EObjectManager {
 		}
 		return ret;	
 	}
-	
+
 
 	public<T extends EObject> Set<T> getNoncomposite(EObject start, Class<T> type) {
 		Set<T> ret = new HashSet<>();
@@ -394,19 +466,22 @@ public class EObjectManager {
 		ret.removeAll(included);
 		return ret;
 	}
+			
 
 	public VMEObject getObject(Identifier id) {
 		return this.createdObjects.get(id);
 	}
 
+
+
 	public String getObjName(EObject obj) {
 		return this.eobjReader.getName(obj);
 	}
 
+
 	public void knowResource(Resource r) {
 		this.eobjReader.knowResource(r);
 	}
-		
 	public void knowResource(UseModel mod) {
 		String uri = mod.getUrl();
 		String name = mod.getName();
@@ -460,27 +535,6 @@ public class EObjectManager {
 		Set<Identifier> identifiers = getNoncomposite(model, Identifier.class);
 		model.getIdentifiers().addAll(identifiers);
 		
-	}
-
-
-	public EObjectCreator getBestCreatorOrNull(String namespace, String name) {
-		return getBestCreatorOrNull(namespace, name, null);
-	}
-			
-
-	public EObjectCreator getBestCreatorOrNull(String namespace, String name, String altNamespace) {
-		//Maybe choose own
-		Map<String, EObjectCreator> map = this.eobjectCreators.getOrDefault(namespace, Collections.emptyMap());
-		EObjectCreator cr = map.get(name);
-		if (cr == null) {
-			String newNamespace = altNamespace;
-			map = this.eobjectCreators.getOrDefault(newNamespace, Collections.emptyMap());
-			cr = map.get(name);
-			if (cr != null) {
-				return cr;
-			}
-		}
-		return cr;
 	}
 
 }

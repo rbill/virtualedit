@@ -10,10 +10,8 @@ import at.ac.tuwien.big.vfunc.nbasic.NewValueListenable;
 
 public class SampleObject extends SamplePupil {
 	
-	//Virtual objects
-	private Burger cit;
-	
 	public static final EClass $SAMPLE_OBJECT_CLASS = EcoreFactory.eINSTANCE.createEClass();
+	
 	public static final EReference $CIT_REFERENCE = EcoreFactory.eINSTANCE.createEReference();
 	static {
 		//Typedef funktioniert nicht bei derivtem
@@ -33,29 +31,8 @@ public class SampleObject extends SamplePupil {
 		$CIT_REFERENCE.setUpperBound(-1);
 		$SAMPLE_OBJECT_CLASS.getEReferences().add($CIT_REFERENCE);
 	}
-	
-	public SampleObject() {
-
-	}
-	
-	
-	public void initDerived() {
-		super.initDerived();
-		
-		this.cit = (Burger)parameters.get(0);
-		
-		{
-			OclDerivationEvaluable evaluable = new OclDerivationEvaluable("cit.name", null);
-			OclDerivationEvaluableState state = evaluable.getState(res, this);
-			state.addChangeListener(newNameListener);
-			//Brauche ich das?
-		}
-		{
-			OclDerivationEvaluable evaluable = new OclDerivationEvaluable("cit.address", null);
-			OclDerivationEvaluableState state = evaluable.getState(res, this);
-			state.addChangeListener(newInclassListener);
-		}
-	}
+	//Virtual objects
+	private Burger cit;
 	
 	private NewValueListenable<Object> newInclassListener = new NewValueListenable<Object>() {
 
@@ -63,7 +40,7 @@ public class SampleObject extends SamplePupil {
 		public void changed(Object oldValue, Object newValue) {
 			//For every simple attribute
 			if (newValue == null || newValue instanceof String) {
-				name_inclass = (String)newValue;
+				SampleObject.this.name_inclass = (String)newValue;
 				//This is only for simple things, for other things it gets more complex
 				//Multi-Attributes:
 				// PatchUtil.applyPatch(name_inclass, newValue);
@@ -83,37 +60,62 @@ public class SampleObject extends SamplePupil {
 			
 		}
 	};
-
+	
+	
 	private String name_inclass;
 	
-	
-	public String getInclass_derived() {
-		return name_inclass;
-	}
-
 	private String name_derived;
-	
+
 	private NewValueListenable<Object> newNameListener = new NewValueListenable<Object>() {
 
 		@Override
 		public void changed(Object oldValue, Object newValue) {
 			//For every simple attribute
 			if (newValue == null || newValue instanceof String) {
-				name_derived = (String)newValue;
+				SampleObject.this.name_derived = (String)newValue;
 			} else {
 				System.err.println("Got wrong type "+newValue);
 			}
 			
 		}
 	};
+	
+	
+	public SampleObject() {
+
+	}
+
+	@Override
+	public EClass eClass() {
+		return $SAMPLE_OBJECT_CLASS;
+	}
+	
+	public String getInclass_derived() {
+		return this.name_inclass;
+	}
 
 	public String getName_derived() {
-		return name_derived;
+		return this.name_derived;
 	}
 
 	
-	public EClass eClass() {
-		return $SAMPLE_OBJECT_CLASS;
+	@Override
+	public void initDerived() {
+		super.initDerived();
+		
+		this.cit = (Burger)this.parameters.get(0);
+		
+		{
+			OclDerivationEvaluable evaluable = new OclDerivationEvaluable("cit.name", null);
+			OclDerivationEvaluableState state = evaluable.getState(this.res, this);
+			state.addChangeListener(this.newNameListener);
+			//Brauche ich das?
+		}
+		{
+			OclDerivationEvaluable evaluable = new OclDerivationEvaluable("cit.address", null);
+			OclDerivationEvaluableState state = evaluable.getState(this.res, this);
+			state.addChangeListener(this.newInclassListener);
+		}
 	}
 
 }

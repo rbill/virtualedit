@@ -16,7 +16,7 @@ public interface VMEObject extends Serializable, NotifyableEObject {
 		
 	public IdentifierInfo getIdentifierInfo();
 
-	public EObjectCreator getSourceOrNull();
-
 	public EObjectManager getManager();
+
+	public EObjectCreator getSourceOrNull();
 }

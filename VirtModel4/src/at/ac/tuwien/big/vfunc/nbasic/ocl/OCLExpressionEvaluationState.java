@@ -49,7 +49,7 @@ import org.eclipse.ocl.pivot.internal.ids.GeneralizedTupleTypeIdImpl;
 import org.eclipse.ocl.pivot.internal.values.TupleValueImpl;
 import org.eclipse.ocl.types.TupleType;
 import org.eclipse.ocl.util.Tuple;
-import org.eclipse.ocl.utilities.OCLFactory;
+import org.eclipse.ocl.utilities.OCLFactory; 
 
 import at.ac.tuwien.big.generalutil.Pair;
 import at.ac.tuwien.big.xmlintelledit.xmltext.ecoretransform.impl.TypeTransformatorStore;
@@ -66,6 +66,24 @@ public class OCLExpressionEvaluationState {
 	}
 	private static TypeTransformatorStore tts = new TypeTransformatorStore();
 	
+	public static EClassifier getEClassifier(Object value) {
+		if (value == null) {
+			//TODO???
+			return null;
+		}
+		if (value instanceof EObject) {
+			return ((EObject)value).eClass();
+		}
+		//DataTypes
+		EDataType defaultDatatype = tts.getStandardDatatypeOrNull(value.getClass());
+		if (defaultDatatype != null) {
+			return defaultDatatype;
+		}
+		
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	private static Object toOclCol(Collection col, TypeId[] typeId) {
 		if (col instanceof Set) {
 			typeId[0] = TypeId.SET;
@@ -77,30 +95,30 @@ public class OCLExpressionEvaluationState {
 			typeId[0] = TypeId.BAG;
 		}
 		return col;
-	}
-	
-	private String oclExpression;;
+	};
 	
 
+	private String oclExpression;
 	private Map extents;
+	
+
 	private EvaluationEnvironment env;
 	
-
 	private Map<String,Object> values;
 	
 	TracingEvaluationVisitor evalVisitor = null;
 	
-	Object returnedValue = null;
-	
 	
 	
 
+	Object returnedValue = null;
 	Double quality = null;
 	boolean fullEval = false;
 	public OCLExpressionEvaluationState(String oclExpression, Map<String, Object> values) {
 		this.oclExpression = oclExpression;
 		this.values = values;
 	}
+	
 	public Object evaluate() {
 		this.returnedValue = evaluate(this.oclExpression, this.values);
 		return this.returnedValue;
@@ -170,24 +188,6 @@ public class OCLExpressionEvaluationState {
 		}
 		Object ret = query.accept(this.evalVisitor);
 		return ret;
-	}
-	
-	public static EClassifier getEClassifier(Object value) {
-		if (value == null) {
-			//TODO???
-			return null;
-		}
-		if (value instanceof EObject) {
-			return ((EObject)value).eClass();
-		}
-		//DataTypes
-		EDataType defaultDatatype = tts.getStandardDatatypeOrNull(value.getClass());
-		if (defaultDatatype != null) {
-			return defaultDatatype;
-		}
-		
-		// TODO Auto-generated method stub
-		return null;
 	}
 	public Map<Object, Set> getProperties() {
 		return this.evalVisitor.getPropertiesPerObject();

@@ -33,13 +33,19 @@ public class OclExpressionGetter {
 
 		OCLExpression query;
 		try {
-			oclHelper.setInstanceContext(null);
+			oclHelper.setInstanceContext(eobj);
 			Environment<?, EClassifier, EOperation, EStructuralFeature, ?, ?, ?, ?, ?, Constraint, ?, ?> environment = oclHelper.getEnvironment();
 			for (Entry<String,Object> entr: values.entrySet()) {
 				Variable<EClassifier, ?> elem = ExpressionsFactory.eINSTANCE.createVariable();
 				elem.setName(entr.getKey());
 				elem.setType(OCLExpressionEvaluationState.getEClassifier(entr.getValue()));
 				environment.addElement(entr.getKey(), (Variable)elem, true);
+			}
+			if (eobj != null) {
+				Variable<EClassifier, ?> elem = ExpressionsFactory.eINSTANCE.createVariable();
+				elem.setName(Environment.SELF_VARIABLE_NAME);
+				elem.setType(eobj.eClass());
+				environment.addElement(Environment.SELF_VARIABLE_NAME, (Variable)elem, true);
 			}
 			query = oclHelper.createQuery(oclExpression);
 			return query;

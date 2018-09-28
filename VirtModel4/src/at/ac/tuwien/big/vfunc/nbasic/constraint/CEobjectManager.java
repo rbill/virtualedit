@@ -1,6 +1,7 @@
 package at.ac.tuwien.big.vfunc.nbasic.constraint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,9 +12,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.ocl.pivot.ids.TuplePartId;
 import org.eclipse.ocl.pivot.ids.TupleTypeId;
 import org.eclipse.ocl.pivot.values.TupleValue;
@@ -35,24 +38,33 @@ import at.ac.tuwien.big.xtext.util.MyEcoreUtil;
 
 public class CEobjectManager {
 	
+	public static void main(String[] args) {
+		MyResource res = MyResource.get(new ResourceImpl());
+		System.out.println(res);
+	}
 	private Resource fakeResource = new ResourceImpl(URI.createURI("fake://myResource/"+Math.random()));
+	
 	{
 	}
 	
 	private Map<ObjectCreator,  Map<List<?>, SampleEObject>> existingObjects = new HashMap<>();
 	
-	private Class<? extends SampleEObject> getClass(ObjectCreator creator) {
-		
-		//TODO: Implement me
-		return null;
-	}
-	
 	private EObjectManager emanager;
+	private ObjectCreatorGenerator ocg;
+	private ClassGenerationManager cgm;
 	
+	private MyResource myFakeResource;
+	
+	public CEobjectManager(EObjectManager emanager) {
+		this.emanager = emanager;
+		this.cgm = new ClassGenerationManager();
+		emanager.getEPackages().forEach(x->this.cgm.knowPackage(x));
+		this.ocg = new ObjectCreatorGenerator(this, this.cgm);
+	}
 	
 	public Object convertOclTuple(Object obj) {
 		if (obj instanceof SampleEObject) {
-			return (SampleEObject)obj;
+			return obj;
 		}
 		if (obj instanceof TupleValue) {
 			TupleValue tv = (TupleValue)obj;
@@ -74,7 +86,7 @@ public class CEobjectManager {
 			}
 			
 			if (name != null) {
-				EObjectCreator creator = emanager.getBestCreatorOrNull(namespace,name);
+				EObjectCreator creator = this.emanager.getBestCreatorOrNull(namespace,name);
 				if (creator != null ) { 
 					if (creator instanceof ObjectCreatorCreator) {
 						SampleEObject ret = getOrCreateBasic(((ObjectCreatorCreator)creator).getCreator(), values);
@@ -106,22 +118,51 @@ public class CEobjectManager {
 		}
 		return ret;
 	}
-	
-	public SampleEObject getOrNull(ObjectCreator creator, List<?> parameters) {
-		return existingObjects.getOrDefault(creator, Collections.emptyMap()).get(parameters);
+	public SampleEObject generateBasic(EClass ecl) {
+		Class<? extends SampleEObject> cl = getCompiledClass(ecl);
+		SampleEObject ret = null;
+		try {
+			ret = cl.newInstance();
+			ret.initMyResource(this.myFakeResource, this);
+			if (this.myFakeResource != null) {
+				this.myFakeResource.objectAdded(ret);
+			}
+		} catch (InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ret;
 	}
 	
+	private Class<? extends SampleEObject> getCompiledClass(EClass cl) {
+		return this.ocg.getOrCreate(cl);
+	}
+	
+	private Class<? extends SampleEObject> getCompiledClass(ObjectCreator creator) {
+		return this.ocg.getOrCreate(creator);
+	}
+	
+	
+	public List<EObject> getContents() {
+		return this.fakeResource.getContents();
+	}
+	
+	public EObjectManager getEObjectManager() {
+		return this.emanager;
+	}
+	 
+	 
 	public SampleEObject getOrCreateBasic(ObjectCreator creator, List<?> parameters) {
-		return existingObjects.computeIfAbsent(creator, x->new HashMap<>()).computeIfAbsent(parameters, x->{
+		return this.existingObjects.computeIfAbsent(creator, x->new HashMap<>()).computeIfAbsent(parameters, x->{
 			SampleEObject ret = null;
-			Class<? extends SampleEObject> cl = getClass(creator);
+			Class<? extends SampleEObject> cl = getCompiledClass(creator);
 			try {
 				ret = cl.newInstance();
 				ret.initParameters(parameters);
 				//so.initIdentifier(id);
-				ret.initMyResource(myFakeResource);
-				if (myFakeResource != null) {
-					myFakeResource.objectAdded(ret);
+				ret.initMyResource(this.myFakeResource, this);
+				if (this.myFakeResource != null) {
+					this.myFakeResource.objectAdded(ret);
 				}
 				return ret;
 			} catch (InstantiationException | IllegalAccessException e) {
@@ -131,6 +172,7 @@ public class CEobjectManager {
 			return ret;
 		});
 	}
+
 	public EObject getOrCreateFull(EObject existing) {
 		Map<EObject,EObject> map = new HashMap<>();
 		Function<EObject, EObject> retriever = (y)->{
@@ -161,16 +203,28 @@ public class CEobjectManager {
 				VMEObject vm = (VMEObject)old;
 				Identifier id = vm.getIdentificator();
 				IdentifierInfo identifierInfo = vm.getIdentifierInfo();
-				List<?> objPars = identifierInfo.getParameters();
+				List<?> oldObjPars = identifierInfo.getParameters();
+				List<Object> objPars = new ArrayList<>();
+				for (Object o: oldObjPars) {
+					if (o instanceof EObject) {
+						objPars.add(getOrCreateFull((EObject)o));
+					} else {
+						objPars.add(o);
+					}
+				}
 				EObjectCreator cr = identifierInfo.getCreator();
 				if (cr instanceof ExistingEObjectCreator) {
-					ExistingEObjectCreator eec = (ExistingEObjectCreator)cr;
+					/*ExistingEObjectCreator eec = (ExistingEObjectCreator)cr;
 					//Here I will probably copy them normally
-					return MyEcoreUtil.newInstance(vm);
+					return MyEcoreUtil.newInstance(vm);*/
+					//Nope
+					ExistingEObjectCreator eoc = (ExistingEObjectCreator)cr;
+					//TODO: Problem if multiple eobjects of multiple classes exist ...
+					return generateBasic(vm.eClass()); 
 				} else if (cr instanceof ObjectCreatorCreator) {
 					ObjectCreatorCreator occ = (ObjectCreatorCreator)cr;
 					ObjectCreator oc = occ.getCreator();
-					Class<? extends SampleEObject> scl = getClass(oc);
+					Class<? extends SampleEObject> scl = getCompiledClass(oc);
 					SampleEObject subret = getOrCreateBasic(oc, objPars);
 					subret.makeInitialized();
 					return subret;
@@ -192,13 +246,10 @@ public class CEobjectManager {
 		return eret;
 	}
 	
-	public CEobjectManager(EObjectManager emanager) {
-		this.emanager = emanager;
+	public SampleEObject getOrNull(ObjectCreator creator, List<?> parameters) {
+		return this.existingObjects.getOrDefault(creator, Collections.emptyMap()).get(parameters);
 	}
-	
-	private MyResource myFakeResource;
-	 
-	 
+
 	public void initWith(VirtualResource vr) {
 		
 		//Add to fakeResource
@@ -209,12 +260,9 @@ public class CEobjectManager {
 			contained.addAll(vmeo.eContents());
 		}
 		allObjs.removeAll(contained);
-		fakeResource.getContents().addAll(allObjs);
-		myFakeResource = MyResource.get(fakeResource);
-	}
-
-	public static void main(String[] args) {
-		MyResource res = MyResource.get(new ResourceImpl());
-		System.out.println(res);
+		for (VMEObject existing: allObjs) {
+			this.fakeResource.getContents().add(getOrCreateFull(existing));
+		}
+		this.myFakeResource = MyResource.get(this.fakeResource);
 	}
 }

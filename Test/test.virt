@@ -7,6 +7,8 @@ objects CitizenPupils (cit: citizen::Burger) : school::Pupil {
 	inclass+= ocl "cit.address";
 	fix name;
 	fix inclass;
+	
+	inv nameCorrect: ocl "self.name = 'blablaASDF'";
 }
 
 objects CitzenPupils2 (cit: citizen::Burger): school::Pupil {
