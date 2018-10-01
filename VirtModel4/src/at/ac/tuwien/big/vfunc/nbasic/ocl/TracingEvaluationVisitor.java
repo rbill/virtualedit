@@ -17,6 +17,7 @@
 
 package at.ac.tuwien.big.vfunc.nbasic.ocl;
 
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ import org.eclipse.ocl.utilities.ExpressionInOCL;
 
 import at.ac.tuwien.big.generalutil.Pair;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
+import at.ac.tuwien.big.xmlintelledit.util.VisitorDecorable;
 
 
 /**
@@ -69,7 +71,7 @@ import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
  * @author Christian W. Damus (cdamus)
  */
 public class TracingEvaluationVisitor<PK, C, O, P, EL, PM, S, COA, SSA, CT, CLS, E>
-    extends EvaluationVisitorDecorator<PK, C, O, P, EL, PM, S, COA, SSA, CT, CLS, E> {
+    extends EvaluationVisitorDecorator<PK, C, O, P, EL, PM, S, COA, SSA, CT, CLS, E> implements VisitorDecorable<PK, C, O, P, EL, PM, S, COA, SSA, CT, CLS, E> {
 
     private List<Object> evaluatedObjects = new ArrayList<>();
 
@@ -86,6 +88,23 @@ public class TracingEvaluationVisitor<PK, C, O, P, EL, PM, S, COA, SSA, CT, CLS,
     
     private Map<Object, Set<P>> propertiesPerObject = new HashMap<>();
     
+    private VisitorDecorable visitor = this;
+    
+    public VisitorDecorable getVisitor() {
+    	return visitor;
+    }
+    
+    public void setVisitor(VisitorDecorable visitor) {
+    	this.visitor = visitor;
+    	if (getDelegate() instanceof VisitorDecorable) {
+    		((VisitorDecorable)getDelegate()).setVisitor(visitor);
+    	}
+    }
+
+	@Override
+	public VisitorDecorable spawnNew(EvaluationVisitor sub) {
+		return new TracingEvaluationVisitor(sub);
+	}
     /**
      * Initializes me with the visitor whose evaluation I trace to the console.
      * 
@@ -94,6 +113,9 @@ public class TracingEvaluationVisitor<PK, C, O, P, EL, PM, S, COA, SSA, CT, CLS,
     public TracingEvaluationVisitor(
             EvaluationVisitor<PK, C, O, P, EL, PM, S, COA, SSA, CT, CLS, E> decorated) {
         super(decorated);
+        if (decorated instanceof VisitorDecorable) {
+        	((VisitorDecorable)decorated).setVisitor(this);
+        }
     }
     
     private void addTraceInfo(OCLExpression<C> source, P referredProperty) {

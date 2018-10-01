@@ -1,7 +1,9 @@
 package at.ac.tuwien.big.vfunc.nbasic.constraint;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,10 +12,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
+import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EOperation;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EcoreFactory;
+import org.eclipse.emf.ecore.impl.EFactoryImpl;
+import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -33,10 +51,11 @@ import at.ac.tuwien.big.vfunc.nbasic.ecore.VMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VirtualResource;
 import at.ac.tuwien.big.virtlang.virtLang.ObjectCreator;
 import at.ac.tuwien.big.xmlintelledit.intelledit.ecore.util.MyResource;
+import at.ac.tuwien.big.xmlintelledit.util.Spawnable;
 import at.ac.tuwien.big.xtext.util.MyEcoreUtil;
 
 
-public class CEobjectManager {
+public class CEobjectManager implements Spawnable<CEobjectManager>{
 	
 	public static void main(String[] args) {
 		MyResource res = MyResource.get(new ResourceImpl());
@@ -54,6 +73,52 @@ public class CEobjectManager {
 	private ClassGenerationManager cgm;
 	
 	private MyResource myFakeResource;
+	
+	private static Map<EClass, Supplier<? extends EObject>> eclassGenerator = new HashMap<>();
+	
+	public static void addSupplier(EClass cl, Supplier<? extends EObject> supplier) {
+		eclassGenerator.put(cl, supplier);
+	}
+	
+	private static Resource fakeEClassResource = new ResourceImpl();
+	
+	private static EPackage fakePackage = EcoreFactory.eINSTANCE.createEPackage();
+	
+	
+	private static EFactoryImpl fakeFactory = new EFactoryImpl() {
+		
+		
+		@Override
+		public EObject create(EClass eClass) {
+			Supplier<? extends EObject> supplier = CEobjectManager.eclassGenerator.get(eClass);
+			if (supplier != null) {
+				return supplier.get();
+			}
+			System.err.println("Unknown eClass: "+eClass.getName());
+			return null;
+		}
+	};
+	static {
+		fakePackage.setEFactoryInstance(fakeFactory);
+		fakeEClassResource.getContents().add(fakePackage);
+	}
+	
+	public static EPackage getFakePackage() {
+		return fakePackage;
+	}
+		
+	
+	public CEobjectManager spawnNew() {
+		CEobjectManager ret = new CEobjectManager(this);
+		return ret;
+	}
+	
+	private CEobjectManager(CEobjectManager halfCopy) {
+		this.emanager = halfCopy.emanager;
+		this.cgm = halfCopy.cgm;
+		this.ocg = halfCopy.ocg;
+		//TODO: Die Fake-Resourcen auch kopieren oder nicht?
+	}
 	
 	public CEobjectManager(EObjectManager emanager) {
 		this.emanager = emanager;
@@ -173,10 +238,11 @@ public class CEobjectManager {
 		});
 	}
 
+	private Map<EObject,EObject> globalMap = new HashMap<>();
+	
 	public EObject getOrCreateFull(EObject existing) {
-		Map<EObject,EObject> map = new HashMap<>();
 		Function<EObject, EObject> retriever = (y)->{
-			return map.computeIfAbsent(y, z->{
+			return globalMap.computeIfAbsent(y, z->{
 			if (z instanceof VMEObject) {
 				VMEObject vm = (VMEObject)z;
 				Identifier id = vm.getIdentificator();
@@ -196,7 +262,7 @@ public class CEobjectManager {
 			return null;});
 		};
 		BiConsumer<EObject, EObject> setter = (a,b)->{
-			map.put(a,b);
+			globalMap.put(a,b);
 		};
 		Function<EObject, EObject> newInstanceProvider = (old)->{
 			if (old instanceof VMEObject) {
@@ -265,4 +331,13 @@ public class CEobjectManager {
 		}
 		this.myFakeResource = MyResource.get(this.fakeResource);
 	}
+
+/*
+	public void addContents(Collection<EObject> contents) {
+		for (EObject eobj: contents) {
+			
+			EObject basic = emanager.getFakeVirtual(eobj);
+			this.fakeResource.getContents().add(getOrCreateFull(basic));
+		}
+	}*/
 }

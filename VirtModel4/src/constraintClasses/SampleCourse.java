@@ -11,7 +11,6 @@ import at.ac.tuwien.big.vfunc.nbasic.constraint.NotifyingList;
 import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import org.eclipse.emf.ecore.EcoreFactory;
-import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,21 +18,13 @@ import java.util.ArrayList;
 import at.ac.tuwien.big.vfunc.nbasic.NewValueListenable;
 
 public class SampleCourse extends at.ac.tuwien.big.vfunc.nbasic.constraint.SampleEObject implements school.Course {
-	public static final EClass $SampleCourse_CLASS = EcoreFactory.eINSTANCE.createEClass();
-	static {
-	CEobjectManager.getFakePackage().getEClassifiers().add($SampleCourse_CLASS);
-	CEobjectManager.addSupplier($SampleCourse_CLASS,()->new SampleCourse());
-	CEobjectManager.addSupplier(school.SchoolPackage.eINSTANCE.getCourse(),()->new SampleCourse());
-	$SampleCourse_CLASS.getESuperTypes().add(school.SchoolPackage.eINSTANCE.getCourse());
-	$SampleCourse_CLASS.setName("Course_single");
-	}
+	public static final EClass $SampleCourse_CLASS = school.SchoolPackage.eINSTANCE.getCourse();
 	public static final EAttribute $Course_name = school.SchoolPackage.eINSTANCE.getCourse_Name();
 	protected ConstantValue<java.lang.String> name = new ConstantValue<>(null);
 	public java.lang.String getName() {
 		return this.name.value();
 	}
 	public void setName(java.lang.String newValue) {
-		super_eSet($Course_name,newValue);
 		this.name.setValue(newValue);
 	}
 @Override

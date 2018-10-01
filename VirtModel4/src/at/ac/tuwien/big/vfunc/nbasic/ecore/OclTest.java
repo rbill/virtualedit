@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
 import Citizen.CitizenPackage;
 import VObjectModel.CreatorId;
@@ -17,6 +18,7 @@ import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.ClassGenerationManager;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.ObjectCreatorGenerator;
 import at.ac.tuwien.big.virtlang.virtLang.ObjectCreator;
+import at.ac.tuwien.big.xmlintelledit.intelledit.xtext.DynamicValidator;
 import school.SchoolPackage;
 import uk.ac.york.cs.ecss.ecss2xtext.ConvertToXmi;
 
@@ -30,14 +32,21 @@ public class OclTest {
 		EObjectManager manager = new EObjectManager();
 		manager.addKnown(SchoolPackage.eINSTANCE);
 		manager.addKnown(CitizenPackage.eINSTANCE);
-		Resource vl = EObjectManager.getVirtLangResource(new File("C:\\Users\\Robert\\Documents\\eclipseMars\\eclipseEcore2ASP\\virtualedit\\Test\\test.virt"));
+		File virtFile = new File("C:\\Users\\Robert\\Documents\\eclipseMars\\eclipseEcore2ASP\\virtualedit\\Test\\test.virt");
+		if (!virtFile.exists()) {
+			virtFile = new File("E:\\patrick\\virtualedit\\Test\\test.virt");
+		}
+		Resource vl = EObjectManager.getVirtLangResource(virtFile);
 		manager.knowVirtualDefinition((at.ac.tuwien.big.virtlang.virtLang.VirtualModel)vl.getContents().get(0));
 		
 		
 		/*Resource r = ConvertToXmi.getXmiResource(new File("C:\\Users\\Robert\\Documents\\eclipse-modeling-neon-2-win32-x86_64\\eclipse\\workspacePatrickMaven\\at.ac.tuwien.big.virtlang.examples.school\\model\\School.xmi"));
 		manager.knowResource(r);*/
-		
-		Resource r = ConvertToXmi.getXmiResource(new File("C:\\Users\\Robert\\Documents\\eclipseMars\\eclipseEcore2ASP\\virtualedit\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi"));
+		File citFile = new File("C:\\Users\\Robert\\Documents\\eclipseMars\\eclipseEcore2ASP\\virtualedit\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi");
+		if (!citFile.exists()) {
+			citFile = new File("E:\\patrick\\virtualedit\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi");
+		}
+		Resource r = ConvertToXmi.getXmiResource(citFile);
 		manager.knowResource(r);
 		
 		VMEObject testCit = manager.getFakeVirtual(r.getContents().get(0));
@@ -62,7 +71,7 @@ public class OclTest {
 		System.out.println("Pupil: "+testPup);
 		
 		CEobjectManager cmanager = new CEobjectManager(manager);
-		
+		//cmanager.addContents(r.getContents());
 		VirtualResource vr = new VirtualResource(manager);
 		vr.addRoot(testPup);
 		cmanager.initWith(vr);
@@ -93,6 +102,16 @@ public class OclTest {
 		System.out.println(ocg.generate(SchoolPackage.eINSTANCE.getPupil()));
 		System.out.println(ocg.generate(CitizenPackage.eINSTANCE.getBurger()));
 		*/
-
+		DynamicValidator dv = new DynamicValidator();
+		ResourceImpl tempRes = new ResourceImpl();
+		tempRes.getContents().addAll(cmanager.getContents());
+		dv.checkFile(tempRes);
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("DynamicValidator finished!");
 	} 
 }

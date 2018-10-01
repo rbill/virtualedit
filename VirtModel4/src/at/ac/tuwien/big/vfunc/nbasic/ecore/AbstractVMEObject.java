@@ -45,6 +45,13 @@ public abstract class AbstractVMEObject  extends MinimalEObjectImpl implements I
 		}
 		return virtObj;
 	};
+	
+	private List<?> parameters = new ArrayList<>();
+	
+	@Override
+	public Collection<?> getParameters() {
+		return parameters;
+	}
 
 
 	public AbstractVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id, List<?> parametersUsed) {
@@ -53,6 +60,7 @@ public abstract class AbstractVMEObject  extends MinimalEObjectImpl implements I
 		this.identificator = id;
 		this.hashCode = Objects.hash(this.creator.getName(),this.identificator);
 		this.identifierInfo = new IdentifierInfo(creator, parametersUsed);
+		this.parameters = parametersUsed;
 	}
 	
 

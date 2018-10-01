@@ -1,6 +1,7 @@
 package at.ac.tuwien.big.vfunc.nbasic.constraint;
 
 import java.io.File;
+import static at.ac.tuwien.big.util.Util.escape;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,8 +29,10 @@ import org.joor.Reflect;
 import VObjectModel.VObjectModelFactory;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import at.ac.tuwien.big.vfunc.nbasic.ConstantValue;
+import at.ac.tuwien.big.vfunc.nbasic.NewValueListenable;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.EObjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.ObjectCreatorCreator;
+import at.ac.tuwien.big.virtlang.virtLang.BasicOCLExpression;
 import at.ac.tuwien.big.virtlang.virtLang.ClassRef;
 import at.ac.tuwien.big.virtlang.virtLang.Definition;
 import at.ac.tuwien.big.virtlang.virtLang.Expression;
@@ -135,6 +138,8 @@ public class ObjectCreatorGenerator {
 				"import "+PatchUtil.class.getName()+ ";",
 				"import "+BasicListenable.class.getName()+ ";",
 				"import org.eclipse.emf.ecore.EcoreFactory;",
+				"import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;",
+				
 				"import java.util.List;",
 				"import java.util.Collection;",
 				"import java.util.Collections;",
@@ -145,7 +150,17 @@ public class ObjectCreatorGenerator {
 		pushIndent();
 		String myEClassType = this.cgm.getEClass(cl);
 		String myEClass = "$"+myClass+"_CLASS"; //TODO: Duplication
-		appendLines(ret, "public static final EClass "+myEClass+" = "+myEClassType+";");
+		//appendLines(ret, "public static final EClass "+myEClass+" = "+myEClassType+";");
+		
+		appendLines(ret, "public static final EClass "+myEClass+" = EcoreFactory.eINSTANCE.createEClass();");
+		appendLines(ret, "static {","CEobjectManager.getFakePackage().getEClassifiers().add("+myEClass+");",
+				"CEobjectManager.addSupplier("+myEClass+",()->new "+myClass+"());",
+				"CEobjectManager.addSupplier("+myEClassType+",()->new "+myClass+"());",
+				myEClass+".getESuperTypes().add("+myEClassType+");",
+				myEClass+".setName(\""+cl.getName()+"_single\");",
+			"}");
+		
+
 		Map<EStructuralFeature, String> featNames = new HashMap<>();
 		for (EStructuralFeature feat: cl.getEAllStructuralFeatures()) {
 			String featType = (feat instanceof EReference)?"EReference":"EAttribute";
@@ -158,11 +173,11 @@ public class ObjectCreatorGenerator {
 			String complexType = this.cgm.getNotifyingJavaType(feat);
 			String simpleFeatName = feat.getName();
 			appendLines(ret, "public static final "+featType+" "+featName+" = "+featRef+";");
-			appendLines(ret, "private "+complexType+" "+simpleFeatName+" = "+this.cgm.getNotifyingJavaTypeInitalizer(feat)+";");
+			appendLines(ret, "protected "+complexType+" "+simpleFeatName+" = "+this.cgm.getNotifyingJavaTypeInitalizer(feat)+";");
 			appendLines(ret, "public "+simpleType+" "+getFunctionName+"() {");
 			appendLines(ret, "\treturn this."+(feat.isMany()?simpleFeatName:(simpleFeatName+".value()"))+";");
 			appendLines(ret, "}");
-			appendLines(ret, "public void "+setFunctionName+"("+simpleType+" newValue) {");
+			appendLines(ret, "public void "+setFunctionName+"("+simpleType+" newValue) {\n\t\tsuper_eSet("+featName+",newValue);");
 				if (feat.isMany()) {
 					appendLines(ret, "\tPatchUtil.applyPatch(this."+simpleFeatName+",newValue);");
 				} else {
@@ -198,6 +213,8 @@ public class ObjectCreatorGenerator {
 				"import "+EList.class.getName()+";",
 				"import "+BasicEList.class.getName()+";",
 				"import org.eclipse.emf.ecore.EcoreFactory;",
+				"import at.ac.tuwien.big.xmlintelledit.intelledit.ecore.util.MyResource;",
+				"import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;",
 				"import org.eclipse.emf.ecore.EStructuralFeature;",				
 				"import "+OclDerivationEvaluable.class.getCanonicalName()+";",
 				"import "+OclDerivationEvaluableState.class.getCanonicalName()+";",
@@ -212,7 +229,9 @@ public class ObjectCreatorGenerator {
 		String myEClass = "$"+myClass+"_CLASS";
 		String superEClass =  superClass+".$"+superClass+"_CLASS";
 		appendLines(ret, "public static final EClass "+myEClass+" = EcoreFactory.eINSTANCE.createEClass();");
-		appendLines(ret, "static {",myEClass+".getESuperTypes().add("+superEClass+");",
+			appendLines(ret, "static {","CEobjectManager.getFakePackage().getEClassifiers().add("+myEClass+");",
+					"CEobjectManager.addSupplier("+myEClass+",()->new "+myClass+"());",
+					myEClass+".getESuperTypes().add("+superEClass+");",
 				myEClass+".setName(\""+creator.getName()+"\");",
 				"}");
 		
@@ -232,7 +251,8 @@ public class ObjectCreatorGenerator {
 					"static {",
 					
 					"\t"+parName+".setName(\""+pt.getName()+"\");",
-					"\t"+parName+".setChangeable(false);",
+					//"\t"+parName+".setChangeable(false);",
+					//"\t"+parName+".setDerived(true);",
 					"\t"+parName+".setEType("+this.cgm.getEClass(parClass)+");",
 					"\t"+myEClass+".getEReferences().add("+parName+");",
 					"}",
@@ -256,7 +276,10 @@ public class ObjectCreatorGenerator {
 			appendLines(ret, "public "+simpleType+" "+getFunctionName+"() {");
 			appendLines(ret, "\treturn this."+simpleFeatName+";");
 			appendLines(ret, "}");
-			appendLines(ret, "public void "+setFunctionName+"("+simpleType+" newValue) {","\t throw new UnsupportedOperationException(\"Setting pars not supported!\");");
+			appendLines(ret, "public void "+setFunctionName+"("+simpleType+" newValue) {",
+					"\tthis."+simpleFeatName+" = newValue;",
+					"\tthis.isSet_"+simpleFeatName+" = true;",
+					"checkInitDerived();");
 				
 			appendLines(ret, "}");
 		}
@@ -266,16 +289,41 @@ public class ObjectCreatorGenerator {
 		
 		StringBuilder initDerived = new StringBuilder();
 		//Derived init
+		appendLines(initDerived, "private boolean $derivDone = false;");
+		for (ParameterType pt: pars) {
+			String parName = pt.getName();
+			appendLines(initDerived, "boolean isSet_"+parName+" = false;");
+			
+		}appendLines(initDerived, "private void checkInitDerived(){");
+		pushIndent();
+		for (ParameterType pt: pars) {
+			String parName = pt.getName();
+			appendLines(initDerived, "if (this.$derivDone) {return;}");
+			appendLines(initDerived, "if (!this.isSet_"+parName+") {return;}");
+			appendLines(initDerived, "initDerivedProt();");
+			
+		}
+		
+		appendLines(initDerived,"}");
+		popIndent();
 		appendLines(initDerived, "public void initDerived(){");
 		pushIndent();
-		appendLines(initDerived, "super.initDerived();");
+		
 		{	int index = 0;
-			for (ParameterType pt: pars) {
-				String parName = pt.getName();
-				String parType = this.cgm.getEClassTypeRef(getEClass(pt.getType()),false);
-				appendLines(initDerived, "this."+parName+" = ("+parType+")parameters.get("+index+");");
-			}
+		for (ParameterType pt: pars) {
+			String parName = pt.getName();
+			String parType = this.cgm.getEClassTypeRef(getEClass(pt.getType()),false);
+			appendLines(initDerived, "this."+parName+" = ("+parType+")parameters.get("+index+");");
 		}
+		appendLines(initDerived, "initDerivedProt();");
+		}
+		popIndent();
+		appendLines(initDerived,"}");
+		appendLines(initDerived, "protected void initDerivedProt(){");
+		pushIndent();
+		appendLines(initDerived, "if (this.$derivDone) {return;}","this.$derivDone = true;");
+		appendLines(initDerived, "super.initDerivedProt();");
+
 		//Check which things are fixed
 		Set<FeatureAssignment> fixed = new HashSet<>();
 		Map<String, FeatureAssignment> namedAssignmetn = new HashMap<>();
@@ -290,6 +338,7 @@ public class ObjectCreatorGenerator {
 			if (fas == null) {continue;}
 			definitions.computeIfAbsent(fas, x->new ArrayList<>()).add(def);
 		}
+		List<Invariant> invariants = new ArrayList<Invariant>();
 		//At first, A variable for each
 		for (FeatureAssignment fixedThing: fixed) {
 			String name = fixedThing.getName();
@@ -341,12 +390,68 @@ public class ObjectCreatorGenerator {
 					popIndent();
 					appendLines(initDerived,"}");
 				}
+				/*
+				if (subFeatures.size() == 1) {
+					Invariant inv = VirtLangFactory.eINSTANCE.createInvariant();
+					inv.setName("feature_"+fixedFeature.getName());
+					String expr = getExpressionString(subFeatures.get(0).getExpr());
+					BasicOCLExpression newExpr = VirtLangFactory.eINSTANCE.createBasicOCLExpression();
+					newExpr.setExpression(fixedFeature.getName()+" = "+expr);
+					inv.setExpr(newExpr);
+					invariants.add(inv);
+					
+				} else {
+					//Multiple contains invariants
+					StringBuilder allExpr = new StringBuilder();
+					for (int index = 0; index <  subFeatures.size(); ++index) {
+						Invariant inv = VirtLangFactory.eINSTANCE.createInvariant();
+						inv.setName("feature_"+fixedFeature.getName()+"_"+(index+1));
+						String expr = getExpressionString(subFeatures.get(index).getExpr());
+						BasicOCLExpression newExpr = VirtLangFactory.eINSTANCE.createBasicOCLExpression();
+						newExpr.setExpression(fixedFeature.getName()+"->containsAll("+expr+")");
+						if (index > 0) {
+							allExpr.append(" or ");
+						}
+						allExpr.append("("+expr+")->contains(mf_assfd)");
+						inv.setExpr(newExpr);
+						invariants.add(inv);
+					}
+					Invariant lastInv = VirtLangFactory.eINSTANCE.createInvariant();
+					lastInv.setName("feature_"+fixedFeature.getName());
+					BasicOCLExpression lastExpr = VirtLangFactory.eINSTANCE.createBasicOCLExpression();
+					lastExpr.setExpression(fixedFeature.getName()+"->forAll(mf_assfd | "+allExpr.toString()+")");
+					lastInv.setExpr(lastExpr);
+					invariants.add(lastInv);
+				}*/
+				//Alternative: Erstelle OCLExpressions for derivation
+				String featVarName = "$"+fixedFeature.getEContainingClass().getName()+"_"+fixedFeature.getName();
+				if (subFeatures.size() == 1) {
+					String expr = getExpressionString(subFeatures.get(0).getExpr());
+					appendLines(varDef, "static {",
+							"MyResource.putDerivation("+myEClass+","+featVarName+",\""+escape(expr)+"\");"
+							,"}");
+					
+				} else {
+					StringBuilder allUnion = new StringBuilder();
+					for (int index = 0; index < subFeatures.size(); ++index) {
+						if (index > 0) {
+							allUnion.append("->union");
+						}
+						String expr = getExpressionString(subFeatures.get(index).getExpr());
+						allUnion.append("("+expr+")");
+					}
+					appendLines(varDef, "static {",
+							"MyResource.putDerivation("+myEClass+","+featVarName+",\""+
+									escape(allUnion.toString())+"\");"
+							,"}");
+				}
+				
 			} else {
 				System.err.println("I can't assign nonexistant feature "+name+" in class "+myEcl.getName());
 			}
 		}
-		
-		for (Invariant inv: creator.getInv()) {
+		invariants.addAll(creator.getInv());
+		for (Invariant inv: invariants) {
 			String iname = inv.getName();
 			String cname = "check_"+iname;
 			String newVarNameListener = cname+"_listener";
@@ -354,8 +459,18 @@ public class ObjectCreatorGenerator {
 			appendLines(initDerived,"{");
 			pushIndent();
 			String state = newVarNameListener+"_state";
-			generateEvaluableContent(initDerived, expr, newVarNameListener, state);
+			String evaluableName = newVarNameListener+"_evaluable";
+			String stateVar = state;
+			appendLines(initDerived,"OclDerivationEvaluable evaluable = "+evaluableName+";",
+					stateVar+" = evaluable.getState(this.res, this);",
+					stateVar+".addChangeListener("+newVarNameListener+");",stateVar+".initParam();",stateVar+".refresh();");
+			//Not necessary any more
+			//generateEvaluableContent(initDerived, expr, newVarNameListener, state);
 			appendLines(varDef, "OclDerivationEvaluableState "+state+";");
+			appendLines(varDef, " static OclDerivationEvaluable "+evaluableName+"  = new OclDerivationEvaluable(\""+getExpressionString(expr)+"\", null);");
+			appendLines(varDef, "static {",
+					"\tMyResource.addEvaluable("+myEClass+","+evaluableName+");",
+					"}");
 			popIndent();
 			appendLines(initDerived,"}");
 			//TODO: ...

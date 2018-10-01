@@ -1,6 +1,7 @@
 package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -19,4 +20,6 @@ public interface VMEObject extends Serializable, NotifyableEObject {
 	public EObjectManager getManager();
 
 	public EObjectCreator getSourceOrNull();
+	
+	public Collection<?> getParameters(); 
 }

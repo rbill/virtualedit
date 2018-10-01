@@ -11,7 +11,6 @@ import at.ac.tuwien.big.vfunc.nbasic.constraint.NotifyingList;
 import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import org.eclipse.emf.ecore.EcoreFactory;
-import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,21 +18,13 @@ import java.util.ArrayList;
 import at.ac.tuwien.big.vfunc.nbasic.NewValueListenable;
 
 public class SampleGrade extends at.ac.tuwien.big.vfunc.nbasic.constraint.SampleEObject implements school.Grade {
-	public static final EClass $SampleGrade_CLASS = EcoreFactory.eINSTANCE.createEClass();
-	static {
-	CEobjectManager.getFakePackage().getEClassifiers().add($SampleGrade_CLASS);
-	CEobjectManager.addSupplier($SampleGrade_CLASS,()->new SampleGrade());
-	CEobjectManager.addSupplier(school.SchoolPackage.eINSTANCE.getGrade(),()->new SampleGrade());
-	$SampleGrade_CLASS.getESuperTypes().add(school.SchoolPackage.eINSTANCE.getGrade());
-	$SampleGrade_CLASS.setName("Grade_single");
-	}
+	public static final EClass $SampleGrade_CLASS = school.SchoolPackage.eINSTANCE.getGrade();
 	public static final EReference $Grade_course = school.SchoolPackage.eINSTANCE.getGrade_Course();
 	protected ConstantValue<school.Course> course = new ConstantValue<>(null);
 	public school.Course getCourse() {
 		return this.course.value();
 	}
 	public void setCourse(school.Course newValue) {
-		super_eSet($Grade_course,newValue);
 		this.course.setValue(newValue);
 	}
 	public static final EAttribute $Grade_grade = school.SchoolPackage.eINSTANCE.getGrade_Grade();
@@ -42,7 +33,6 @@ public class SampleGrade extends at.ac.tuwien.big.vfunc.nbasic.constraint.Sample
 		return this.grade.value();
 	}
 	public void setGrade(java.math.BigInteger newValue) {
-		super_eSet($Grade_grade,newValue);
 		this.grade.setValue(newValue);
 	}
 	public static final EAttribute $Grade_year = school.SchoolPackage.eINSTANCE.getGrade_Year();
@@ -51,7 +41,6 @@ public class SampleGrade extends at.ac.tuwien.big.vfunc.nbasic.constraint.Sample
 		return this.year.value();
 	}
 	public void setYear(java.math.BigInteger newValue) {
-		super_eSet($Grade_year,newValue);
 		this.year.setValue(newValue);
 	}
 @Override

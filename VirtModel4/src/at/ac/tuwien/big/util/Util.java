@@ -17,4 +17,8 @@ public class Util {
 		return object;
 	}
 	
+	public static String escape(String str) {
+		return str.replace("\\", "\\\\").replace("\"", "\\\"");
+	}
+	
 }

@@ -32,6 +32,7 @@ Bundle-ClassPath: lib/diffutils-1.2.1.jar,
  .
 Export-Package: at.ac.tuwien.big.verocl.parameterdesc,
  at.ac.tuwien.big.verocl.parameterdesc.impl,
+ at.ac.tuwien.big.vfunc.nbasic.constraint,
  at.ac.tuwien.big.virtmod.multiref,
  at.ac.tuwien.big.virtmod.structure,
  at.ac.tuwien.big.virtmod.structure.impl,

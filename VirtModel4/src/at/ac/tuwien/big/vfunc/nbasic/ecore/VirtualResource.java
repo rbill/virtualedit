@@ -26,7 +26,7 @@ public class VirtualResource {
 	
 	public List<VMEObject> getAllObjects() {
 		return SetUtils.getRecursivelyL(rootObjects, x->{
-			return ()->IteratorUtils.filterType(IteratorUtils.multiIterator(x.eContents().iterator(),x.eCrossReferences().iterator()),VMEObject.class);
+			return ()->IteratorUtils.filterType(IteratorUtils.multiIterator(x.eContents().iterator(),x.eCrossReferences().iterator(),x.getParameters().iterator()),VMEObject.class);
 		});
 	}
 	

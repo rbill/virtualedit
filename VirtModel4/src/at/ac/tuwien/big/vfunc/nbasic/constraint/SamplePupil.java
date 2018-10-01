@@ -19,6 +19,9 @@ import at.ac.tuwien.big.vfunc.nbasic.NewValueListenable;
 
 public class SamplePupil extends at.ac.tuwien.big.vfunc.nbasic.constraint.SampleEObject implements school.Pupil {
 	public static final EClass $SamplePupil_CLASS = school.SchoolPackage.eINSTANCE.getPupil();
+	static {
+		CEobjectManager.getFakePackage().getEClassifiers().add($SamplePupil_CLASS);
+	}
 	public static final EAttribute $Pupil_name = school.SchoolPackage.eINSTANCE.getPupil_Name();
 	private ConstantValue<java.lang.String> name = new ConstantValue<>(null);
 	public java.lang.String getName() {

@@ -11,7 +11,6 @@ import at.ac.tuwien.big.vfunc.nbasic.constraint.NotifyingList;
 import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import org.eclipse.emf.ecore.EcoreFactory;
-import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,21 +18,13 @@ import java.util.ArrayList;
 import at.ac.tuwien.big.vfunc.nbasic.NewValueListenable;
 
 public class SamplePupil extends at.ac.tuwien.big.vfunc.nbasic.constraint.SampleEObject implements school.Pupil {
-	public static final EClass $SamplePupil_CLASS = EcoreFactory.eINSTANCE.createEClass();
-	static {
-	CEobjectManager.getFakePackage().getEClassifiers().add($SamplePupil_CLASS);
-	CEobjectManager.addSupplier($SamplePupil_CLASS,()->new SamplePupil());
-	CEobjectManager.addSupplier(school.SchoolPackage.eINSTANCE.getPupil(),()->new SamplePupil());
-	$SamplePupil_CLASS.getESuperTypes().add(school.SchoolPackage.eINSTANCE.getPupil());
-	$SamplePupil_CLASS.setName("Pupil_single");
-	}
+	public static final EClass $SamplePupil_CLASS = school.SchoolPackage.eINSTANCE.getPupil();
 	public static final EAttribute $Pupil_name = school.SchoolPackage.eINSTANCE.getPupil_Name();
 	protected ConstantValue<java.lang.String> name = new ConstantValue<>(null);
 	public java.lang.String getName() {
 		return this.name.value();
 	}
 	public void setName(java.lang.String newValue) {
-		super_eSet($Pupil_name,newValue);
 		this.name.setValue(newValue);
 	}
 	public static final EAttribute $Pupil_inclass = school.SchoolPackage.eINSTANCE.getPupil_Inclass();
@@ -42,7 +33,6 @@ public class SamplePupil extends at.ac.tuwien.big.vfunc.nbasic.constraint.Sample
 		return this.inclass.value();
 	}
 	public void setInclass(java.lang.String newValue) {
-		super_eSet($Pupil_inclass,newValue);
 		this.inclass.setValue(newValue);
 	}
 	public static final EReference $Pupil_grades = school.SchoolPackage.eINSTANCE.getPupil_Grades();
@@ -51,7 +41,6 @@ public class SamplePupil extends at.ac.tuwien.big.vfunc.nbasic.constraint.Sample
 		return this.grades;
 	}
 	public void setGrades(org.eclipse.emf.common.util.EList<school.Grade> newValue) {
-		super_eSet($Pupil_grades,newValue);
 		PatchUtil.applyPatch(this.grades,newValue);
 	}
 @Override
