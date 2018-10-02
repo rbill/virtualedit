@@ -3,15 +3,15 @@ use "http://www.example.org/Citizen" as citizen;
 
 objects CitizenPupils (cit: citizen::Burger) : school::Pupil {
 	//name+= ocl "cit.name";
-	name+= ocl "cit.name + 'ASDF'"; 
+	name+= ocl "cit.name"; 
 	inclass+= ocl "cit.address";
 	fix name;
 	fix inclass;
 	
-	inv nameCorrect: ocl "self.name = 'blablaASDF'";
+	inv nameCorrect: ocl "name = 'blablaASDF'";
 }
-
+/*
 objects CitzenPupils2 (cit: citizen::Burger): school::Pupil {
 	name+= ocl "cit.name + 'BLA'";
 	fix name;
-}
+} */
