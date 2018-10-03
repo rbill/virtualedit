@@ -4,9 +4,11 @@ package VObjectModel.impl;
 
 import VObjectModel.AnyValue;
 import VObjectModel.BasicFunction;
+import VObjectModel.CompleteFile;
 import VObjectModel.CreatorId;
 import VObjectModel.DeltaFunction;
 import VObjectModel.DeltaStore;
+import VObjectModel.EcoreDef;
 import VObjectModel.FeatureFunc;
 import VObjectModel.FiniteUnionFunction;
 import VObjectModel.Function;
@@ -15,6 +17,7 @@ import VObjectModel.IdentifierCmp;
 import VObjectModel.IdentifierRef;
 import VObjectModel.IdentifierRefOrCmp;
 import VObjectModel.JavaValue;
+import VObjectModel.LanguageDef;
 import VObjectModel.StoredFuncs;
 import VObjectModel.VObjDeltaModel;
 import VObjectModel.VObjectModelFactory;
@@ -147,6 +150,27 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 	 * @generated
 	 */
 	private EClass deltaStoreEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass completeFileEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass languageDefEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass ecoreDefEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -646,6 +670,132 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getCompleteFile() {
+		return completeFileEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getCompleteFile_VirtModels() {
+		return (EAttribute)completeFileEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getCompleteFile_InputModels() {
+		return (EAttribute)completeFileEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getCompleteFile_Deltamodel() {
+		return (EReference)completeFileEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getCompleteFile_LastModelText() {
+		return (EAttribute)completeFileEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getCompleteFile_CurrentModelText() {
+		return (EAttribute)completeFileEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getCompleteFile_Xtextlanguage() {
+		return (EReference)completeFileEClass.getEStructuralFeatures().get(5);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getCompleteFile_Ecoredef() {
+		return (EReference)completeFileEClass.getEStructuralFeatures().get(6);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getCompleteFile_RootObjects() {
+		return (EReference)completeFileEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getLanguageDef() {
+		return languageDefEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getLanguageDef_LangStandaloneSetup() {
+		return (EAttribute)languageDefEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getEcoreDef() {
+		return ecoreDefEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getEcoreDef_FactoryPackage() {
+		return (EAttribute)ecoreDefEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getEcoreDef_PackagePackage() {
+		return (EAttribute)ecoreDefEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public VObjectModelFactory getVObjectModelFactory() {
 		return (VObjectModelFactory)getEFactoryInstance();
 	}
@@ -732,6 +882,23 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 		deltaStoreEClass = createEClass(DELTA_STORE);
 		createEReference(deltaStoreEClass, DELTA_STORE__ADD_MAP);
 		createEReference(deltaStoreEClass, DELTA_STORE__FILTER_SCOPE);
+
+		completeFileEClass = createEClass(COMPLETE_FILE);
+		createEAttribute(completeFileEClass, COMPLETE_FILE__VIRT_MODELS);
+		createEAttribute(completeFileEClass, COMPLETE_FILE__INPUT_MODELS);
+		createEReference(completeFileEClass, COMPLETE_FILE__DELTAMODEL);
+		createEAttribute(completeFileEClass, COMPLETE_FILE__LAST_MODEL_TEXT);
+		createEAttribute(completeFileEClass, COMPLETE_FILE__CURRENT_MODEL_TEXT);
+		createEReference(completeFileEClass, COMPLETE_FILE__XTEXTLANGUAGE);
+		createEReference(completeFileEClass, COMPLETE_FILE__ECOREDEF);
+		createEReference(completeFileEClass, COMPLETE_FILE__ROOT_OBJECTS);
+
+		languageDefEClass = createEClass(LANGUAGE_DEF);
+		createEAttribute(languageDefEClass, LANGUAGE_DEF__LANG_STANDALONE_SETUP);
+
+		ecoreDefEClass = createEClass(ECORE_DEF);
+		createEAttribute(ecoreDefEClass, ECORE_DEF__FACTORY_PACKAGE);
+		createEAttribute(ecoreDefEClass, ECORE_DEF__PACKAGE_PACKAGE);
 	}
 
 	/**
@@ -836,6 +1003,23 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 		initEClass(deltaStoreEClass, DeltaStore.class, "DeltaStore", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getDeltaStore_AddMap(), this.getBasicFunction(), null, "addMap", null, 0, 1, DeltaStore.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getDeltaStore_FilterScope(), this.getBasicFunction(), null, "filterScope", null, 0, 1, DeltaStore.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(completeFileEClass, CompleteFile.class, "CompleteFile", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getCompleteFile_VirtModels(), ecorePackage.getEString(), "virtModels", null, 0, -1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCompleteFile_InputModels(), ecorePackage.getEString(), "inputModels", null, 0, -1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCompleteFile_Deltamodel(), this.getVObjDeltaModel(), null, "deltamodel", null, 0, 1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCompleteFile_LastModelText(), ecorePackage.getEString(), "lastModelText", null, 0, 1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getCompleteFile_CurrentModelText(), ecorePackage.getEString(), "currentModelText", null, 0, 1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCompleteFile_Xtextlanguage(), this.getLanguageDef(), null, "xtextlanguage", null, 0, 1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCompleteFile_Ecoredef(), this.getEcoreDef(), null, "ecoredef", null, 0, -1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCompleteFile_RootObjects(), this.getIdentifier(), null, "rootObjects", null, 0, -1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(languageDefEClass, LanguageDef.class, "LanguageDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getLanguageDef_LangStandaloneSetup(), ecorePackage.getEString(), "langStandaloneSetup", null, 0, 1, LanguageDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(ecoreDefEClass, EcoreDef.class, "EcoreDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getEcoreDef_FactoryPackage(), ecorePackage.getEString(), "factoryPackage", null, 0, 1, EcoreDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getEcoreDef_PackagePackage(), ecorePackage.getEString(), "packagePackage", null, 0, 1, EcoreDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

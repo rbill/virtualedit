@@ -251,6 +251,7 @@ public class ObjectCreatorGenerator {
 					"static {",
 					
 					"\t"+parName+".setName(\""+pt.getName()+"\");",
+					"\t"+parName+".setLowerBound(1);",
 					//"\t"+parName+".setChangeable(false);",
 					//"\t"+parName+".setDerived(true);",
 					"\t"+parName+".setEType("+this.cgm.getEClass(parClass)+");",
@@ -338,7 +339,7 @@ public class ObjectCreatorGenerator {
 			if (fas == null) {continue;}
 			definitions.computeIfAbsent(fas, x->new ArrayList<>()).add(def);
 		}
-		List<Invariant> invariants = new ArrayList<Invariant>();
+		List<Invariant> invariants = new ArrayList<>();
 		//At first, A variable for each
 		for (FeatureAssignment fixedThing: fixed) {
 			String name = fixedThing.getName();
@@ -360,6 +361,12 @@ public class ObjectCreatorGenerator {
 					appendLines(varDef, listJavaClass+" "+newVarName+" = "+initialisation+";");
 					generateOclListenable(varDef, newVarName, recalcName, nonListJavaClass);
 					appendLines(ret,varName+".addAll("+newVarName+");");	
+				}
+				String setFunctionName = "set"+this.cgm.toFirstUpper(fixedFeature.getName());
+				if (fixedFeature.isMany()) {
+					appendLines(ret,setFunctionName+"("+varName+");");
+				} else {
+					appendLines(ret,setFunctionName+"("+varName+".isEmpty()?null:"+varName+".get(0));");
 				}
 				popIndent();
 				appendLines(ret, "}");
@@ -438,7 +445,7 @@ public class ObjectCreatorGenerator {
 							allUnion.append("->union");
 						}
 						String expr = getExpressionString(subFeatures.get(index).getExpr());
-						allUnion.append("("+expr+")");
+						allUnion.append("(("+expr+")->asSet())");
 					}
 					appendLines(varDef, "static {",
 							"MyResource.putDerivation("+myEClass+","+featVarName+",\""+
@@ -514,7 +521,7 @@ public class ObjectCreatorGenerator {
 		//A specific listener
 		appendLines(varDef, "private NewValueListenable<Object> "+newVarNameListener+" = new NewValueListenable<Object>() {");
 		pushIndent();
-		appendLines(varDef, "@Override","public void changed(Object oldValue, Object newValue) {System.out.println(\"Changed Inv from \"+oldValue+\" to \" +newValue);\n");
+		appendLines(varDef, "@Override","public void changed(Object oldValue, Object newValue) {","//System.out.println(\"Changed Inv from \"+oldValue+\" to \" +newValue);\n");
 		pushIndent();
 		appendLines(varDef, "List l = cmanager.convertOclTupleList(newValue);");
 		appendLines(varDef, "l.removeIf((x)->(x == null || !(x instanceof Boolean) || !((Boolean)x)));");
@@ -532,7 +539,7 @@ public class ObjectCreatorGenerator {
 		//A specific listener
 		appendLines(varDef, "private NewValueListenable<Object> "+newVarNameListener+" = new NewValueListenable<Object>() {");
 		pushIndent();
-		appendLines(varDef, "@Override","public void changed(Object oldValue, Object newValue) {System.out.println(\"Changed Der from \"+oldValue+\" to \" +newValue);\n");
+		appendLines(varDef, "@Override","public void changed(Object oldValue, Object newValue) {","//System.out.println(\"Changed Der from \"+oldValue+\" to \" +newValue);\n");
 		pushIndent();
 		appendLines(varDef, "List l = cmanager.convertOclTupleList(newValue);");
 		appendLines(varDef, "l.removeIf((x)->(x == null || !(x instanceof "+nonListJavaClass+")));");

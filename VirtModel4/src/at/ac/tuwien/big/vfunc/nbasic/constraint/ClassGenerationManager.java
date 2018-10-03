@@ -117,13 +117,19 @@ public class ClassGenerationManager {
 
 	
 	public String getPackageClass(EPackage pkg) {
-		return getPrefix(pkg)+"."+this.knownPackages.getOrDefault(pkg, NO_INFO).packageClassName;
+		return getPrefix(pkg)+"."+getInfo(pkg).packageClassName;
 	}
 	
 	
 
 	public String getPrefix(EPackage pkg) {
-		return this.knownPackages.getOrDefault(pkg, NO_INFO).packageClassPrefix;
+		return getInfo(pkg).packageClassPrefix;
+	}
+	
+	public PackageInfo getInfo(EPackage pkg) {
+		return knownPackages.computeIfAbsent(pkg, p->{
+			return knowPackage(pkg);
+		});
 	}
 	
 	public String getPrefixed(EPackage pkg, String str) {
@@ -143,7 +149,7 @@ public class ClassGenerationManager {
 	}
 	
 	/**Must be in the code!*/
-	public void knowPackage(EPackage pkg) {
+	public PackageInfo knowPackage(EPackage pkg) {
 		String pkgClass = pkg.getClass().getName();
 		pkgClass = pkgClass.substring(0,pkgClass.lastIndexOf('.'));
 		PackageInfo pkgInfo =new PackageInfo();
@@ -156,6 +162,7 @@ public class ClassGenerationManager {
 			pkgInfo.packageClassName = pkgInfo.packageClassName.substring(0, pkgInfo.packageClassName.length()-"Impl".length());
 		}
 		this.knownPackages.put(pkg, pkgInfo);
+		return pkgInfo;
 	}
 
 }

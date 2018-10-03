@@ -71,6 +71,9 @@ public class VObjectModelFactoryImpl extends EFactoryImpl implements VObjectMode
 			case VObjectModelPackage.STORED_FUNCS: return createStoredFuncs();
 			case VObjectModelPackage.FEATURE_FUNC: return createFeatureFunc();
 			case VObjectModelPackage.DELTA_STORE: return createDeltaStore();
+			case VObjectModelPackage.COMPLETE_FILE: return createCompleteFile();
+			case VObjectModelPackage.LANGUAGE_DEF: return createLanguageDef();
+			case VObjectModelPackage.ECORE_DEF: return createEcoreDef();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -224,6 +227,36 @@ public class VObjectModelFactoryImpl extends EFactoryImpl implements VObjectMode
 	public DeltaStore createDeltaStore() {
 		DeltaStoreImpl deltaStore = new DeltaStoreImpl();
 		return deltaStore;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public CompleteFile createCompleteFile() {
+		CompleteFileImpl completeFile = new CompleteFileImpl();
+		return completeFile;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public LanguageDef createLanguageDef() {
+		LanguageDefImpl languageDef = new LanguageDefImpl();
+		return languageDef;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EcoreDef createEcoreDef() {
+		EcoreDefImpl ecoreDef = new EcoreDefImpl();
+		return ecoreDef;
 	}
 
 	/**

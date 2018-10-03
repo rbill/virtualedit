@@ -815,6 +815,191 @@ public interface VObjectModelPackage extends EPackage {
 
 
 	/**
+	 * The meta object id for the '{@link VObjectModel.impl.CompleteFileImpl <em>Complete File</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see VObjectModel.impl.CompleteFileImpl
+	 * @see VObjectModel.impl.VObjectModelPackageImpl#getCompleteFile()
+	 * @generated
+	 */
+	int COMPLETE_FILE = 16;
+
+	/**
+	 * The feature id for the '<em><b>Virt Models</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLETE_FILE__VIRT_MODELS = 0;
+
+	/**
+	 * The feature id for the '<em><b>Input Models</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLETE_FILE__INPUT_MODELS = 1;
+
+	/**
+	 * The feature id for the '<em><b>Deltamodel</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLETE_FILE__DELTAMODEL = 2;
+
+	/**
+	 * The feature id for the '<em><b>Last Model Text</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLETE_FILE__LAST_MODEL_TEXT = 3;
+
+	/**
+	 * The feature id for the '<em><b>Current Model Text</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLETE_FILE__CURRENT_MODEL_TEXT = 4;
+
+	/**
+	 * The feature id for the '<em><b>Xtextlanguage</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLETE_FILE__XTEXTLANGUAGE = 5;
+
+	/**
+	 * The feature id for the '<em><b>Ecoredef</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLETE_FILE__ECOREDEF = 6;
+
+	/**
+	 * The feature id for the '<em><b>Root Objects</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLETE_FILE__ROOT_OBJECTS = 7;
+
+	/**
+	 * The number of structural features of the '<em>Complete File</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLETE_FILE_FEATURE_COUNT = 8;
+
+	/**
+	 * The number of operations of the '<em>Complete File</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPLETE_FILE_OPERATION_COUNT = 0;
+
+	/**
+	 * The meta object id for the '{@link VObjectModel.impl.LanguageDefImpl <em>Language Def</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see VObjectModel.impl.LanguageDefImpl
+	 * @see VObjectModel.impl.VObjectModelPackageImpl#getLanguageDef()
+	 * @generated
+	 */
+	int LANGUAGE_DEF = 17;
+
+	/**
+	 * The feature id for the '<em><b>Lang Standalone Setup</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LANGUAGE_DEF__LANG_STANDALONE_SETUP = 0;
+
+	/**
+	 * The number of structural features of the '<em>Language Def</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LANGUAGE_DEF_FEATURE_COUNT = 1;
+
+	/**
+	 * The number of operations of the '<em>Language Def</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int LANGUAGE_DEF_OPERATION_COUNT = 0;
+
+
+	/**
+	 * The meta object id for the '{@link VObjectModel.impl.EcoreDefImpl <em>Ecore Def</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see VObjectModel.impl.EcoreDefImpl
+	 * @see VObjectModel.impl.VObjectModelPackageImpl#getEcoreDef()
+	 * @generated
+	 */
+	int ECORE_DEF = 18;
+
+	/**
+	 * The feature id for the '<em><b>Factory Package</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ECORE_DEF__FACTORY_PACKAGE = 0;
+
+	/**
+	 * The feature id for the '<em><b>Package Package</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ECORE_DEF__PACKAGE_PACKAGE = 1;
+
+	/**
+	 * The number of structural features of the '<em>Ecore Def</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ECORE_DEF_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>Ecore Def</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ECORE_DEF_OPERATION_COUNT = 0;
+
+
+	/**
 	 * Returns the meta object for class '{@link VObjectModel.Identifier <em>Identifier</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1324,6 +1509,157 @@ public interface VObjectModelPackage extends EPackage {
 	EReference getDeltaStore_FilterScope();
 
 	/**
+	 * Returns the meta object for class '{@link VObjectModel.CompleteFile <em>Complete File</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Complete File</em>'.
+	 * @see VObjectModel.CompleteFile
+	 * @generated
+	 */
+	EClass getCompleteFile();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link VObjectModel.CompleteFile#getVirtModels <em>Virt Models</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Virt Models</em>'.
+	 * @see VObjectModel.CompleteFile#getVirtModels()
+	 * @see #getCompleteFile()
+	 * @generated
+	 */
+	EAttribute getCompleteFile_VirtModels();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link VObjectModel.CompleteFile#getInputModels <em>Input Models</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Input Models</em>'.
+	 * @see VObjectModel.CompleteFile#getInputModels()
+	 * @see #getCompleteFile()
+	 * @generated
+	 */
+	EAttribute getCompleteFile_InputModels();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link VObjectModel.CompleteFile#getDeltamodel <em>Deltamodel</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Deltamodel</em>'.
+	 * @see VObjectModel.CompleteFile#getDeltamodel()
+	 * @see #getCompleteFile()
+	 * @generated
+	 */
+	EReference getCompleteFile_Deltamodel();
+
+	/**
+	 * Returns the meta object for the attribute '{@link VObjectModel.CompleteFile#getLastModelText <em>Last Model Text</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Last Model Text</em>'.
+	 * @see VObjectModel.CompleteFile#getLastModelText()
+	 * @see #getCompleteFile()
+	 * @generated
+	 */
+	EAttribute getCompleteFile_LastModelText();
+
+	/**
+	 * Returns the meta object for the attribute '{@link VObjectModel.CompleteFile#getCurrentModelText <em>Current Model Text</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Current Model Text</em>'.
+	 * @see VObjectModel.CompleteFile#getCurrentModelText()
+	 * @see #getCompleteFile()
+	 * @generated
+	 */
+	EAttribute getCompleteFile_CurrentModelText();
+
+	/**
+	 * Returns the meta object for the containment reference '{@link VObjectModel.CompleteFile#getXtextlanguage <em>Xtextlanguage</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference '<em>Xtextlanguage</em>'.
+	 * @see VObjectModel.CompleteFile#getXtextlanguage()
+	 * @see #getCompleteFile()
+	 * @generated
+	 */
+	EReference getCompleteFile_Xtextlanguage();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link VObjectModel.CompleteFile#getEcoredef <em>Ecoredef</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Ecoredef</em>'.
+	 * @see VObjectModel.CompleteFile#getEcoredef()
+	 * @see #getCompleteFile()
+	 * @generated
+	 */
+	EReference getCompleteFile_Ecoredef();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link VObjectModel.CompleteFile#getRootObjects <em>Root Objects</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Root Objects</em>'.
+	 * @see VObjectModel.CompleteFile#getRootObjects()
+	 * @see #getCompleteFile()
+	 * @generated
+	 */
+	EReference getCompleteFile_RootObjects();
+
+	/**
+	 * Returns the meta object for class '{@link VObjectModel.LanguageDef <em>Language Def</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Language Def</em>'.
+	 * @see VObjectModel.LanguageDef
+	 * @generated
+	 */
+	EClass getLanguageDef();
+
+	/**
+	 * Returns the meta object for the attribute '{@link VObjectModel.LanguageDef#getLangStandaloneSetup <em>Lang Standalone Setup</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Lang Standalone Setup</em>'.
+	 * @see VObjectModel.LanguageDef#getLangStandaloneSetup()
+	 * @see #getLanguageDef()
+	 * @generated
+	 */
+	EAttribute getLanguageDef_LangStandaloneSetup();
+
+	/**
+	 * Returns the meta object for class '{@link VObjectModel.EcoreDef <em>Ecore Def</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Ecore Def</em>'.
+	 * @see VObjectModel.EcoreDef
+	 * @generated
+	 */
+	EClass getEcoreDef();
+
+	/**
+	 * Returns the meta object for the attribute '{@link VObjectModel.EcoreDef#getFactoryPackage <em>Factory Package</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Factory Package</em>'.
+	 * @see VObjectModel.EcoreDef#getFactoryPackage()
+	 * @see #getEcoreDef()
+	 * @generated
+	 */
+	EAttribute getEcoreDef_FactoryPackage();
+
+	/**
+	 * Returns the meta object for the attribute '{@link VObjectModel.EcoreDef#getPackagePackage <em>Package Package</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Package Package</em>'.
+	 * @see VObjectModel.EcoreDef#getPackagePackage()
+	 * @see #getEcoreDef()
+	 * @generated
+	 */
+	EAttribute getEcoreDef_PackagePackage();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1761,6 +2097,124 @@ public interface VObjectModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference DELTA_STORE__FILTER_SCOPE = eINSTANCE.getDeltaStore_FilterScope();
+
+		/**
+		 * The meta object literal for the '{@link VObjectModel.impl.CompleteFileImpl <em>Complete File</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see VObjectModel.impl.CompleteFileImpl
+		 * @see VObjectModel.impl.VObjectModelPackageImpl#getCompleteFile()
+		 * @generated
+		 */
+		EClass COMPLETE_FILE = eINSTANCE.getCompleteFile();
+
+		/**
+		 * The meta object literal for the '<em><b>Virt Models</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPLETE_FILE__VIRT_MODELS = eINSTANCE.getCompleteFile_VirtModels();
+
+		/**
+		 * The meta object literal for the '<em><b>Input Models</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPLETE_FILE__INPUT_MODELS = eINSTANCE.getCompleteFile_InputModels();
+
+		/**
+		 * The meta object literal for the '<em><b>Deltamodel</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference COMPLETE_FILE__DELTAMODEL = eINSTANCE.getCompleteFile_Deltamodel();
+
+		/**
+		 * The meta object literal for the '<em><b>Last Model Text</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPLETE_FILE__LAST_MODEL_TEXT = eINSTANCE.getCompleteFile_LastModelText();
+
+		/**
+		 * The meta object literal for the '<em><b>Current Model Text</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPLETE_FILE__CURRENT_MODEL_TEXT = eINSTANCE.getCompleteFile_CurrentModelText();
+
+		/**
+		 * The meta object literal for the '<em><b>Xtextlanguage</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference COMPLETE_FILE__XTEXTLANGUAGE = eINSTANCE.getCompleteFile_Xtextlanguage();
+
+		/**
+		 * The meta object literal for the '<em><b>Ecoredef</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference COMPLETE_FILE__ECOREDEF = eINSTANCE.getCompleteFile_Ecoredef();
+
+		/**
+		 * The meta object literal for the '<em><b>Root Objects</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference COMPLETE_FILE__ROOT_OBJECTS = eINSTANCE.getCompleteFile_RootObjects();
+
+		/**
+		 * The meta object literal for the '{@link VObjectModel.impl.LanguageDefImpl <em>Language Def</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see VObjectModel.impl.LanguageDefImpl
+		 * @see VObjectModel.impl.VObjectModelPackageImpl#getLanguageDef()
+		 * @generated
+		 */
+		EClass LANGUAGE_DEF = eINSTANCE.getLanguageDef();
+
+		/**
+		 * The meta object literal for the '<em><b>Lang Standalone Setup</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute LANGUAGE_DEF__LANG_STANDALONE_SETUP = eINSTANCE.getLanguageDef_LangStandaloneSetup();
+
+		/**
+		 * The meta object literal for the '{@link VObjectModel.impl.EcoreDefImpl <em>Ecore Def</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see VObjectModel.impl.EcoreDefImpl
+		 * @see VObjectModel.impl.VObjectModelPackageImpl#getEcoreDef()
+		 * @generated
+		 */
+		EClass ECORE_DEF = eINSTANCE.getEcoreDef();
+
+		/**
+		 * The meta object literal for the '<em><b>Factory Package</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ECORE_DEF__FACTORY_PACKAGE = eINSTANCE.getEcoreDef_FactoryPackage();
+
+		/**
+		 * The meta object literal for the '<em><b>Package Package</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute ECORE_DEF__PACKAGE_PACKAGE = eINSTANCE.getEcoreDef_PackagePackage();
 
 	}
 

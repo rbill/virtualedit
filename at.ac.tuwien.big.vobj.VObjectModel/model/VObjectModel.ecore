@@ -78,4 +78,27 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="addMap" eType="#//BasicFunction"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="filterScope" eType="#//BasicFunction"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CompleteFile">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="virtModels" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="inputModels" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deltamodel" eType="#//VObjDeltaModel"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="lastModelText" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="currentModelText" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="xtextlanguage" eType="#//LanguageDef"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ecoredef" upperBound="-1"
+        eType="#//EcoreDef" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rootObjects" upperBound="-1"
+        eType="#//Identifier" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="LanguageDef">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="langStandaloneSetup" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="EcoreDef">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="factoryPackage" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="packagePackage" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
 </ecore:EPackage>

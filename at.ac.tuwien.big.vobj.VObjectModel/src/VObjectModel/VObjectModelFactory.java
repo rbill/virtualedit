@@ -157,6 +157,33 @@ public interface VObjectModelFactory extends EFactory {
 	DeltaStore createDeltaStore();
 
 	/**
+	 * Returns a new object of class '<em>Complete File</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Complete File</em>'.
+	 * @generated
+	 */
+	CompleteFile createCompleteFile();
+
+	/**
+	 * Returns a new object of class '<em>Language Def</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Language Def</em>'.
+	 * @generated
+	 */
+	LanguageDef createLanguageDef();
+
+	/**
+	 * Returns a new object of class '<em>Ecore Def</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Ecore Def</em>'.
+	 * @generated
+	 */
+	EcoreDef createEcoreDef();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

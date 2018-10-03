@@ -132,6 +132,18 @@ public class VObjectModelAdapterFactory extends AdapterFactoryImpl {
 				return createDeltaStoreAdapter();
 			}
 			@Override
+			public Adapter caseCompleteFile(CompleteFile object) {
+				return createCompleteFileAdapter();
+			}
+			@Override
+			public Adapter caseLanguageDef(LanguageDef object) {
+				return createLanguageDefAdapter();
+			}
+			@Override
+			public Adapter caseEcoreDef(EcoreDef object) {
+				return createEcoreDefAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -372,6 +384,48 @@ public class VObjectModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createDeltaStoreAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.CompleteFile <em>Complete File</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.CompleteFile
+	 * @generated
+	 */
+	public Adapter createCompleteFileAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.LanguageDef <em>Language Def</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.LanguageDef
+	 * @generated
+	 */
+	public Adapter createLanguageDefAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link VObjectModel.EcoreDef <em>Ecore Def</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see VObjectModel.EcoreDef
+	 * @generated
+	 */
+	public Adapter createEcoreDefAdapter() {
 		return null;
 	}
 

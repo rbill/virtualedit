@@ -49,26 +49,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
  */
 public class IdentifierImpl extends MinimalEObjectImpl.Container implements Identifier {
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String NAME_EDEFAULT = null;
-
-	/**
-	 * The default value of the '{@link #getHc() <em>Hc</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getHc()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final int HC_EDEFAULT = 0;
-
-	/**
 	 * The cached value of the '{@link #getIdentifierreforcmp() <em>Identifierreforcmp</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -77,6 +57,16 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * @ordered
 	 */
 	protected EList<AnyValue> identifierreforcmp;
+
+	/**
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getName()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String NAME_EDEFAULT = null;
 
 	/**
 	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
@@ -97,6 +87,16 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * @ordered
 	 */
 	protected CreatorId creatorid;
+
+	/**
+	 * The default value of the '{@link #getHc() <em>Hc</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getHc()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final int HC_EDEFAULT = 0;
 
 	/**
 	 * The cached value of the '{@link #getHc() <em>Hc</em>}' attribute.
@@ -123,8 +123,8 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * @generated
 	 */
 	public NotificationChain basicSetCreatorid(CreatorId newCreatorid, NotificationChain msgs) {
-		CreatorId oldCreatorid = this.creatorid;
-		this.creatorid = newCreatorid;
+		CreatorId oldCreatorid = creatorid;
+		creatorid = newCreatorid;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__CREATORID, oldCreatorid, newCreatorid);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
@@ -196,13 +196,13 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP:
-				return this.identifierreforcmp != null && !this.identifierreforcmp.isEmpty();
+				return identifierreforcmp != null && !identifierreforcmp.isEmpty();
 			case VObjectModelPackage.IDENTIFIER__NAME:
-				return NAME_EDEFAULT == null ? this.name != null : !NAME_EDEFAULT.equals(this.name);
+				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 			case VObjectModelPackage.IDENTIFIER__CREATORID:
-				return this.creatorid != null;
+				return creatorid != null;
 			case VObjectModelPackage.IDENTIFIER__HC:
-				return this.hc != HC_EDEFAULT;
+				return hc != HC_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -356,7 +356,7 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 */
 	@Override
 	public CreatorId getCreatorid() {
-		return this.creatorid;
+		return creatorid;
 	}
 
 	/**
@@ -366,7 +366,7 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 */
 	@Override
 	public int getHc() {
-		return this.hc;
+		return hc;
 	}
 
 	/**
@@ -376,10 +376,10 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 */
 	@Override
 	public EList<AnyValue> getIdentifierreforcmp() {
-		if (this.identifierreforcmp == null) {
-			this.identifierreforcmp = new EObjectContainmentEList<>(AnyValue.class, this, VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP);
+		if (identifierreforcmp == null) {
+			identifierreforcmp = new EObjectContainmentEList<AnyValue>(AnyValue.class, this, VObjectModelPackage.IDENTIFIER__IDENTIFIERREFORCMP);
 		}
-		return this.identifierreforcmp;
+		return identifierreforcmp;
 	}
 
 	/**
@@ -389,7 +389,7 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 */
 	@Override
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	/**
@@ -424,10 +424,10 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 */
 	@Override
 	public void setCreatorid(CreatorId newCreatorid) {
-		if (newCreatorid != this.creatorid) {
+		if (newCreatorid != creatorid) {
 			NotificationChain msgs = null;
-			if (this.creatorid != null)
-				msgs = ((InternalEObject)this.creatorid).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - VObjectModelPackage.IDENTIFIER__CREATORID, null, msgs);
+			if (creatorid != null)
+				msgs = ((InternalEObject)creatorid).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - VObjectModelPackage.IDENTIFIER__CREATORID, null, msgs);
 			if (newCreatorid != null)
 				msgs = ((InternalEObject)newCreatorid).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - VObjectModelPackage.IDENTIFIER__CREATORID, null, msgs);
 			msgs = basicSetCreatorid(newCreatorid, msgs);
@@ -444,10 +444,10 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 */
 	@Override
 	public void setHc(int newHc) {
-		int oldHc = this.hc;
-		this.hc = newHc;
+		int oldHc = hc;
+		hc = newHc;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__HC, oldHc, this.hc));
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__HC, oldHc, hc));
 	}
 
 	/**
@@ -457,10 +457,10 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 */
 	@Override
 	public void setName(String newName) {
-		String oldName = this.name;
-		this.name = newName;
+		String oldName = name;
+		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__NAME, oldName, this.name));
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER__NAME, oldName, name));
 	}
 
 	/**

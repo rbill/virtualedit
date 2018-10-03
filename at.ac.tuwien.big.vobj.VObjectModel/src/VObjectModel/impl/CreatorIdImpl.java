@@ -40,16 +40,6 @@ public class CreatorIdImpl extends MinimalEObjectImpl.Container implements Creat
 	protected static final String NAMESPACE_EDEFAULT = null;
 
 	/**
-	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getName()
-	 * @generated
-	 * @ordered
-	 */
-	protected static final String NAME_EDEFAULT = null;
-
-	/**
 	 * The cached value of the '{@link #getNamespace() <em>Namespace</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -58,6 +48,16 @@ public class CreatorIdImpl extends MinimalEObjectImpl.Container implements Creat
 	 * @ordered
 	 */
 	protected String namespace = NAMESPACE_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getName()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String NAME_EDEFAULT = null;
 
 	/**
 	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
@@ -103,9 +103,9 @@ public class CreatorIdImpl extends MinimalEObjectImpl.Container implements Creat
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case VObjectModelPackage.CREATOR_ID__NAMESPACE:
-				return NAMESPACE_EDEFAULT == null ? this.namespace != null : !NAMESPACE_EDEFAULT.equals(this.namespace);
+				return NAMESPACE_EDEFAULT == null ? namespace != null : !NAMESPACE_EDEFAULT.equals(namespace);
 			case VObjectModelPackage.CREATOR_ID__NAME:
-				return NAME_EDEFAULT == null ? this.name != null : !NAME_EDEFAULT.equals(this.name);
+				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -171,7 +171,7 @@ public class CreatorIdImpl extends MinimalEObjectImpl.Container implements Creat
 	 */
 	@Override
 	public String getName() {
-		return this.name;
+		return name;
 	}
 
 	/**
@@ -181,7 +181,7 @@ public class CreatorIdImpl extends MinimalEObjectImpl.Container implements Creat
 	 */
 	@Override
 	public String getNamespace() {
-		return this.namespace;
+		return namespace;
 	}
 
 	/**
@@ -200,10 +200,10 @@ public class CreatorIdImpl extends MinimalEObjectImpl.Container implements Creat
 	 */
 	@Override
 	public void setName(String newName) {
-		String oldName = this.name;
-		this.name = newName;
+		String oldName = name;
+		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.CREATOR_ID__NAME, oldName, this.name));
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.CREATOR_ID__NAME, oldName, name));
 	}
 	
 	/**
@@ -213,10 +213,10 @@ public class CreatorIdImpl extends MinimalEObjectImpl.Container implements Creat
 	 */
 	@Override
 	public void setNamespace(String newNamespace) {
-		String oldNamespace = this.namespace;
-		this.namespace = newNamespace;
+		String oldNamespace = namespace;
+		namespace = newNamespace;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.CREATOR_ID__NAMESPACE, oldNamespace, this.namespace));
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.CREATOR_ID__NAMESPACE, oldNamespace, namespace));
 	}
 	
 	/**

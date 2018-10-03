@@ -169,6 +169,24 @@ public class VObjectModelSwitch<T> extends Switch<T> {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case VObjectModelPackage.COMPLETE_FILE: {
+				CompleteFile completeFile = (CompleteFile)theEObject;
+				T result = caseCompleteFile(completeFile);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.LANGUAGE_DEF: {
+				LanguageDef languageDef = (LanguageDef)theEObject;
+				T result = caseLanguageDef(languageDef);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.ECORE_DEF: {
+				EcoreDef ecoreDef = (EcoreDef)theEObject;
+				T result = caseEcoreDef(ecoreDef);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -410,6 +428,51 @@ public class VObjectModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseDeltaStore(DeltaStore object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Complete File</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Complete File</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseCompleteFile(CompleteFile object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Language Def</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Language Def</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseLanguageDef(LanguageDef object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Ecore Def</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Ecore Def</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseEcoreDef(EcoreDef object) {
 		return null;
 	}
 

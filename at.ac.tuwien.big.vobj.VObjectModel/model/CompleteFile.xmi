@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VObjectModel:CompleteFile
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:VObjectModel="http://www.example.org/VObjectModel"
+    xsi:schemaLocation="http://www.example.org/VObjectModel VObjectModel.ecore">
+  <ecoredef
+      factoryPackage=""
+      packagePackage="school.SchoolPackage"/>
+  <ecoredef
+      packagePackage="Citizen.CitizenPackage"/>
+  <rootObjects>
+    <identifierreforcmp
+        xsi:type="VObjectModel:IdentifierCmp">
+      <s_identifier>
+        <creatorid/>
+      </s_identifier>
+    </identifierreforcmp>
+    <creatorid
+        name="CitizenPupils"/>
+  </rootObjects>
+</VObjectModel:CompleteFile>

@@ -26,6 +26,7 @@ public class CitizenPupils_OC extends SamplePupil{
 	public static final EReference $cit = EcoreFactory.eINSTANCE.createEReference();
 	static {
 		$cit.setName("cit");
+		$cit.setLowerBound(1);
 		$cit.setEType(Citizen.CitizenPackage.eINSTANCE.getBurger());
 		$CitizenPupils_OC_CLASS.getEReferences().add($cit);
 	}
@@ -42,6 +43,7 @@ public class CitizenPupils_OC extends SamplePupil{
 		private void recalcname_deriv() {
 			name_deriv.clear();
 			name_deriv.addAll(name_deriv_0);
+			setName(name_deriv.isEmpty()?null:name_deriv.get(0));
 		}
 		public java.lang.String getname_deriv() {
 			if (name_deriv.isEmpty()) {return null;} else {return name_deriv.get(0);}
@@ -49,6 +51,7 @@ public class CitizenPupils_OC extends SamplePupil{
 		private void recalcinclass_deriv() {
 			inclass_deriv.clear();
 			inclass_deriv.addAll(inclass_deriv_0);
+			setInclass(inclass_deriv.isEmpty()?null:inclass_deriv.get(0));
 		}
 		public java.lang.String getinclass_deriv() {
 			if (inclass_deriv.isEmpty()) {return null;} else {return inclass_deriv.get(0);}
@@ -97,7 +100,8 @@ public class CitizenPupils_OC extends SamplePupil{
 			org.eclipse.emf.common.util.EList<java.lang.String> name_deriv_0 = new org.eclipse.emf.common.util.BasicEList<>();
 			private NewValueListenable<Object> name_deriv_0_listener = new NewValueListenable<Object>() {
 				@Override
-				public void changed(Object oldValue, Object newValue) {System.out.println("Changed Der from "+oldValue+" to " +newValue);
+				public void changed(Object oldValue, Object newValue) {
+				//System.out.println("Changed Der from "+oldValue+" to " +newValue);
 
 					List l = cmanager.convertOclTupleList(newValue);
 					l.removeIf((x)->(x == null || !(x instanceof java.lang.String)));
@@ -113,7 +117,8 @@ public class CitizenPupils_OC extends SamplePupil{
 			org.eclipse.emf.common.util.EList<java.lang.String> inclass_deriv_0 = new org.eclipse.emf.common.util.BasicEList<>();
 			private NewValueListenable<Object> inclass_deriv_0_listener = new NewValueListenable<Object>() {
 				@Override
-				public void changed(Object oldValue, Object newValue) {System.out.println("Changed Der from "+oldValue+" to " +newValue);
+				public void changed(Object oldValue, Object newValue) {
+				//System.out.println("Changed Der from "+oldValue+" to " +newValue);
 
 					List l = cmanager.convertOclTupleList(newValue);
 					l.removeIf((x)->(x == null || !(x instanceof java.lang.String)));
@@ -132,7 +137,8 @@ public class CitizenPupils_OC extends SamplePupil{
 			}
 		private NewValueListenable<Object> check_nameCorrect_listener = new NewValueListenable<Object>() {
 			@Override
-			public void changed(Object oldValue, Object newValue) {System.out.println("Changed Inv from "+oldValue+" to " +newValue);
+			public void changed(Object oldValue, Object newValue) {
+			//System.out.println("Changed Inv from "+oldValue+" to " +newValue);
 
 				List l = cmanager.convertOclTupleList(newValue);
 				l.removeIf((x)->(x == null || !(x instanceof Boolean) || !((Boolean)x)));

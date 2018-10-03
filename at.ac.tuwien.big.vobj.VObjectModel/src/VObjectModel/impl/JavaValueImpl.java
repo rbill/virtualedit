@@ -2,8 +2,6 @@
  */
 package VObjectModel.impl;
 
-import VObjectModel.IdentifierCmp;
-import VObjectModel.IdentifierRef;
 import VObjectModel.JavaValue;
 import VObjectModel.VObjectModelPackage;
 
@@ -81,7 +79,7 @@ public class JavaValueImpl extends AnyValueImpl implements JavaValue {
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case VObjectModelPackage.JAVA_VALUE__VALUE:
-				return VALUE_EDEFAULT == null ? this.value != null : !VALUE_EDEFAULT.equals(this.value);
+				return VALUE_EDEFAULT == null ? value != null : !VALUE_EDEFAULT.equals(value);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -144,7 +142,7 @@ public class JavaValueImpl extends AnyValueImpl implements JavaValue {
 	 */
 	@Override
 	public Object getValue() {
-		return this.value;
+		return value;
 	}
 
 	/**
@@ -162,10 +160,10 @@ public class JavaValueImpl extends AnyValueImpl implements JavaValue {
 	 */
 	@Override
 	public void setValue(Object newValue) {
-		Object oldValue = this.value;
-		this.value = newValue;
+		Object oldValue = value;
+		value = newValue;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.JAVA_VALUE__VALUE, oldValue, this.value));
+			eNotify(new ENotificationImpl(this, Notification.SET, VObjectModelPackage.JAVA_VALUE__VALUE, oldValue, value));
 	}
 	
 	/**

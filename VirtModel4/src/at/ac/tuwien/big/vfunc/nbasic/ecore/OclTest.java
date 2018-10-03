@@ -20,7 +20,6 @@ import at.ac.tuwien.big.vfunc.nbasic.constraint.ObjectCreatorGenerator;
 import at.ac.tuwien.big.virtlang.virtLang.ObjectCreator;
 import at.ac.tuwien.big.xmlintelledit.intelledit.xtext.DynamicValidator;
 import school.SchoolPackage;
-import uk.ac.york.cs.ecss.ecss2xtext.ConvertToXmi;
 
 public class OclTest {
 

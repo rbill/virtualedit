@@ -56,8 +56,8 @@ public class IdentifierCmpImpl extends IdentifierRefOrCmpImpl implements Identif
 	 * @generated
 	 */
 	public NotificationChain basicSetS_identifier(Identifier newS_identifier, NotificationChain msgs) {
-		Identifier oldS_identifier = this.s_identifier;
-		this.s_identifier = newS_identifier;
+		Identifier oldS_identifier = s_identifier;
+		s_identifier = newS_identifier;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, VObjectModelPackage.IDENTIFIER_CMP__SIDENTIFIER, oldS_identifier, newS_identifier);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
@@ -102,7 +102,7 @@ public class IdentifierCmpImpl extends IdentifierRefOrCmpImpl implements Identif
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
 			case VObjectModelPackage.IDENTIFIER_CMP__SIDENTIFIER:
-				return this.s_identifier != null;
+				return s_identifier != null;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -167,7 +167,7 @@ public class IdentifierCmpImpl extends IdentifierRefOrCmpImpl implements Identif
 	 */
 	@Override
 	public Identifier getS_identifier() {
-		return this.s_identifier;
+		return s_identifier;
 	}
 
 	/**
@@ -185,10 +185,10 @@ public class IdentifierCmpImpl extends IdentifierRefOrCmpImpl implements Identif
 	 */
 	@Override
 	public void setS_identifier(Identifier newS_identifier) {
-		if (newS_identifier != this.s_identifier) {
+		if (newS_identifier != s_identifier) {
 			NotificationChain msgs = null;
-			if (this.s_identifier != null)
-				msgs = ((InternalEObject)this.s_identifier).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - VObjectModelPackage.IDENTIFIER_CMP__SIDENTIFIER, null, msgs);
+			if (s_identifier != null)
+				msgs = ((InternalEObject)s_identifier).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - VObjectModelPackage.IDENTIFIER_CMP__SIDENTIFIER, null, msgs);
 			if (newS_identifier != null)
 				msgs = ((InternalEObject)newS_identifier).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - VObjectModelPackage.IDENTIFIER_CMP__SIDENTIFIER, null, msgs);
 			msgs = basicSetS_identifier(newS_identifier, msgs);

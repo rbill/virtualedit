@@ -70,5 +70,22 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//DeltaStore/addMap"/>
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//DeltaStore/filterScope"/>
     </genClasses>
+    <genClasses ecoreClass="VObjectModel.ecore#//CompleteFile">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//CompleteFile/virtModels"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//CompleteFile/inputModels"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//CompleteFile/deltamodel"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//CompleteFile/lastModelText"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//CompleteFile/currentModelText"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//CompleteFile/xtextlanguage"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//CompleteFile/ecoredef"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//CompleteFile/rootObjects"/>
+    </genClasses>
+    <genClasses ecoreClass="VObjectModel.ecore#//LanguageDef">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//LanguageDef/langStandaloneSetup"/>
+    </genClasses>
+    <genClasses ecoreClass="VObjectModel.ecore#//EcoreDef">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//EcoreDef/factoryPackage"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//EcoreDef/packagePackage"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

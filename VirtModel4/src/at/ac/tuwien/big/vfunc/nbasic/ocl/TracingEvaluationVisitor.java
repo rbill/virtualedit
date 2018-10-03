@@ -79,32 +79,17 @@ public class TracingEvaluationVisitor<PK, C, O, P, EL, PM, S, COA, SSA, CT, CLS,
     
     private Object lastPretrace;
     
-    public boolean isTitleAt = false;
+    public boolean isTitleAt = false; 
     
     private Set<String> rootVarAccess = new HashSet<>();
-    		
-    private Set<Pair<String,Object>> variableValues = new HashSet<>();
-    private Map<OCLExpression<C>, Set<P>> exprPropertySets = new HashMap<>();
     
+    private Set<Pair<String,Object>> variableValues = new HashSet<>();
+    		
+    private Map<OCLExpression<C>, Set<P>> exprPropertySets = new HashMap<>();
     private Map<Object, Set<P>> propertiesPerObject = new HashMap<>();
     
     private VisitorDecorable visitor = this;
     
-    public VisitorDecorable getVisitor() {
-    	return visitor;
-    }
-    
-    public void setVisitor(VisitorDecorable visitor) {
-    	this.visitor = visitor;
-    	if (getDelegate() instanceof VisitorDecorable) {
-    		((VisitorDecorable)getDelegate()).setVisitor(visitor);
-    	}
-    }
-
-	@Override
-	public VisitorDecorable spawnNew(EvaluationVisitor sub) {
-		return new TracingEvaluationVisitor(sub);
-	}
     /**
      * Initializes me with the visitor whose evaluation I trace to the console.
      * 
@@ -125,15 +110,22 @@ public class TracingEvaluationVisitor<PK, C, O, P, EL, PM, S, COA, SSA, CT, CLS,
     public Object getCurResult() {
     	return this.evaluatedObjects.get(this.evaluationIndex);
     }
-    
+
+	@Override
+	public EvaluationVisitor getOtherDelegate() {
+    	return super.getDelegate();
+    }
     public Map<Object, Set<P>> getPropertiesPerObject() {
     	return this.propertiesPerObject;
     }
     
-    
-    
     public Set<Pair<String,Object>> getVariableValues() {
     	return this.variableValues;
+    }
+    
+    @Override
+	public VisitorDecorable getVisitor() {
+    	return this.visitor;
     }
     
     public boolean hasCurResult() {
@@ -141,9 +133,24 @@ public class TracingEvaluationVisitor<PK, C, O, P, EL, PM, S, COA, SSA, CT, CLS,
     }
     
     
+    
     private boolean isInvalid(Object value) {
         return value == getEnvironment().getOCLStandardLibrary().getInvalid();
     }
+    
+    @Override
+	public void setVisitor(VisitorDecorable visitor) {
+    	this.visitor = visitor;
+    	if (getDelegate() instanceof VisitorDecorable) {
+    		((VisitorDecorable)getDelegate()).setVisitor(visitor);
+    	}
+    }
+    
+    
+    @Override
+	public VisitorDecorable spawnNew(EvaluationVisitor sub) {
+		return new TracingEvaluationVisitor(sub);
+	}
     
     private Object trace(Object expression, Object value) {
        Set<P> props = this.exprPropertySets.getOrDefault(expression, Collections.emptySet());
