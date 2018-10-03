@@ -7,10 +7,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipse.xtext.ISetup;
+import org.eclipse.xtext.resource.XtextResourceSet;
+
+import com.google.inject.Injector;
 
 import Citizen.CitizenPackage;
 import VObjectModel.CompleteFile;
@@ -22,28 +27,22 @@ import VObjectModel.VObjDeltaModel;
 import VObjectModel.VObjectModelFactory;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.ObjectCreatorGenerator;
+import at.ac.tuwien.big.virtlang.VirtLangStandaloneSetup;
 import at.ac.tuwien.big.xmlintelledit.intelledit.xtext.DynamicValidator;
 import school.SchoolPackage;
 
 public class VOMTest {
 	
-
-
-	public static void main(String[] args) throws IOException {
-		
-		buildVOMFile();
-		if (true) {return;}
-		//ObjectCreatorGenerator.generateRoot = new File("C:\\Users\\Robert\\Documents\\eclipseMars\\eclipseEcore2ASP\\virtualedit\\VirtModel4\\src");
-		File vomFile = new File("E:\\patrick\\virtualedit\\at.ac.tuwien.big.vobj.VObjectModel\\model\\CompleteFile.xmi");
-		Resource res = ConvertToXmi.getXmiResource(vomFile);
-		
-		
-		
-		CompleteFile file = (CompleteFile)res.getContents().get(0);
-		doThingsWithVOM(file);
-		
-	}
 	
+	private static File rootVFile = new File("E:\\patrick\\");
+	static {
+		if (!rootVFile.exists()) {
+			rootVFile = new File("C:\\Users\\Robert\\Documents\\eclipseMars\\eclipseEcore2ASP\\");
+		}
+		rootVFile = new File(rootVFile.getAbsolutePath()+File.separator+"\\virtualedit\\");
+	}
+
+
 	public static void buildVOMFile() {
 		CompleteFile file = VObjectModelFactory.eINSTANCE.createCompleteFile();
 		EcoreDef schoolDef = VObjectModelFactory.eINSTANCE.createEcoreDef();
@@ -52,9 +51,9 @@ public class VOMTest {
 		citizenDef.setPackagePackage(SchoolPackage.class.getCanonicalName());
 		file.getEcoredef().addAll(Arrays.asList(schoolDef,citizenDef));
 		
-		file.getInputModels().add("E:\\patrick\\virtualedit\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi");
-		file.getVirtModels().add("E:\\patrick\\virtualedit\\Test\\test.virt");
-		File 	citFile = new File("E:\\patrick\\virtualedit\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi");
+		file.getInputModels().add(rootVFile.getAbsolutePath()+"\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi");
+		file.getVirtModels().add(rootVFile.getAbsolutePath()+"\\Test\\test.virt");
+		File 	citFile = new File(rootVFile.getAbsolutePath()+"\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi");
 		try {
 			EObjectManager manager = new EObjectManager();
 			manager.addKnown(CitizenPackage.eINSTANCE);
@@ -75,7 +74,6 @@ public class VOMTest {
 		}
 		doThingsWithVOM(file);
 	}
-	
 	
 	public static void doThingsWithVOM(CompleteFile file) {
 		String currentText = file.getCurrentModelText();
@@ -142,6 +140,52 @@ public class VOMTest {
 			System.out.println("Loaded: "+eobj);			
 		}
 		
+		SchoolTextStandaloneSetup setup; 
+		
+	}
+	
+	public static Resource getVirtLangResource(File ecsslFile, Class<? extends ISetup> setupClass) throws IOException {
+		
+		try {
+			ISetup standaloneSetup= setupClass.newInstance();
+			Injector injector = standaloneSetup.createInjectorAndDoEMFRegistration();
+			XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
+			Resource ecsslResource = rs.getResource(URI.createFileURI(ecsslFile.getCanonicalPath()), true);
+			return ecsslResource; 
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static Resource getVirtLangResource(String text, Class<? extends ISetup> setupClass) throws IOException {
+		
+		try {
+			ISetup standaloneSetup= setupClass.newInstance();
+			Injector injector = standaloneSetup.createInjectorAndDoEMFRegistration();
+			XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
+			Resource ecsslResource = rs.getResource(URI.createFileURI(ecsslFile.getCanonicalPath()), true);
+			return ecsslResource; 
+		} catch (InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	public static void main(String[] args) throws IOException {
+		
+		buildVOMFile();
+		if (true) {return;}
+		//ObjectCreatorGenerator.generateRoot = new File("C:\\Users\\Robert\\Documents\\eclipseMars\\eclipseEcore2ASP\\virtualedit\\VirtModel4\\src");
+		File vomFile = new File(rootVFile.getAbsolutePath()+"\\at.ac.tuwien.big.vobj.VObjectModel\\model\\CompleteFile.xmi");
+		
+		Resource res = ConvertToXmi.getXmiResource(vomFile);
+		
+		
+		
+		CompleteFile file = (CompleteFile)res.getContents().get(0);
+		doThingsWithVOM(file);
 	}
 	
 }
