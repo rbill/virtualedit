@@ -1,11 +1,16 @@
 package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -13,6 +18,8 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.xtext.ISetup;
+import org.eclipse.xtext.resource.IResourceFactory;
+import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 
 import com.google.inject.Injector;
@@ -23,12 +30,20 @@ import VObjectModel.CreatorId;
 import VObjectModel.EcoreDef;
 import VObjectModel.Identifier;
 import VObjectModel.IdentifierRef;
+import VObjectModel.LanguageDef;
 import VObjectModel.VObjDeltaModel;
 import VObjectModel.VObjectModelFactory;
+import at.ac.tuwien.big.school.SchoolTextStandaloneSetup;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.ObjectCreatorGenerator;
 import at.ac.tuwien.big.virtlang.VirtLangStandaloneSetup;
 import at.ac.tuwien.big.xmlintelledit.intelledit.xtext.DynamicValidator;
+import at.ac.tuwien.big.xtext.equalizer.InstanceCreator;
+import at.ac.tuwien.big.xtext.equalizer.ModelCorrespondance;
+import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
+import at.ac.tuwien.big.xtext.equalizer.impl.SimpleModelCorrespondance;
+import at.ac.tuwien.big.xtext.equalizer.impl.SimpleModelEqualizer;
+import at.ac.tuwien.big.xtext.util.DocumentChanger;
 import school.SchoolPackage;
 
 public class VOMTest {
@@ -68,11 +83,34 @@ public class VOMTest {
 			id.getIdentifierreforcmp().add(ir);
 			id.init();
 			file.getRootObjects().add(id);
+			file.setLastModelText("School {	pupils {		Pupil bla {			grades { Grade  { grade 4 course c1  } }		}	}	courses {		Course c1 , Course c2	}");
+			LanguageDef ld = VObjectModelFactory.eINSTANCE.createLanguageDef();
+			ld.setLangStandaloneSetup(SchoolTextStandaloneSetup.class.getCanonicalName());
+			file.setXtextlanguage(ld);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		doThingsWithVOM(file);
+	}
+	
+	private static Map<Class<? extends ISetup>, String> setupExtension = new HashMap<>();
+	
+	public static String getExtension(ISetup setup) {
+		return setupExtension.computeIfAbsent(setup.getClass(), (cl)->{
+			//OK, this is much more difficult than expected, unfortunately
+			Map<String,Object> existingMap = new HashMap<>(Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap());
+			Injector injector = setup.createInjectorAndDoEMFRegistration();
+			//Just find out what has changed due to the registration ...
+			for (Entry<String, Object> entr: Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().entrySet()) {
+				if (existingMap.get(entr.getKey()) != entr.getValue()) {
+					return entr.getKey();
+				}
+			}
+			System.err.println("Could not find extension for "+setup+"!");
+			return "??";
+		});
+		
 	}
 	
 	public static void doThingsWithVOM(CompleteFile file) {
@@ -140,32 +178,78 @@ public class VOMTest {
 			System.out.println("Loaded: "+eobj);			
 		}
 		
-		SchoolTextStandaloneSetup setup; 
+		SchoolTextStandaloneSetup setup = new SchoolTextStandaloneSetup();
+		Injector injector = setup.createInjectorAndDoEMFRegistration(); 
+		XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
+		LanguageDef xtextlanguage = file.getXtextlanguage();
+		if (xtextlanguage != null && xtextlanguage.getLangStandaloneSetup() != null) {
+			Class<? extends ISetup> setupClass;
+			try {
+				setupClass = (Class<? extends ISetup>)Class.forName(xtextlanguage.getLangStandaloneSetup());
+				XtextResource res = (XtextResource) getVirtLangResource(file.getLastModelText(), setupClass);
+				for (EObject cont: (Iterable<EObject>)(()->res.getAllContents())) {
+					System.out.println("loaded: "+cont);
+				}
+				ModelCorrespondance corr = new SimpleModelCorrespondance();
+				;
+				SimpleModelCorrespondance subCor = new SimpleModelCorrespondance();
+				//We don't need to create any virtual objects here
+				InstanceCreator creator = InstanceCreator.DEFAULT;
+				//Zuerst der Modellbasierte, dann der Textbasierte Patch
+				SimpleModelEqualizer sme = new SimpleModelEqualizer(new ArrayList<>(vr.getRoots()), res.getContents(), corr, subCor, creator);
+				sme.equalize();
+				String newText = DocumentChanger.getContent(res);
+				System.out.println("New text: "+newText);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 		
 	}
 	
-	public static Resource getVirtLangResource(File ecsslFile, Class<? extends ISetup> setupClass) throws IOException {
+	public static XtextResource getVirtLangResource(File ecsslFile, Class<? extends ISetup> setupClass) throws IOException {
 		
 		try {
 			ISetup standaloneSetup= setupClass.newInstance();
 			Injector injector = standaloneSetup.createInjectorAndDoEMFRegistration();
-			XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
-			Resource ecsslResource = rs.getResource(URI.createFileURI(ecsslFile.getCanonicalPath()), true);
-			return ecsslResource; 
+			IResourceFactory resourceFactory = injector.getInstance(IResourceFactory.class);
+			//XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
+			//XtextResource ecsslResource = (XtextResource)rs.getResource(URI.createFileURI(ecsslFile.getCanonicalPath()), true);
+			Resource ecsslResource = resourceFactory.createResource(URI.createFileURI(ecsslFile.getCanonicalPath()));
+			return (XtextResource)ecsslResource; 
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	public static Resource getVirtLangResource(String text, Class<? extends ISetup> setupClass) throws IOException {
+	public static XtextResource getVirtLangResource(String text, Class<? extends ISetup> setupClass) throws IOException {
 		
 		try {
 			ISetup standaloneSetup= setupClass.newInstance();
 			Injector injector = standaloneSetup.createInjectorAndDoEMFRegistration();
 			XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
-			Resource ecsslResource = rs.getResource(URI.createFileURI(ecsslFile.getCanonicalPath()), true);
-			return ecsslResource; 
+			String extension = getExtension(standaloneSetup);
+			URI uri = URI.createURI("temp://bla."+extension);
+			System.out.println("Temp file: "+uri.toString());
+			IResourceFactory resourceFactory = injector.getInstance(IResourceFactory.class);
+			//XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
+			//XtextResource ecsslResource = (XtextResource)rs.getResource(URI.createFileURI(ecsslFile.getCanonicalPath()), true);
+			XtextResource res = (XtextResource) resourceFactory.createResource(uri);
+			//XtextResource res = (XtextResource)rs.createResource(uri);
+			if (text != null) {
+				ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes());
+				try {
+					res.load(bis, Collections.emptyMap());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			return res; 
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}

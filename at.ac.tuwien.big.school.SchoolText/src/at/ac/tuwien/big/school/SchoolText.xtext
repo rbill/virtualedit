@@ -23,7 +23,7 @@ Pupil returns Pupil:
 	'}';
 
 Course returns Course:
-	{Course}
+	{Course} 
 	'Course'
 	name=EString;
 

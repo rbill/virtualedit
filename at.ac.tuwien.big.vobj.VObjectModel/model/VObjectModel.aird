@@ -4,6 +4,7 @@
     <semanticResources>VObjectModel.ecore</semanticResources>
     <semanticResources>VObjectModel.genmodel</semanticResources>
     <semanticResources>http://www.eclipse.org/emf/2002/Ecore</semanticResources>
+    <semanticResources>CompleteFile.xmi</semanticResources>
     <ownedViews xmi:type="viewpoint:DView" xmi:id="_cIvQQLZ1EeivF5zOAyP16w">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.eclipse.emf.ecoretools.design/description/ecore.odesign#//@ownedViewpoints[name='Design']"/>
       <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" xmi:id="_cOONMLZ1EeivF5zOAyP16w" name="VObjectModel" representation="_cOONMbZ1EeivF5zOAyP16w">
