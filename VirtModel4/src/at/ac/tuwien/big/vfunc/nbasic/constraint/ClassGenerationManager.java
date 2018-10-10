@@ -14,9 +14,9 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 
-import VObjectModel.VObjDeltaModel;
-import VObjectModel.VObjectModelPackage;
-import VObjectModel.impl.VObjDeltaModelImpl;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjDeltaModelImpl;
 
 public class ClassGenerationManager {
 	
@@ -71,6 +71,12 @@ public class ClassGenerationManager {
 		return ret;
 	}
 
+	public PackageInfo getInfo(EPackage pkg) {
+		return this.knownPackages.computeIfAbsent(pkg, p->{
+			return knowPackage(pkg);
+		});
+	}
+	
 	public String getJavaType(EClassifier ecl, boolean isMulti) {
 		String ret = ecl.getInstanceClass().getName();
 		if (isMulti) {
@@ -100,7 +106,7 @@ public class ClassGenerationManager {
 	public String getNotifyingJavaType(EStructuralFeature ecl) {
 		return getNotifyingJavaType(ecl.getEType(), ecl.isMany());
 	}
-	
+
 	public String getNotifyingJavaTypeInitalizer(EClassifier ecl, boolean isMulti) {
 		String ret = ecl.getInstanceClass().getName();
 		if (isMulti) {
@@ -111,25 +117,19 @@ public class ClassGenerationManager {
 		return ret;
 	}
 
+	
 	public String getNotifyingJavaTypeInitalizer(EStructuralFeature feat) {
 		return getNotifyingJavaTypeInitalizer(feat.getEType(), feat.isMany());
 	}
-
 	
+	
+
 	public String getPackageClass(EPackage pkg) {
 		return getPrefix(pkg)+"."+getInfo(pkg).packageClassName;
 	}
 	
-	
-
 	public String getPrefix(EPackage pkg) {
 		return getInfo(pkg).packageClassPrefix;
-	}
-	
-	public PackageInfo getInfo(EPackage pkg) {
-		return knownPackages.computeIfAbsent(pkg, p->{
-			return knowPackage(pkg);
-		});
 	}
 	
 	public String getPrefixed(EPackage pkg, String str) {

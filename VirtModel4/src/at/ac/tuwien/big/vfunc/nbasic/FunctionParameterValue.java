@@ -7,15 +7,21 @@ import java.util.List;
 public class FunctionParameterValue<Target> extends NoChangeNotifyer<Target> {
 	
 	
+	public String name;
+	private BasicMetaInfo bmi = new BasicMetaInfo();
+	
+	
 	public FunctionParameterValue(String name) {
 		this.name = name;
+	} 
+	
+	@Override
+	public MetaInfo getMetaInfo() {
+		return this.bmi;
 	}
-	
-	
-	public String name; 
-	
+
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 }

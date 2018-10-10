@@ -5,7 +5,7 @@
     importerID="org.eclipse.emf.importer.ecore" complianceLevel="8.0" copyrightFields="false"
     operationReflection="true" importOrganizing="true">
   <foreignModel>VObjectModel.ecore</foreignModel>
-  <genPackages prefix="VObjectModel" disposableProviderFactory="true" ecorePackage="VObjectModel.ecore#/">
+  <genPackages prefix="VObjectModel" basePackage="at.ac.tuwien.big.vom.vobjectmodel"  disposableProviderFactory="true" ecorePackage="VObjectModel.ecore#/">
     <genClasses ecoreClass="VObjectModel.ecore#//Identifier">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference VObjectModel.ecore#//Identifier/identifierreforcmp"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute VObjectModel.ecore#//Identifier/name"/>

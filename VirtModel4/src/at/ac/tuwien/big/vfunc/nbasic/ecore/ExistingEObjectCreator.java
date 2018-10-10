@@ -12,10 +12,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
-import VObjectModel.CreatorId;
-import VObjectModel.Identifier;
-import VObjectModel.JavaValue;
-import VObjectModel.VObjectModelFactory;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CreatorId;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.JavaValue;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
 import at.ac.tuwien.big.virtmod.ecore.VirtualModel;
 
 
@@ -86,7 +86,7 @@ public class ExistingEObjectCreator implements EObjectCreator {
 		EClass ecl = eobj.eClass();
 		DeltaVMEObject ret = new DeltaVMEObject(this.manager, this, ide, ecl, parameters);
 		ecl.getEAllStructuralFeatures().forEach(esf->{
-			ret.addBasicSingletonFeature(esf, eobj, esf);
+			ret.addBasicSingletonFeature(esf, eobj, esf, false);
 		});
 		this.realObjects.put(ide, eobj);
 		return ret;

@@ -10,18 +10,19 @@ import javax.swing.event.TreeSelectionEvent;
 
 import org.eclipse.emf.ecore.EStructuralFeature;
 
-import VObjectModel.BasicFunction;
-import VObjectModel.DeltaStore;
-import VObjectModel.FeatureFunc;
-import VObjectModel.Identifier;
-import VObjectModel.StoredFuncs;
-import VObjectModel.VObjectModelFactory;
-import VObjectModel.ValuePair;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.BasicFunction;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.DeltaStore;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.FeatureFunc;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.StoredFuncs;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.ValuePair;
 import at.ac.tuwien.big.vfunc.basic.FixedFinitScope;
 import at.ac.tuwien.big.vfunc.basic.Scope;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.AttributeHandler;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.MultiAttributeHandler;
 import at.ac.tuwien.big.virtmod.basic.Treepos;
+import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.DerivationStatus;
 
 public class DeltaVMEObjectStore {
 
@@ -85,6 +86,10 @@ public class DeltaVMEObjectStore {
 
 		BasicMapFunc<Treepos, T> valueFunc = new BasicMapFunc<>(Treepos.class);
 		BasicMapFunc<Treepos, Boolean> scopeFunc = new BasicMapFunc<>(Treepos.class);
+		{
+			this.valueFunc.setBasicMetaInfoCreater((src)->new BasicMetaInfo(new BasicDerivationReason(DerivationStatus.NONDERIVED)));
+			this.scopeFunc.setBasicMetaInfoCreater((src)->new BasicMetaInfo(new BasicDerivationReason(DerivationStatus.NONDERIVED)));
+		}
 
 		public BasicMapFunc<Treepos, Boolean> getScopeFunc() {
 			return this.scopeFunc;

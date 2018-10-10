@@ -2,14 +2,11 @@ package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 
-public interface MultiAttributeHandler<T> extends AttributeHandler<T> {
-	
-	public void setValues(Collection<T> newValues);
-	
-	public void unset();
+public interface MultiAttributeHandler<T> extends AttributeHandler<T, List<T>> {
 	
 	public EList<T> exposeList();
 	
@@ -18,15 +15,14 @@ public interface MultiAttributeHandler<T> extends AttributeHandler<T> {
 		return exposeList();
 	}
 	
-
-	@Override
-	public default EList<T> readOnlyValues() {
-		return exposeList();
-	}
-	
 	@Override
 	public default boolean isSet() {
 		return exposeList().isEmpty();
+	}
+	
+	@Override
+	public default EList<T> readOnlyValues() {
+		return exposeList();
 	}
 	
 	public default void setSingle(T val) {
@@ -35,6 +31,17 @@ public interface MultiAttributeHandler<T> extends AttributeHandler<T> {
 		} else {
 			setValues(Collections.singleton(val));
 		}
+	}
+	
+
+	public void setValues(Collection<T> newValues);
+	
+	@Override
+	public void unset();
+	
+	@Override
+	public default List<T> value() {
+		return exposeList();
 	}
 	
 

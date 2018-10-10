@@ -25,14 +25,41 @@ public class BasicQueryResult<Source,Target> extends WeakChangeFuncNotifyer<Basi
 		init(src, container);
 	}
 
-	public BasicResult<Target> getResult() {
-		return result;
+	@Override
+	public void changed(Target oldValue, Target newValue) {
+		notifyChanged(source(), oldValue, newValue);
 	}
 	
+	public Object evaluateNew(Replacer replacer, boolean[] changed) {
+		return this;
+	}
+	 
+	@Override
+	public void finalize() {
+		super.finalize();
+	}
+
+	@Override
+	public MetaInfo getMetaInfo() {
+		return this.result==null?null:this.result.getMetaInfo();
+	}
+
+	public BasicResult<Target> getResult() {
+		return this.result;
+	}
+
+	@Override
+	public void refresh() {
+		//Moeglicherweise stimmt das nicht
+		if (this.result != null) {
+			this.result.refresh();
+		}
+	}
+
 	public void setResult(BasicResult<Target> newResult) {
-		if (result != newResult) {
-			if (result != null) {
-				result.removeChangeListener(this);
+		if (this.result != newResult) {
+			if (this.result != null) {
+				this.result.removeChangeListener(this);
 			}
 			Target oldVal = value();
 			this.result = newResult;
@@ -45,38 +72,10 @@ public class BasicQueryResult<Source,Target> extends WeakChangeFuncNotifyer<Basi
 			}
 		}
 	}
-	 
+
 	@Override
 	public Target value() {
-		return result==null?null:result.value();
-	}
-
-	@Override
-	public MetaInfo getMetaInfo() {
-		return result==null?null:result.getMetaInfo();
-	}
-
-	@Override
-	public void refresh() {
-		//Moeglicherweise stimmt das nicht
-		if (result != null) {
-			result.refresh();
-		}
-	}
-
-	@Override
-	public void changed(Target oldValue, Target newValue) {
-		notifyChanged(source(), oldValue, newValue);
-	}
-
-	@Override
-	public void finalize() {
-		super.finalize();
-	}
-
-	@Override
-	public Object evaluateNew(Replacer replacer, boolean[] changed) {
-		return this;
+		return this.result==null?null:this.result.value();
 	}
 	
 }

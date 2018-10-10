@@ -36,6 +36,24 @@ public class BasicDeltaFunc<Src,Target> extends AbstractFunc<Src, Target, BasicQ
 				}
 			};
 			this.finiteResult.addBasicChangeListener(this.bl);
+			Reason reason = mi.getReason();
+			if (reason instanceof ComposedReason) {
+				ComposedReason cr = (ComposedReason)reason;
+				cr.initSourceInfos(()->{
+					List<BasicValuedChangeNotifyer<?>> ret = new ArrayList<>();
+					Boolean filterValue = BasicDeltaFunc.this.filterScope.evaluateBasic(src);
+					if (filterValue != null) {
+						ret.add(BasicDeltaFunc.this.filterScope.evaluate(src));
+						if (filterValue) {
+							ret.add(BasicDeltaFunc.this.addMap.evaluate(src));
+						}
+					} else {
+						ret.add(BasicDeltaFunc.this.originalFunc.evaluate(src));
+					}
+					
+					return ret;
+				});
+			}
 		}
 
 		@Override
@@ -128,8 +146,10 @@ public class BasicDeltaFunc<Src,Target> extends AbstractFunc<Src, Target, BasicQ
 		};
 		this.filteredScope.addChangeListener(this.scl);
 		
+		setBasicMetaInfoCreater(CREATE_COMPOSED_REASON);
+		
 		Function<Src, BasicResult<Target>> func = (src)->{
-			MetaInfo mi = new BasicMetaInfo();
+			MetaInfo mi = createMetaInfo(src);
 			//So wie merged things ...
 			DeltaResult ret = new DeltaResult(mi , src);
 			ret.refresh();

@@ -46,7 +46,7 @@ public class BasicMapFunc<Src, Target> extends AbstractFunc<Src, Target, QueryRe
 	}
 	
 	private BasicResult<Target> createResult(Src src) {
-		MetaInfo mi = new BasicMetaInfo();
+		MetaInfo mi = createMetaInfo(src);
 		ConstantBasicResult<Target> br = new ConstantBasicResult<>(mi);
 		//br.setValue(target);
 		return br;

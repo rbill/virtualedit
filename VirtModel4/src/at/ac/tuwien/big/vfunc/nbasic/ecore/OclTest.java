@@ -10,10 +10,10 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
 import Citizen.CitizenPackage;
-import VObjectModel.CreatorId;
-import VObjectModel.Identifier;
-import VObjectModel.IdentifierRef;
-import VObjectModel.VObjectModelFactory;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CreatorId;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierRef;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.ClassGenerationManager;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.ObjectCreatorGenerator;

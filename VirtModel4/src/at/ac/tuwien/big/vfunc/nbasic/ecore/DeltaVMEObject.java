@@ -20,18 +20,21 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 
-import VObjectModel.Identifier;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
 import at.ac.tuwien.big.vfunc.basic.impl.BasicUnionScope;
 import at.ac.tuwien.big.vfunc.nbasic.AbstractFunc;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyer;
 import at.ac.tuwien.big.vfunc.nbasic.BasicDeltaFunc;
+import at.ac.tuwien.big.vfunc.nbasic.BasicDerivationReason;
 import at.ac.tuwien.big.vfunc.nbasic.BasicFiniteUnionFunc;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import at.ac.tuwien.big.vfunc.nbasic.BasicMapFunc;
+import at.ac.tuwien.big.vfunc.nbasic.BasicMetaInfo;
 import at.ac.tuwien.big.vfunc.nbasic.DeltaVMEObjectStore;
 import at.ac.tuwien.big.vfunc.nbasic.DeltaVMEObjectStore.DeltaStoreInfo;
 import at.ac.tuwien.big.vfunc.nbasic.FunctionListWrapper;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.BasicCache.CacheType;
+import at.ac.tuwien.big.vfunc.nbasic.wrapper.BasicDerivationStatus;
 import at.ac.tuwien.big.vfunc.nbasic.wrapper.TreePosList;
 import at.ac.tuwien.big.vfunc.wrapper.BasicListWrapper;
 import at.ac.tuwien.big.virtmod.basic.Treepos;
@@ -39,6 +42,8 @@ import at.ac.tuwien.big.virtmod.basic.TreeposList;
 import at.ac.tuwien.big.virtmod.basic.col.impl.ConvertingListImpl;
 import at.ac.tuwien.big.virtmod.basic.impl.SimpleEditState;
 import at.ac.tuwien.big.virtmod.ecore.FeaturePropertyValue;
+import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.DerivationStatus;
+import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.ExactDerivationStatus;
 import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import at.ac.tuwien.big.xtext.util.MyEcoreUtil;
 
@@ -48,17 +53,25 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		BasicFiniteUnionFunc<Treepos, T> unionFunc;
 		BasicDeltaFunc<Treepos, T> deltaFunc;
 		MultiAttributeHandler<T> multiHandler;
-		AttributeHandler<T> attributeHandler;
+		AttributeHandler<T,?> attributeHandler;
+	}
+	
+	private static<T> BasicMapFunc<Treepos, T> getBasicMapFunc(boolean isDerived) {
+		BasicMapFunc<Treepos, T> bmf = new BasicMapFunc<>(Treepos.class);
+		if (isDerived) {
+			bmf.setBasicMetaInfoCreater((src)->new BasicMetaInfo(new BasicDerivationReason(DerivationStatus.DERIVED)));
+		}
+		return bmf;
 	}
 	
 	private DeltaVMEObjectStore store;
 	
+	
+	
 	private Map<EStructuralFeature, DeltaInfo<?>> attributeHandlerInfos = new HashMap<>();
 	
-	
-	
 	private WeakHashMap<TreePosList<?>, BasicListenable> handlers = new WeakHashMap<>();
-	
+
 	private EClass myClass;
 
 	private Function<EObject, Identifier> convertToIdentifier = (eobj)->{
@@ -67,7 +80,6 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		}
 		return getManager().getFakeVirtual(eobj).getIdentificator();
 	};
-
 	private Function<Identifier, EObject> convertFromIdentifierToNormal = (id)->{
 		EObject ret = getManager().getObject(id);
 		if (ret instanceof VMEObject) {
@@ -75,14 +87,11 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		}
 		return ret;
 	};
+
 	private Function<Identifier, EObject> convertFromIdentifier = (id)->{
 		EObject ret = getManager().getObject(id);
 		return ret;
 	};
-
-	public DeltaVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id, EClass eclass, List<?> parameters) {
-		this(manager,creator,id,eclass,manager.getDeltaStore(id), parameters);
-	}
 
 	public DeltaVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id, EClass eclass, DeltaVMEObjectStore store, List<?> parameters) {
 		super(manager, creator, id, parameters);
@@ -90,25 +99,29 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		this.store = store;
 	}
 
+	public DeltaVMEObject(EObjectManager manager, EObjectCreator creator, Identifier id, EClass eclass, List<?> parameters) {
+		this(manager,creator,id,eclass,manager.getDeltaStore(id), parameters);
+	}
+
 	public void addBaseFunction(EStructuralFeature feat, AbstractFunc<Treepos, ?, ?> func) {
 		DeltaInfo<?> info = getDeltaInfo(feat);
 		((BasicFiniteUnionFunc)info.unionFunc).addBase(func);
 	}
-
+	
 	/* Requirement: feature.isMany() */
 	public void addBasicFeature(EStructuralFeature feature, AbstractFunc<Treepos, ?, ?> func) {
 		addBaseFunction(feature, func);
 		
 	}
-	
-	public <T> void addBasicFeature(EStructuralFeature feature, List<T> objectList) {
-		int prefix = getCurPrefix(feature);
-		addBasicFeature(feature, objectList, prefix);
-	}
 
+	public <T> void addBasicFeature(EStructuralFeature feature, List<T> objectList, boolean isDerived) {
+		int prefix = getCurPrefix(feature);
+		addBasicFeature(feature, objectList, prefix, isDerived);
+	}
+	
 	/** Requirement: feature.isMany() */
-	public <T> void addBasicFeature(EStructuralFeature feature, List<T> objectList, int prefix) {
-		BasicMapFunc<Treepos, T> bmf = new BasicMapFunc<>(Treepos.class);
+	public <T> void addBasicFeature(EStructuralFeature feature, List<T> objectList, int prefix, boolean isDerived) {
+		BasicMapFunc<Treepos, T> bmf = getBasicMapFunc(isDerived);
 		TreePosList<T> tpl = (prefix==0)?new TreePosList(bmf):new TreePosList<>(bmf, prefix);
 		ListSynchronizer<?,?> synchronizer; 
 		if (feature instanceof EReference) {
@@ -130,45 +143,45 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		
 	}
 	
-	public <T> List<T> addBasicListFeature(EStructuralFeature feature) {
+	
+	public <T> List<T> addBasicListFeature(EStructuralFeature feature, boolean isDerived) {
 		int prefix = getCurPrefix(feature);
-		return addBasicListFeature(feature, prefix);
+		return addBasicListFeature(feature, prefix, isDerived);
 	}
-	
-	
-	public <T> List<T> addBasicListFeature(EStructuralFeature feature, int prefix) {
-		BasicMapFunc<Treepos, T> bmf = new BasicMapFunc<>(Treepos.class);
+	public <T> List<T> addBasicListFeature(EStructuralFeature feature, int prefix, boolean isDerived) {
+		BasicMapFunc<Treepos, T> bmf = getBasicMapFunc(isDerived);
 		TreePosList<T> tpl = (prefix==0)?new TreePosList(bmf):new TreePosList<>(bmf, prefix);
 		addBasicFeature(feature, bmf);
 		return tpl;
 	}
+	
 	public <T, U> void addBasicSingletonFeature(EStructuralFeature myFeature, EObject otherObject,
-			EStructuralFeature otherFeature) {
+			EStructuralFeature otherFeature, boolean isDerived) {
 		if (otherFeature instanceof EReference) {
 			//You need to convert them
 			if (otherFeature.isMany()) {
-				addBasicSingletonFeature(myFeature, otherObject, otherFeature, this.convertToVirtual, this.convertFromVirtual);	
+				addBasicSingletonFeature(myFeature, otherObject, otherFeature, this.convertToVirtual, this.convertFromVirtual, isDerived);	
 			} else {
-				addBasicSingletonFeature(myFeature, otherObject, otherFeature, this.convertToVirtual, this.convertFromVirtual);
+				addBasicSingletonFeature(myFeature, otherObject, otherFeature, this.convertToVirtual, this.convertFromVirtual, isDerived);
 			}
 		} else {
 			//Don't need to convert them as they are values
-			addBasicSingletonFeature(myFeature, otherObject, otherFeature, BasicListAttributeHandler.IDENTIY(), BasicListAttributeHandler.IDENTIY());
+			addBasicSingletonFeature(myFeature, otherObject, otherFeature, BasicListAttributeHandler.IDENTIY(), BasicListAttributeHandler.IDENTIY(), isDerived);
 		}
 	}
 
 	private <T, U> void addBasicSingletonFeature(EStructuralFeature myFeature, EObject otherObject,
-			EStructuralFeature otherFeature, Function<T, U> convertThere, Function<U, T> convertBack) {
+			EStructuralFeature otherFeature, Function<T, U> convertThere, Function<U, T> convertBack, boolean isDerived) {
 		if (otherFeature.isMany()) {
 			//TODO: Does not work maybe?
 			List<U> list = (List<U>) otherObject.eGet(otherFeature);
 			MultiAttributeHandler<T> handler = new BasicListAttributeHandler(list, convertThere, convertBack);
 			List<T> changedList = handler.exposeList();
 			
-			addBasicFeature(myFeature, changedList);
+			addBasicFeature(myFeature, changedList,isDerived);
 		} else {
-			
-			BasicMapFunc<Treepos, ?> bmf = new BasicMapFunc<>(Treepos.class);
+		
+			BasicMapFunc<Treepos, ?> bmf = getBasicMapFunc(isDerived);
 			TreePosList<?> tpl = new TreePosList<>(bmf);
 			SingleESFAttributeHandler<T,U> attrHandler = new SingleESFAttributeHandler<>(otherObject, otherFeature, convertBack, convertThere);
 			
@@ -280,14 +293,22 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		return (DeltaInfo)mah;
 	}
 	
-	@Override
-	public AttributeHandler<?> getHandler(EStructuralFeature feature) {
-		return getDeltaInfo(feature).attributeHandler;
+	public Collection<? extends BasicDerivationStatus> getDerivationStatus(EStructuralFeature esf) {
+		AttributeHandler<?,?> handler = getHandler(esf);
+		if (handler == null) {
+			return Collections.emptyList();
+		}
+		return handler.getDerivationStatus();
 	}
 	
 	
 	
 	
+	@Override
+	public AttributeHandler<?,?> getHandler(EStructuralFeature feature) {
+		return getDeltaInfo(feature).attributeHandler;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

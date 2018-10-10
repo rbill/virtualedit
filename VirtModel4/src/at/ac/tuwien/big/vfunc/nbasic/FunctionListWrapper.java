@@ -29,7 +29,7 @@ import at.ac.tuwien.big.virtmod.structure.ChangeListener;
 
 public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg> extends AbstractList<Trg> implements EList<Trg>, BasicChangeNotifyer {
 	
-	private static class BasicEntry<Src,Trg> {
+	public static class BasicEntry<Src,Trg> {
 		private Src src;
 		private QueryResult<Src, Trg> res;
 		
@@ -38,7 +38,15 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 			this.res = res;
 		}
 		
-		private Trg value() {
+		public QueryResult<Src, Trg> getResult() {
+			return this.res;
+		}
+		
+		public Src getSource() {
+			return this.src;
+		}
+		
+		public Trg value() {
 			return (this.res==null)?null:this.res.value();
 		}
 	}
@@ -49,6 +57,7 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 	private TriConsumer<? super Func,? super Src, ? super Trg> valueSetter;
 	
 	private List<WeakReference<BasicListenable>> basicListeners = new ArrayList<>();
+	
 	private ModifiedScopeChangeListenable<Scope<Src>, Src> myScopeListener = new ModifiedScopeChangeListenable<Scope<Src>, Src>() {
 
 		@Override
@@ -82,7 +91,6 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 
 
 	};
-	
 	private ChangeListenable<?, Src, Trg> listener = new ChangeListenable() {
 
 		@Override
@@ -122,8 +130,6 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 		Util.unsupportedIfNot(this.valueSetter).consume(this.func, newSrc, value);
 	}
 	
-	
-	
 	private void addSource(Src src) {
 		Entry<Src, BasicEntry<Src, Trg>> fe = this.map.ceilingEntry(src);
 		BasicEntry<Src, Trg> be = new BasicEntry<>(src, this.func.evaluate(src));
@@ -143,6 +149,8 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 		}
 		
 	}
+	
+	
 	
 	@Override
 	public void finalize() throws Throwable {
@@ -167,10 +175,14 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 	public Trg get(int index) {
 		return this.list.get(index).value();
 	}
-
+	
 	@Override
 	public List<WeakReference<BasicListenable>> getBasicChangeListeners() {
 		return this.basicListeners;
+	}
+
+	public List<? extends BasicEntry<Src, Trg>> getEntries() {
+		return this.list;
 	}
 	
 	public Func getFunc() {

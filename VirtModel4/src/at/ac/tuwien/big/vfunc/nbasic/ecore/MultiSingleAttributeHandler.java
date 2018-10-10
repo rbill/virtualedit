@@ -2,6 +2,7 @@ package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +15,8 @@ import at.ac.tuwien.big.vfunc.nbasic.AbstractFunc;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyerWithLocalImpl;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import at.ac.tuwien.big.vfunc.nbasic.QueryResult;
+import at.ac.tuwien.big.vfunc.nbasic.wrapper.BasicDerivationStatus;
+import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.ExactDerivationStatus;
 
 public class MultiSingleAttributeHandler<T> implements SingleAttributeHandler<T> {
 	
@@ -37,6 +40,11 @@ public class MultiSingleAttributeHandler<T> implements SingleAttributeHandler<T>
 	@Override
 	public List<WeakReference<BasicListenable>> getBasicChangeListeners() {
 		return this.multiHandler.getBasicChangeListeners();
+	}
+
+	@Override
+	public Collection<? extends BasicDerivationStatus> getDerivationStatus() {
+		return this.multiHandler.getDerivationStatus();
 	}
 
 	@Override

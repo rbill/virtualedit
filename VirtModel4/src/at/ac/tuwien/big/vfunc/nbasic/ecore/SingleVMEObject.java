@@ -21,8 +21,8 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 
-import VObjectModel.Identifier;
-import VObjectModel.JavaValue;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.JavaValue;
 import at.ac.tuwien.big.vfunc.nbasic.AbstractFunc;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyer;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
@@ -57,7 +57,7 @@ public class SingleVMEObject extends AbstractVMEObject {
 	}
 
 	@Override
-	public AttributeHandler<?> getHandler(EStructuralFeature feature) {
+	public AttributeHandler<?,?> getHandler(EStructuralFeature feature) {
 		return this.attributeHandlers.get(feature);
 	}
 
@@ -68,7 +68,7 @@ public class SingleVMEObject extends AbstractVMEObject {
 		setBasicFeature(feature, treeposHandler);
 	}
 	
-	public void setBasicFeature(EStructuralFeature feature, AttributeHandler<?> handler) {
+	public void setBasicFeature(EStructuralFeature feature, AttributeHandler<?,?> handler) {
 		this.attributeHandlers.put(feature, handler);
 		if (feature instanceof EReference) {
 			EReference ref = (EReference)feature;

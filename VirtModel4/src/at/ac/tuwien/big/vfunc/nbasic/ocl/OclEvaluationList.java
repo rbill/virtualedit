@@ -15,9 +15,9 @@ import org.eclipse.ocl.pivot.ids.TupleTypeId;
 import org.eclipse.ocl.pivot.internal.resource.OCLASResourceFactory;
 import org.eclipse.ocl.pivot.values.TupleValue;
 
-import VObjectModel.CreatorId;
-import VObjectModel.Identifier;
-import VObjectModel.VObjectModelFactory;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CreatorId;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
 
 import java.util.Objects;
 import java.util.Set;

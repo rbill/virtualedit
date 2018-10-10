@@ -4,10 +4,17 @@
 package at.ac.tuwien.big.school.ui
 
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import at.ac.tuwien.big.school.editor.VMXtextEditor
+import org.eclipse.xtext.ui.editor.XtextEditor
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
  */
 @FinalFieldsConstructor
 class SchoolTextUiModule extends AbstractSchoolTextUiModule {
+	
+		
+	 def Class<? extends XtextEditor> bindXtextEditor() {
+  		return VMXtextEditor;
+	 }  
 }

@@ -25,7 +25,7 @@ import at.ac.tuwien.big.vfunc.basic.impl.BasicChange;
 import at.ac.tuwien.big.vfunc.basic.io.BasicStatement.CJmpStatement;
 
 public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Target>> implements Function<Src, Target> {
-
+	
 	private class CompleteChangeNotifyer extends AbstractFunctionNotifyer<CompleteChangeNotifyer, Src, Target> {
 
 		private Map<Src, QueryResult<Src, Target>> completeMap = new HashMap<>();
@@ -152,19 +152,26 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 		}
 
 	}
+	
+	protected static Function<Object, MetaInfo> CREATE_COMPOSED_REASON = (x)->{
+		BasicMetaInfo ret = new BasicMetaInfo(new ComposedReason());
+		return ret;
+	};
+	
 	protected static <T> T ensure(Object o, Class<T> cl) {
 		if (cl.isInstance(o)) {
 			return (T) o;
 		}
 		throw new RuntimeException("Expected class " + cl + " for " + o + "!");
 	}
+	
+	private Function<? super Src, ? extends MetaInfo> metaInfoCreater = (x)->new BasicMetaInfo();
+
 	private QueryResultCache<Src, QueryResult<Src, Target>> cache;
 	private Function<Src, BasicResult<Target>> func;
 	private BiFunction<? super Src, ? super QueryResult<Src, Target>, ? extends Target> valueUpdater;
 	private CompleteChangeNotifyer globalChangeListener;
-
 	private FunctionModificator modificator;
-
 	// You need to call init!
 	@Deprecated
 	protected AbstractFunc() {
@@ -205,6 +212,10 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 		return new CompleteChangeNotifyer();
 	}
 
+	protected MetaInfo createMetaInfo(Src src) {
+		return this.metaInfoCreater.apply(src);
+	}
+
 	public Map<Src,Target> createValuesMap() {
 		Map<Src,Target> ret = new HashMap<>();
 		Scope<Src> scope = getScope();
@@ -234,11 +245,11 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 		}
 		return ret;
 	}
-	
+
 	protected QueryResult<Src, Target> getCacheIfExists(Src src) {
 		return this.cache.getIfExists(src);
 	}
-
+	
 	public AbstractFunctionNotifyer<?, Src, Target> getChangeNotifyer() {
 		if (this.globalChangeListener == null) {
 			this.globalChangeListener = createChangeNotifyer();
@@ -246,13 +257,13 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 		return this.globalChangeListener;
 	}
 
-
 	public FunctionModificator getModificator() {
 		if (this.modificator != null) {
 			return this.modificator;
 		}
 		return FunctionModificator.NO_MODIFICATOR;
 	}
+
 
 	public abstract Scope<Src> getScope();
 
@@ -285,6 +296,10 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 
 	public void refreshCache() {
 		this.cache.refreshCompletely();
+	}
+
+	public void setBasicMetaInfoCreater(Function<? super Src, ? extends MetaInfo> mic) {
+		this.metaInfoCreater = mic;
 	}
 
 	protected void setModificator(FunctionModificator modificator) {

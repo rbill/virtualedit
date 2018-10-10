@@ -159,6 +159,7 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 			return createResult(src);
 
 		};
+		setBasicMetaInfoCreater(CREATE_COMPOSED_REASON);
 		//I think you can directly initialize that
 		init(func, null);
 	}
@@ -184,7 +185,7 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 	
 	private OperationBasedResult<Target, Target> createResult(Src src) {
 		//TODO: Better meta info
-		MetaInfo mi = new BasicMetaInfo();
+		MetaInfo mi = createMetaInfo(src);
 		Function<? super List<Target>, ? extends Target> function = this.mergeFunc;
 		
 		List<BasicValuedChangeNotifyer<? extends Target>> sources = new ArrayList<>();
@@ -196,6 +197,11 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 			if (s.contains(src)) {
 				sources.add(s.evaluate(src));
 			}
+		}
+		Reason reason = mi.getReason();
+		if (reason instanceof ComposedReason) {
+			ComposedReason cr = (ComposedReason)reason;
+			cr.initSourceInfos(()->sources);
 		}
 		
 		OperationBasedResult<Target, Target> ret = new OperationBasedResult<>(function, sources, mi, true);

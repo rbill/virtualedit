@@ -39,9 +39,10 @@ import org.eclipse.ocl.pivot.ids.TuplePartId;
 import org.eclipse.ocl.pivot.ids.TupleTypeId;
 import org.eclipse.ocl.pivot.values.TupleValue;
 
-import VObjectModel.CreatorId;
-import VObjectModel.Identifier;
-import VObjectModel.VObjectModelFactory;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CreatorId;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
+import at.ac.tuwien.big.vfunc.nbasic.ecore.AbstractVMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.EObjectCreator;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.EObjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.ExistingEObjectCreator;
@@ -52,38 +53,16 @@ import at.ac.tuwien.big.vfunc.nbasic.ecore.VirtualResource;
 import at.ac.tuwien.big.virtlang.virtLang.ObjectCreator;
 import at.ac.tuwien.big.xmlintelledit.intelledit.ecore.util.MyResource;
 import at.ac.tuwien.big.xmlintelledit.util.Spawnable;
+import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import at.ac.tuwien.big.xtext.util.MyEcoreUtil;
 
 
 public class CEobjectManager implements Spawnable<CEobjectManager>{
 	
-	public static void main(String[] args) {
-		MyResource res = MyResource.get(new ResourceImpl());
-		System.out.println(res);
-	}
-	private Resource fakeResource = new ResourceImpl(URI.createURI("fake://myResource/"+Math.random()));
-	
-	{
-	}
-	
-	private Map<ObjectCreator,  Map<List<?>, SampleEObject>> existingObjects = new HashMap<>();
-	
-	private EObjectManager emanager;
-	private ObjectCreatorGenerator ocg;
-	private ClassGenerationManager cgm;
-	
-	private MyResource myFakeResource;
-	
 	private static Map<EClass, Supplier<? extends EObject>> eclassGenerator = new HashMap<>();
-	
-	public static void addSupplier(EClass cl, Supplier<? extends EObject> supplier) {
-		eclassGenerator.put(cl, supplier);
-	}
-	
 	private static Resource fakeEClassResource = new ResourceImpl();
 	
 	private static EPackage fakePackage = EcoreFactory.eINSTANCE.createEPackage();
-	
 	
 	private static EFactoryImpl fakeFactory = new EFactoryImpl() {
 		
@@ -98,20 +77,40 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 			return null;
 		}
 	};
+	
 	static {
 		fakePackage.setEFactoryInstance(fakeFactory);
 		fakeEClassResource.getContents().add(fakePackage);
 	}
-	
+	public static void addSupplier(EClass cl, Supplier<? extends EObject> supplier) {
+		eclassGenerator.put(cl, supplier);
+	}
 	public static EPackage getFakePackage() {
 		return fakePackage;
 	}
+	
+	public static void main(String[] args) {
+		MyResource res = MyResource.get(new ResourceImpl());
+		System.out.println(res);
+	}
+	
+	private Resource fakeResource = new ResourceImpl(URI.createURI("fake://myResource/"+Math.random()));
+	
+	{
+	}
+	
+	private Map<ObjectCreator,  Map<List<?>, SampleEObject>> existingObjects = new HashMap<>();
+	
+	private EObjectManager emanager;
+	
+	
+	private ObjectCreatorGenerator ocg;
+	private ClassGenerationManager cgm;
+	
+	private MyResource myFakeResource;
 		
 	
-	public CEobjectManager spawnNew() {
-		CEobjectManager ret = new CEobjectManager(this);
-		return ret;
-	}
+	private Map<EObject,EObject> globalMap = new HashMap<>();
 	
 	private CEobjectManager(CEobjectManager halfCopy) {
 		this.emanager = halfCopy.emanager;
@@ -199,24 +198,41 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 		return ret;
 	}
 	
+	public Collection<EObject> getAllContents() {
+		Set<EObject> eobjs = new HashSet<>();
+		this.existingObjects.values().forEach(x->x.values().forEach(y->eobjs.add(y)));
+		eobjs.removeIf(x->{
+			if (x instanceof AbstractVMEObject) {
+				AbstractVMEObject avo = (AbstractVMEObject)x;
+				EObjectCreator cr = avo.getIdentifierInfo().getCreator();
+				if (cr instanceof ExistingEObjectCreator) {
+					return true;
+				}
+			}
+			return false;
+		});
+		return eobjs;
+	}
+	
 	private Class<? extends SampleEObject> getCompiledClass(EClass cl) {
 		return this.ocg.getOrCreate(cl);
 	}
+	
 	
 	private Class<? extends SampleEObject> getCompiledClass(ObjectCreator creator) {
 		return this.ocg.getOrCreate(creator);
 	}
 	
-	
 	public List<EObject> getContents() {
+		recalcContents();
 		return this.fakeResource.getContents();
 	}
-	
+	 
+	 
 	public EObjectManager getEObjectManager() {
 		return this.emanager;
 	}
-	 
-	 
+
 	public SampleEObject getOrCreateBasic(ObjectCreator creator, List<?> parameters) {
 		return this.existingObjects.computeIfAbsent(creator, x->new HashMap<>()).computeIfAbsent(parameters, x->{
 			SampleEObject ret = null;
@@ -237,12 +253,10 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 			return ret;
 		});
 	}
-
-	private Map<EObject,EObject> globalMap = new HashMap<>();
 	
 	public EObject getOrCreateFull(EObject existing) {
 		Function<EObject, EObject> retriever = (y)->{
-			return globalMap.computeIfAbsent(y, z->{
+			return this.globalMap.computeIfAbsent(y, z->{
 			if (z instanceof VMEObject) {
 				VMEObject vm = (VMEObject)z;
 				Identifier id = vm.getIdentificator();
@@ -262,7 +276,7 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 			return null;});
 		};
 		BiConsumer<EObject, EObject> setter = (a,b)->{
-			globalMap.put(a,b);
+			this.globalMap.put(a,b);
 		};
 		Function<EObject, EObject> newInstanceProvider = (old)->{
 			if (old instanceof VMEObject) {
@@ -315,7 +329,7 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 	public SampleEObject getOrNull(ObjectCreator creator, List<?> parameters) {
 		return this.existingObjects.getOrDefault(creator, Collections.emptyMap()).get(parameters);
 	}
-
+	
 	public void initWith(VirtualResource vr) {
 		
 		//Add to fakeResource
@@ -331,6 +345,28 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 		}
 		this.myFakeResource = MyResource.get(this.fakeResource);
 	}
+	
+	
+	public void recalcContents() {
+		//Get all objects
+		Collection<EObject> eobjs = getAllContents();
+		//Remove contained
+		Set<EObject> contained = new HashSet<>();
+		for (EObject eobj: eobjs) {
+			contained.addAll(eobj.eContents());
+		}
+		eobjs.removeAll(contained);
+		this.fakeResource.getContents().retainAll(eobjs);
+		eobjs.removeAll(this.fakeResource.getContents());
+		this.fakeResource.getContents().addAll(eobjs);
+	}
+
+	@Override
+	public CEobjectManager spawnNew() {
+		CEobjectManager ret = new CEobjectManager(this);
+		return ret;
+	}
+	
 
 /*
 	public void addContents(Collection<EObject> contents) {

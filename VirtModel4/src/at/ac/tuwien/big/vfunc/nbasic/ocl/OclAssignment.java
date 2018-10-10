@@ -1,5 +1,7 @@
 package at.ac.tuwien.big.vfunc.nbasic.ocl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +16,11 @@ import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyer;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import at.ac.tuwien.big.vfunc.nbasic.BasicMetaInfo;
 import at.ac.tuwien.big.vfunc.nbasic.BasicResultImpl;
+import at.ac.tuwien.big.vfunc.nbasic.BasicValuedChangeNotifyer;
+import at.ac.tuwien.big.vfunc.nbasic.ComposedReason;
+import at.ac.tuwien.big.vfunc.nbasic.Reason;
 import at.ac.tuwien.big.vfunc.nbasic.Replacer;
+import at.ac.tuwien.big.vfunc.nbasic.ecore.AbstractVMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.DeltaVMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VMEObject;
 import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
@@ -41,7 +47,7 @@ public class OclAssignment extends BasicResultImpl<Object> {
 	};
 	
 	public OclAssignment(String name, EStructuralFeature featureName, String oclExpression, OclEvaluationList manager) {
-		super(new BasicMetaInfo());
+		super(new BasicMetaInfo(new ComposedReason()));
 		this.name = name;
 		this.featureName = featureName;
 		this.oclExpression = oclExpression;
@@ -59,14 +65,16 @@ public class OclAssignment extends BasicResultImpl<Object> {
 		
 		Map<String, Object> myMap = getLastMap();
 		OCLExpressionEvaluationState state = new OCLExpressionEvaluationState(expr, myMap);
+		
 		Object ret = state.evaluate();
 		Map<String, Object> nextMap = getCurMap();
 		nextMap.putAll(myMap);
 		nextMap.put(variable, ret);
-		
+		List<BasicValuedChangeNotifyer<?>> sources = new ArrayList<>();
 		for (Pair<String, Object> pair : state.getVariableObjects()) {
 			OclAssignment depOn = this.manager.getAssignment(pair.getA()); 
 			if (depOn == null) {continue;}
+			sources.add(depOn);
 			if (pair.getB() == null || Objects.equals(pair.getB(), myMap.get(pair.getA()))) {
 				// Assume it is relevant?
 				depOn.addBasicChangeListener(this.refreshMyself);
@@ -89,18 +97,26 @@ public class OclAssignment extends BasicResultImpl<Object> {
 				}
 				EStructuralFeature resf = (EStructuralFeature)esf;
 				vme.addListener(resf, this.refreshMyself);
+				if (vme instanceof AbstractVMEObject) {
+					sources.add(((AbstractVMEObject) vme).getHandler(resf));
+				}
 			}
 		}
 		if (this.firstEval && this.featureName != null) {
 			this.firstEval = false;
 			//Ich brauche eine liste die, wenn ich sie patche, die untenliegende Liste patcht
 			DeltaVMEObject dv = this.manager.getTarget();
-			this.objectList = dv.addBasicListFeature(this.featureName);
+			this.objectList = dv.addBasicListFeature(this.featureName, true);
 			//TODO: Brauche ich hier noch einmal einen Listener? ich glaube nicht
 		}
 		if (this.objectList != null) {
 			List<Object> convertedList = this.manager.convertOcl(ret);
 			PatchUtil.applyPatch(this.objectList, convertedList);
+		}
+		Reason reason = getMetaInfo().getReason();
+		if (reason instanceof ComposedReason) {
+			ComposedReason cr = (ComposedReason)reason;
+			cr.initSourceInfos(()->sources);
 		}
 		return ret;
 	}

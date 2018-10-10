@@ -42,62 +42,109 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 		this.fromDelegate = Converter.from(fromDelegate);
 		this.delegate = delegate;
 		if (delegate instanceof InternalEList && ((InternalEList) delegate).basicList() != delegate) {			
-			basicList = new ConvertingListImpl(((InternalEList) delegate).basicList(), toDelegate, fromDelegate);
+			this.basicList = new ConvertingListImpl(((InternalEList) delegate).basicList(), toDelegate, fromDelegate);
 		} else {
-			basicList = this;
+			this.basicList = this;
 		}
 	}
 	
 	@Override
-	public List<ExactDerivationStatus> getDerivationStatus(Collection<ModelResource> userModels) {
-		if (delegate instanceof NoInverse) {
-			return ((NoInverse) delegate).getDerivationStatus(userModels);
+	public boolean add(E element) {
+		boolean ret = getDelegate().add(convertE(element));
+		if (ret) {
+			changed();
 		}
-		return Collections.emptyList();
+		return ret;
+	}
+	
+	
+	
+	@Override
+	public void add(int index, E element) {
+		getDelegate().add(index, convertE(element));
+		changed();
 	}
 	
 	@Override
-	public EList<E> noInverse() {
-		List<F> delegate = getDelegate();
-		if (delegate instanceof NoInverse) {
-			return new ConvertingListImpl(((NoInverse<List<F>>) delegate).noInverse(),toDelegate,fromDelegate);
+	public  boolean addAll(int index, Collection<? extends E> c) {
+		List<F> newList = new ArrayList<>(c.size());
+		for (E e: c) {
+			newList.add(convertE(e));
 		}
-		return this;
-	}
-	
-	@Override
-	public Converter<E, F> toDelegate() {
-		return toDelegate;
-	}
-
-	@Override 
-	public Converter<F, E> fromDelegate() {
-		return fromDelegate;
-	}
-
-	@Override
-	public List<F> getDelegate() {
-		return delegate;
-	}
-
-	@Override
-	public <T> T[] toArray(T[] a) {
-		return ConvertingList.super.toArray(a);
-	}
-	
-	public String toString() {
-		return Arrays.toString(toArray());
+		boolean ret = getDelegate().addAll(newList);
+		if (ret) {
+			changed();
+		}
+		return ret;
 	}
 
 	@Override
 	public List<E> basicList() {
-		return basicList;
+		return this.basicList;
+	}
+
+	@Override
+	public void clear() {
+		ConvertingList.super.clear();
+		changed();
+	}
+
+	@Override
+	public boolean contains(Object o) {
+		return ConvertingList.super.contains(o);
+	}
+	
+	@Override
+	public boolean containsAll(Collection<?> c) {
+		return ConvertingList.super.containsAll(c);
+	}
+
+	@Override 
+	public Converter<F, E> fromDelegate() {
+		return this.fromDelegate;
 	}
 
 
+	@Override
+	public  E get(int index) {
+		return convertF(getDelegate().get(index));
+	}
+	
+	@Override
+	public List<WeakReference<BasicListenable>> getBasicChangeListeners() {
+		return this.changeListeners;
+	};
+
+	@Override
+	public List<F> getDelegate() {
+		return this.delegate;
+	};
+
+	@Override
+	public List<ExactDerivationStatus> getDerivationStatus(Collection<ModelResource> userModels) {
+		if (this.delegate instanceof NoInverse) {
+			return ((NoInverse) this.delegate).getDerivationStatus(userModels);
+		}
+		return Collections.emptyList();
+	}
+
+	@Override
+	public  int indexOf(Object o) {
+		try {
+			return getDelegate().indexOf(convertE((E)o));
+		} catch (Exception e){
+			return -1;
+		}
+	}
+	
+	@Override
+	public boolean isEmpty() {
+		return ConvertingList.super.isEmpty();
+	}	
+	
 	@Override 
 	public Iterator<E> iterator() {
-		Iterator<F> sub = delegate.iterator();
+		Iterator<F> sub = this.delegate.iterator();
 		return new Iterator<E>() {
 
 			@Override
@@ -117,111 +164,6 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 			}
 		};
 	}
-	
-	@Override
-	public ListIterator<E> listIterator() {
-		return new MyListIterator<E>(this,0);
-	};
-
-	@Override
-	public ListIterator<E> listIterator(int index) {
-		return new MyListIterator<E>(this,index);
-	};
-
-	@Override
-	public void clear() {
-		ConvertingList.super.clear();
-		changed();
-	}
-
-	@Override
-	public int size() {
-		return ConvertingList.super.size();
-	}
-	
-	@Override
-	public boolean removeAll(Collection<?> c) {
-		boolean ret = ConvertingList.super.removeAll(c);
-		if (ret) {
-			changed();
-		}
-		return ret;
-	}	
-	
-	@Override
-	public boolean remove(Object c) {
-		boolean ret = ConvertingList.super.remove(c);
-		if (ret) {
-			changed();
-		}
-		return ret;
-	}
-
-	@Override
-	public boolean containsAll(Collection<?> c) {
-		return ConvertingList.super.containsAll(c);
-	}
-
-	@Override
-	public boolean contains(Object o) {
-		return ConvertingList.super.contains(o);
-	}
-	
-	@Override
-	public boolean retainAll(Collection<?> c) {
-		return ConvertingList.super.retainAll(c);
-	}
-
-
-	@Override
-	public boolean isEmpty() {
-		return ConvertingList.super.isEmpty();
-	}
-
-	
-
-	@Override
-	public boolean add(E element) {
-		boolean ret = getDelegate().add(convertE(element));
-		if (ret) {
-			changed();
-		}
-		return ret;
-	}
-
-	@Override
-	public void add(int index, E element) {
-		getDelegate().add(index, convertE(element));
-		changed();
-	}
-
-	
-	@Override
-	public  boolean addAll(int index, Collection<? extends E> c) {
-		List<F> newList = new ArrayList<>(c.size());
-		for (E e: c) {
-			newList.add(convertE(e));
-		}
-		boolean ret = getDelegate().addAll(newList);
-		if (ret) {
-			changed();
-		}
-		return ret;
-	}
-
-	@Override
-	public  E get(int index) {
-		return convertF(getDelegate().get(index));
-	}
-
-	@Override
-	public  int indexOf(Object o) {
-		try {
-			return getDelegate().indexOf(convertE((E)o));
-		} catch (Exception e){
-			return -1;
-		}
-	}
 
 	@Override
 	public  int lastIndexOf(Object o) {
@@ -231,62 +173,17 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 			return -1;
 		}
 	}
-	
-	@Override
-	public  E remove(int index) {
-		E ret = convertF(getDelegate().remove(index));
-		changed();
-		return ret;
-	}
-	
-	private  E removeNoChange(int index) {
-		E ret = convertF(getDelegate().remove(index));
-		return ret;
-	}
 
 	@Override
-	public  E set(int index, E element) {
-		E ret = convertF(getDelegate().set(index, convertE(element)));
-		changed();
-		return ret;
-	}
-
-	@Override
-	public List<E> subList(int fromIndex, int toIndex) {
-		List<E> This = this;
-		return new AbstractList<E>() {
-
-			@Override
-			public E get(int index) {
-				if (index -fromIndex > toIndex) {
-					throw new IllegalArgumentException();
-				}
-				return This.get(index-fromIndex);
-			}
-			
-			@Override
-			public E set(int index, E newEl) {
-				return This.set(index-fromIndex, newEl);
-			}
-			
-			@Override
-			public boolean add(E newEl) {
-				This.add(toIndex,newEl);
-				return true;
-			}
-			
-			@Override
-			public void add(int ind, E newEl) {
-				This.add(fromIndex+ind,newEl);
-			}
-
-			@Override
-			public int size() {
-				return toIndex-fromIndex;
-			}
-		};
+	public ListIterator<E> listIterator() {
+		return new MyListIterator<>(this,0);
 	}
 	
+	@Override
+	public ListIterator<E> listIterator(int index) {
+		return new MyListIterator<>(this,index);
+	}
+
 
 	@Override
 	public void move(int newPosition, E object) {
@@ -295,6 +192,8 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 			move(newPosition,oldPos);
 		}
 	}
+
+	
 
 	@Override
 	public E move(int newPosition, int oldPosition) {
@@ -310,8 +209,112 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 	}
 
 	@Override
-	public List<WeakReference<BasicListenable>> getBasicChangeListeners() {
-		return changeListeners;
+	public EList<E> noInverse() {
+		List<F> delegate = getDelegate();
+		if (delegate instanceof NoInverse) {
+			return new ConvertingListImpl(((NoInverse<List<F>>) delegate).noInverse(),this.toDelegate,this.fromDelegate);
+		}
+		return this;
+	}
+
+	
+	@Override
+	public  E remove(int index) {
+		E ret = convertF(getDelegate().remove(index));
+		changed();
+		return ret;
+	}
+
+	@Override
+	public boolean remove(Object c) {
+		boolean ret = ConvertingList.super.remove(c);
+		if (ret) {
+			changed();
+		}
+		return ret;
+	}
+
+	@Override
+	public boolean removeAll(Collection<?> c) {
+		boolean ret = ConvertingList.super.removeAll(c);
+		if (ret) {
+			changed();
+		}
+		return ret;
+	}
+
+	private  E removeNoChange(int index) {
+		E ret = convertF(getDelegate().remove(index));
+		return ret;
 	}
 	
+	@Override
+	public boolean retainAll(Collection<?> c) {
+		return ConvertingList.super.retainAll(c);
+	}
+	
+	@Override
+	public  E set(int index, E element) {
+		E ret = convertF(getDelegate().set(index, convertE(element)));
+		changed();
+		return ret;
+	}
+
+	@Override
+	public int size() {
+		return ConvertingList.super.size();
+	}
+
+	@Override
+	public List<E> subList(int fromIndex, int toIndex) {
+		List<E> This = this;
+		return new AbstractList<E>() {
+
+			@Override
+			public boolean add(E newEl) {
+				This.add(toIndex,newEl);
+				return true;
+			}
+			
+			@Override
+			public void add(int ind, E newEl) {
+				This.add(fromIndex+ind,newEl);
+			}
+			
+			@Override
+			public E get(int index) {
+				if (index -fromIndex > toIndex) {
+					throw new IllegalArgumentException();
+				}
+				return This.get(index-fromIndex);
+			}
+			
+			@Override
+			public E set(int index, E newEl) {
+				return This.set(index-fromIndex, newEl);
+			}
+
+			@Override
+			public int size() {
+				return toIndex-fromIndex;
+			}
+		};
+	}
+	
+
+	@Override
+	public <T> T[] toArray(T[] a) {
+		return ConvertingList.super.toArray(a);
+	}
+
+	@Override
+	public Converter<E, F> toDelegate() {
+		return this.toDelegate;
+	}
+
+	@Override
+	public String toString() {
+		return Arrays.toString(toArray());
+	}
+
 }

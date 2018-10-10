@@ -9,5 +9,7 @@ public interface NotifyableEObject extends EObject {
 	
 
 	public void addListener(EStructuralFeature resf, BasicListenable refreshMyself);
+	
+	
 
 }

@@ -1,5 +1,6 @@
 package at.ac.tuwien.big.vfunc.nbasic.constraint;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,12 @@ import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyer;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import at.ac.tuwien.big.vfunc.nbasic.BasicMetaInfo;
 import at.ac.tuwien.big.vfunc.nbasic.BasicResultImpl;
+import at.ac.tuwien.big.vfunc.nbasic.BasicValuedChangeNotifyer;
+import at.ac.tuwien.big.vfunc.nbasic.ComposedReason;
+import at.ac.tuwien.big.vfunc.nbasic.Reason;
 import at.ac.tuwien.big.vfunc.nbasic.Replacer;
+import at.ac.tuwien.big.vfunc.nbasic.ecore.AbstractVMEObject;
+import at.ac.tuwien.big.vfunc.nbasic.ecore.AttributeHandler;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.DeltaVMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ocl.OclAssignment;
@@ -61,7 +67,7 @@ public class OclDerivationEvaluableState extends BasicResultImpl<Object> impleme
 		
 	};
 	public OclDerivationEvaluableState(MyResource res, OclDerivationEvaluable eval, EObject obj) {
-		super(new BasicMetaInfo());
+		super(new BasicMetaInfo(new ComposedReason()));
 		this.eval = eval;
 		this.obj = obj;
 		this.res = res;
@@ -97,7 +103,7 @@ public class OclDerivationEvaluableState extends BasicResultImpl<Object> impleme
 				depOn.removeBasicChangeListener(this.refreshMyself);
 			}
 		}*/
-
+		List<BasicValuedChangeNotifyer<?>> sources = new ArrayList<>();
 		for (Entry<Object, ?> props : refreshVisitor.getPropertiesPerObject().entrySet()) {
 			if (!(props.getKey() instanceof NotifyableEObject)) {
 				// Can't do anything
@@ -112,7 +118,17 @@ public class OclDerivationEvaluableState extends BasicResultImpl<Object> impleme
 				}
 				EStructuralFeature resf = (EStructuralFeature)esf;
 				vme.addListener(resf, this.refreshMyself);
+				if (vme instanceof AbstractVMEObject) {
+					AbstractVMEObject avo = (AbstractVMEObject)vme;
+					AttributeHandler<?,?> handler = avo.getHandler(resf);
+					sources.add(handler);
+				}
 			}
+		}
+		Reason reason = getMetaInfo().getReason();
+		if (reason instanceof ComposedReason) {
+			ComposedReason cr = (ComposedReason)reason;
+			cr.initSourceInfos(()->sources);
 		}
 		return ret;
 		} catch (Exception e) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/joor-java-8-0.9.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.sat4j.core.jar" sourcepath="lib/org.sat4j.core-src.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/diffutils-1.2.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
@@ -16,6 +17,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/at.ac.tuwien.big.virtmodel.vlang"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/intelledit"/>
 	<classpathentry kind="lib" path="lib/string-similarity-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/joor-0.9.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

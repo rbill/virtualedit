@@ -6,17 +6,21 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.ISetup;
 import org.eclipse.xtext.resource.IResourceFactory;
 import org.eclipse.xtext.resource.XtextResource;
@@ -25,18 +29,25 @@ import org.eclipse.xtext.resource.XtextResourceSet;
 import com.google.inject.Injector;
 
 import Citizen.CitizenPackage;
-import VObjectModel.CompleteFile;
-import VObjectModel.CreatorId;
-import VObjectModel.EcoreDef;
-import VObjectModel.Identifier;
-import VObjectModel.IdentifierRef;
-import VObjectModel.LanguageDef;
-import VObjectModel.VObjDeltaModel;
-import VObjectModel.VObjectModelFactory;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.AnyValue;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CompleteFile;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CreatorId;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.EcoreDef;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierCmp;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierRef;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.JavaValue;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.LanguageDef;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
 import at.ac.tuwien.big.school.SchoolTextStandaloneSetup;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.ObjectCreatorGenerator;
+import at.ac.tuwien.big.vfunc.nbasic.xtext.CompleteFileHandler;
 import at.ac.tuwien.big.virtlang.VirtLangStandaloneSetup;
+import at.ac.tuwien.big.virtlang.virtLang.VirtLangFactory;
+import at.ac.tuwien.big.vmod.ecore.impl.SimpleVMEObject;
+import at.ac.tuwien.big.vobjlang.VObjectLangStandaloneSetup;
 import at.ac.tuwien.big.xmlintelledit.intelledit.xtext.DynamicValidator;
 import at.ac.tuwien.big.xtext.equalizer.InstanceCreator;
 import at.ac.tuwien.big.xtext.equalizer.ModelCorrespondance;
@@ -44,6 +55,9 @@ import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import at.ac.tuwien.big.xtext.equalizer.impl.SimpleModelCorrespondance;
 import at.ac.tuwien.big.xtext.equalizer.impl.SimpleModelEqualizer;
 import at.ac.tuwien.big.xtext.util.DocumentChanger;
+import school.Pupil;
+import school.School;
+import school.SchoolFactory;
 import school.SchoolPackage;
 
 public class VOMTest {
@@ -57,9 +71,9 @@ public class VOMTest {
 		rootVFile = new File(rootVFile.getAbsolutePath()+File.separator+"\\virtualedit\\");
 	}
 
-
-	public static void buildVOMFile() {
-		CompleteFile file = VObjectModelFactory.eINSTANCE.createCompleteFile();
+	private static Map<Class<? extends ISetup>, String> setupExtension = new HashMap<>();
+	
+	public static void buildVOMFile(CompleteFile file) {
 		EcoreDef schoolDef = VObjectModelFactory.eINSTANCE.createEcoreDef();
 		schoolDef.setPackagePackage(SchoolPackage.class.getCanonicalName());
 		EcoreDef citizenDef = VObjectModelFactory.eINSTANCE.createEcoreDef();
@@ -93,8 +107,69 @@ public class VOMTest {
 		}
 		doThingsWithVOM(file);
 	}
+
+	public static AnyValue containmentAv(AnyValue av) {
+		if (av instanceof JavaValue) {
+			return EcoreUtil.copy(av);
+		} else if (av instanceof IdentifierRef) {
+			IdentifierRef ir = (IdentifierRef)av;
+			IdentifierCmp ret = VObjectModelFactory.eINSTANCE.createIdentifierCmp();
+			ret.setS_identifier(containmentId(ir.getS_identifier()));
+			return ret;
+		} else if (av instanceof IdentifierCmp) {
+			IdentifierCmp ir = (IdentifierCmp)av;
+			IdentifierCmp ret = VObjectModelFactory.eINSTANCE.createIdentifierCmp();
+			ret.setS_identifier(containmentId(ir.getS_identifier()));
+			return ret;
+		} else {
+			throw new RuntimeException("Unknown "+av);
+		}
+	}
 	
-	private static Map<Class<? extends ISetup>, String> setupExtension = new HashMap<>();
+	public static Identifier containmentId(Identifier id) {
+		Identifier ret = EcoreUtil.copy(id);
+		ret.getIdentifierreforcmp().replaceAll(x->containmentAv(x));
+		return ret;
+	}
+	
+	public static void doThingsWithVOM(CompleteFile file) {
+		CompleteFileHandler cfh = new CompleteFileHandler(file);
+		SchoolTextStandaloneSetup setup = new SchoolTextStandaloneSetup();
+		Injector injector = setup.createInjectorAndDoEMFRegistration(); 
+		XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
+		LanguageDef xtextlanguage = file.getXtextlanguage();
+		if (xtextlanguage != null && xtextlanguage.getLangStandaloneSetup() != null) {
+			Class<? extends ISetup> setupClass;
+			try {
+				setupClass = (Class<? extends ISetup>)Class.forName(xtextlanguage.getLangStandaloneSetup());
+				XtextResource res = getVirtLangResource(file.getLastModelText(), setupClass);
+				for (EObject cont: (Iterable<EObject>)(()->res.getAllContents())) {
+					System.out.println("loaded: "+cont);
+				}
+				ModelCorrespondance corr = new SimpleModelCorrespondance();
+				;
+				SimpleModelCorrespondance subCor = new SimpleModelCorrespondance();
+				//We don't need to create any virtual objects here
+				InstanceCreator creator = InstanceCreator.DEFAULT;
+				//Zuerst der Modellbasierte, dann der Textbasierte Patch
+				VMEObject testSchool = cfh.getEManager().getNewObject(SchoolPackage.eINSTANCE.getSchool());//new DeltaVMEObject(manager, null, VObjectModelFactory.eINSTANCE.createIdentifier(), , new ArrayList<>());
+				//testSchool = new DeltaVMEObject(manager, null, VObjectModelFactory.eINSTANCE.createIdentifier(),SchoolPackage.eINSTANCE.getSchool() , new ArrayList<>());
+				Collection<EObject> allObjs = cfh.getEManager().getAllContents();
+				((Collection)testSchool.eGet(SchoolPackage.eINSTANCE.getSchool_Pupils())).addAll(allObjs.stream().filter(x->(x.eClass().getName().equals("Pupil"))).collect(Collectors.toList()));
+				SimpleModelEqualizer sme = new SimpleModelEqualizer(new ArrayList<>(Arrays.asList(testSchool)), res.getContents(), corr, subCor, creator);
+				sme.equalize();
+				String newText = DocumentChanger.getContent(res);
+				System.out.println("New text: "+newText);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
+	}
 	
 	public static String getExtension(ISetup setup) {
 		return setupExtension.computeIfAbsent(setup.getClass(), (cl)->{
@@ -113,102 +188,35 @@ public class VOMTest {
 		
 	}
 	
-	public static void doThingsWithVOM(CompleteFile file) {
-		String currentText = file.getCurrentModelText();
-		VObjDeltaModel deltaModel = file.getDeltamodel();
-		if (file.getDeltamodel() == null) {
-			deltaModel = VObjectModelFactory.eINSTANCE.createVObjDeltaModel();
-			file.setDeltamodel(deltaModel);
-		}
-		List<EcoreDef> ecD = file.getEcoredef();
-		EObjectManager manager = new EObjectManager();
-		for (EcoreDef ed: ecD)  {
-			String fp = ed.getFactoryPackage();
-			String pp = ed.getPackagePackage();
-			try {
-				Class<?> cl = Class.forName(pp);
-				Field f = cl.getField("eINSTANCE");
-				manager.addKnown((EPackage)f.get(null));
-			} catch (Exception e) {
-				System.err.println("Could not load ePackage "+pp+": "+e.getMessage());
-			}
-		} 
-		for (String vm: file.getVirtModels()) {
-			File virtFile = new File(vm);
-			if (!virtFile .exists()) {
-				System.err.println("Could not find: "+vm);
-				continue;
-			}
-
-			Resource vl;
-			try {
-				vl = EObjectManager.getVirtLangResource(virtFile);
-				manager.knowVirtualDefinition((at.ac.tuwien.big.virtlang.virtLang.VirtualModel)vl.getContents().get(0));
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.err.println("Could not load virtual file "+vm+": "+e.getMessage());
-			}
-		}
-		
-		for (String im: file.getInputModels()) {
-			File inputFile = new File(im);
-			if (!inputFile .exists()) {
-				System.err.println("Could not find: "+im);
-				continue;
-			}
-
-			try {
-			Resource r = ConvertToXmi.getXmiResource(inputFile);
-			manager.knowResource(r);
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.err.println("Could not load input model file "+im+": "+e.getMessage());
-		}
-		}
-		manager.loadDelta(deltaModel);
-		VirtualResource vr = new VirtualResource(manager);
-		for (Identifier id: file.getRootObjects()) {
-			id.init();
-			vr.addRoot(manager.getObject(id));
-		}
-		CEobjectManager cmanager = new CEobjectManager(manager);
-		cmanager.initWith(vr);
-		
-		for (EObject eobj: cmanager.getContents()) {
-			System.out.println("Loaded: "+eobj);			
-		}
-		
-		SchoolTextStandaloneSetup setup = new SchoolTextStandaloneSetup();
-		Injector injector = setup.createInjectorAndDoEMFRegistration(); 
-		XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
-		LanguageDef xtextlanguage = file.getXtextlanguage();
-		if (xtextlanguage != null && xtextlanguage.getLangStandaloneSetup() != null) {
-			Class<? extends ISetup> setupClass;
-			try {
-				setupClass = (Class<? extends ISetup>)Class.forName(xtextlanguage.getLangStandaloneSetup());
-				XtextResource res = (XtextResource) getVirtLangResource(file.getLastModelText(), setupClass);
-				for (EObject cont: (Iterable<EObject>)(()->res.getAllContents())) {
-					System.out.println("loaded: "+cont);
+	public static String getIdentifierString(Identifier id) {
+		id = containmentId(id);
+		//TODO: ....
+		CompleteFile file = VObjectModelFactory.eINSTANCE.createCompleteFile();
+		file.getRootObjects().add(id);
+		ISetup standaloneSetup = new VObjectLangStandaloneSetup();
+		Injector injector = standaloneSetup.createInjectorAndDoEMFRegistration();
+		IResourceFactory resourceFactory = injector.getInstance(IResourceFactory.class);
+		//XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
+		//XtextResource ecsslResource = (XtextResource)rs.getResource(URI.createFileURI(ecsslFile.getCanonicalPath()), true);
+		Resource ecsslResource = resourceFactory.createResource(URI.createFileURI("fake://resource.bla"));
+		ecsslResource.getContents().add(file);
+		String ret = DocumentChanger.getContent(ecsslResource);
+		System.out.println("Ret: "+ret);
+		String[] arr = ret.split("\\{",3);
+		if (arr.length < 3) {
+			return "???";
+		} else {
+			ret = arr[2].trim();
+			int last = ret.lastIndexOf('}');
+			if (last != -1) {
+				ret = ret.substring(0,ret.lastIndexOf('}'));
+				last = ret.lastIndexOf('}');
+				if (last != -1) {
+					ret = ret.substring(0,ret.lastIndexOf('}'));
 				}
-				ModelCorrespondance corr = new SimpleModelCorrespondance();
-				;
-				SimpleModelCorrespondance subCor = new SimpleModelCorrespondance();
-				//We don't need to create any virtual objects here
-				InstanceCreator creator = InstanceCreator.DEFAULT;
-				//Zuerst der Modellbasierte, dann der Textbasierte Patch
-				SimpleModelEqualizer sme = new SimpleModelEqualizer(new ArrayList<>(vr.getRoots()), res.getContents(), corr, subCor, creator);
-				sme.equalize();
-				String newText = DocumentChanger.getContent(res);
-				System.out.println("New text: "+newText);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}catch (ClassNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
+			return ret.trim();
 		}
-		
 	}
 	
 	public static XtextResource getVirtLangResource(File ecsslFile, Class<? extends ISetup> setupClass) throws IOException {
@@ -258,8 +266,8 @@ public class VOMTest {
 	
 	
 	public static void main(String[] args) throws IOException {
-		
-		buildVOMFile();
+		CompleteFile sfile = VObjectModelFactory.eINSTANCE.createCompleteFile();
+		buildVOMFile(sfile);
 		if (true) {return;}
 		//ObjectCreatorGenerator.generateRoot = new File("C:\\Users\\Robert\\Documents\\eclipseMars\\eclipseEcore2ASP\\virtualedit\\VirtModel4\\src");
 		File vomFile = new File(rootVFile.getAbsolutePath()+"\\at.ac.tuwien.big.vobj.VObjectModel\\model\\CompleteFile.xmi");

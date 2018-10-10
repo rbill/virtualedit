@@ -2,6 +2,7 @@ package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -13,6 +14,10 @@ import at.ac.tuwien.big.vfunc.nbasic.AbstractFunc;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyerWithLocalImpl;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
 import at.ac.tuwien.big.vfunc.nbasic.QueryResult;
+import at.ac.tuwien.big.vfunc.nbasic.wrapper.BasicDerivationStatus;
+import at.ac.tuwien.big.vfunc.nbasic.wrapper.BasicDerivationStatusImpl;
+import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.DerivationStatus;
+import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.ExactDerivationStatus;
 
 public class SingleESFAttributeHandler<T,U> extends BasicChangeNotifyerWithLocalImpl implements SingleAttributeHandler<T> {
 	
@@ -31,6 +36,15 @@ public class SingleESFAttributeHandler<T,U> extends BasicChangeNotifyerWithLocal
 	@Override
 	public T get() {
 		return this.convertThere.apply((U)this.base.eGet(this.feature));
+	}
+
+	@Override
+	public Collection<? extends BasicDerivationStatus> getDerivationStatus() {
+		List<BasicDerivationStatus> ret = new ArrayList<>();
+		//fully generated
+		BasicDerivationStatus eds = new BasicDerivationStatusImpl(DerivationStatus.DERIVED);
+		ret.add(eds);
+		return ret;
 	}
 
 	@Override

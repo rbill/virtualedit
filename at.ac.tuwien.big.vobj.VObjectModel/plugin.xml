@@ -10,7 +10,7 @@
       <!-- @generated VObjectModel -->
       <package
             uri="http://www.example.org/VObjectModel"
-            class="VObjectModel.VObjectModelPackage"
+            class="at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage"
             genModel="model/VObjectModel.genmodel"/>
    </extension>
 

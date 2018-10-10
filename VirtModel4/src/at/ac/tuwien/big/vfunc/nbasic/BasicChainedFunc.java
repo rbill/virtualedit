@@ -17,7 +17,7 @@ public class BasicChainedFunc<Src, Mid, Target, QR extends QueryResult<Src,Targe
 	public BasicChainedFunc(AbstractFunc<Src, Mid,  ? extends QueryResult<Src, Mid>> first, AbstractFunc<Mid, Target, ? extends QueryResult<Mid,Target>> totalSecond) {
 		this.first = first;
 		this.second = totalSecond;
-		DependentResultDesc<Target> dpd = new DependentResultDesc<Target>();
+		DependentResultDesc<Target> dpd = new DependentResultDesc<>();
 		ResultSlot<Src> inputSlot = DependentResultDesc.<Src>createInputSlot();
 		
 		List<ResultSlot<?>> dependentSlot = new ArrayList<>();
@@ -39,8 +39,14 @@ public class BasicChainedFunc<Src, Mid, Target, QR extends QueryResult<Src,Targe
 		ResultSlot<Target> finalSlot = dpd.createFinalDesc(totalDependentSlot, finalCalc );
 		dpd.finish(finalSlot);
 		
+		super.setBasicMetaInfoCreater((src)->{
+			ComposedReason reason = new ComposedReason();
+			BasicMetaInfo ret = new BasicMetaInfo(reason);
+			return ret;
+		});
+		
 		Function<Src, BasicResult<Target>> func = (src)->{
-			BasicMetaInfo mi = new BasicMetaInfo();
+			MetaInfo mi = createMetaInfo(src);
 			//TODO: Fill ...
 			return  dpd.getResult(mi, src, true);
 		};
@@ -49,7 +55,7 @@ public class BasicChainedFunc<Src, Mid, Target, QR extends QueryResult<Src,Targe
 	
 	@Override
 	public Scope<Src> getScope() {
-		return first.getScope();
+		return this.first.getScope();
 	}
 
 }

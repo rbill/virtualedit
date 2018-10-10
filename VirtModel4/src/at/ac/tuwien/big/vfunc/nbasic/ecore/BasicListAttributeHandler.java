@@ -3,6 +3,7 @@ package at.ac.tuwien.big.vfunc.nbasic.ecore;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -12,7 +13,10 @@ import at.ac.tuwien.big.vfunc.nbasic.AbstractFunc;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyer;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyerWithLocalImpl;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
+import at.ac.tuwien.big.vfunc.nbasic.BasicMetaInfo;
+import at.ac.tuwien.big.vfunc.nbasic.MetaInfo;
 import at.ac.tuwien.big.vfunc.nbasic.QueryResult;
+import at.ac.tuwien.big.vfunc.nbasic.wrapper.BasicDerivationStatus;
 import at.ac.tuwien.big.virtmod.basic.col.Converter;
 import at.ac.tuwien.big.virtmod.basic.col.impl.ConvertingListImpl;
 import at.ac.tuwien.big.virtmod.basic.wrapper.impl.BasicEditableListWrapper;
@@ -50,6 +54,8 @@ public class BasicListAttributeHandler<T,U> extends BasicChangeNotifyerWithLocal
 		
 	};
 
+	private BasicMetaInfo bmi = new BasicMetaInfo();
+	
 	public BasicListAttributeHandler(List<T> list) {
 		BasicEditableListWrapper<T> bew = new BasicEditableListWrapper<>(list);
 		this.list = bew;
@@ -57,6 +63,8 @@ public class BasicListAttributeHandler<T,U> extends BasicChangeNotifyerWithLocal
 		
 	}
 	
+	
+
 	public BasicListAttributeHandler(List<U> list, Function<U,T> convertThere, Function<T,U> convertBack) {
 		if (convertBack == IDENTITY && convertThere == IDENTITY) {
 			BasicEditableListWrapper<T> bew = new BasicEditableListWrapper<>((List<T>)list);
@@ -68,8 +76,6 @@ public class BasicListAttributeHandler<T,U> extends BasicChangeNotifyerWithLocal
 			this.list = cli;
 		}
 	}
-	
-	
 
 	@Override
 	public EList<T> exposeList() {
@@ -77,10 +83,20 @@ public class BasicListAttributeHandler<T,U> extends BasicChangeNotifyerWithLocal
 	}
 
 	@Override
+	public Collection<? extends BasicDerivationStatus> getDerivationStatus() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public MetaInfo getMetaInfo() {
+		return this.bmi;
+	}
+
+	@Override
 	public AbstractFunc<?, T, ? extends QueryResult<?, T>> getTreeposFuncOrNull() {
 		return null;
 	}
-
+	
 	@Override
 	public void setValues(Collection<T> newValues) {
 		PatchUtil.applyPatch(this.list, asList(newValues));

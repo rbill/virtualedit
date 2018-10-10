@@ -1,5 +1,6 @@
 package at.ac.tuwien.big.vmod.ecore;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,8 +24,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
 
-import at.ac.tuwien.big.autoedit.ecore.util.MyResource;
-import at.ac.tuwien.big.autoedit.test.OclExtractor;
 import at.ac.tuwien.big.virtmod.basic.col.impl.ConvertingListImpl;
 import at.ac.tuwien.big.virtmod.ecore.impl.FakeEListImpl;
 import at.ac.tuwien.big.vmod.ecore.impl.SimpleModelView;
@@ -39,6 +38,7 @@ import at.ac.tuwien.big.vmod.type.impl.ModelProviderTypeImpl;
 import at.ac.tuwien.big.vmod.type.impl.SymbolRegistryTypeImpl;
 import at.ac.tuwien.big.vmodel.ecore.VEcoreFile;
 import at.ac.tuwien.big.vmodel.ecore.impl.VEcoreFileImpl;
+import at.ac.tuwien.big.xmlintelledit.intelledit.oclgen.OclExtractor;
 import at.ac.tuwien.big.xtext.equalizer.Creater;
 import at.ac.tuwien.big.xtext.equalizer.InstanceCreator;
 import at.ac.tuwien.big.xtext.equalizer.ModelCorrespondance;
@@ -48,32 +48,140 @@ import at.ac.tuwien.big.xtext.util.MyEcoreUtil;
 
 public interface VModelView {
 	
-	public VFeatureValues getFeatureValues(String classname, String featureName);
-	
-	public default VFeatureValues getFeatureValues(EStructuralFeature feat) {
-		return getFeatureValues(feat.getEContainingClass().getName(), feat.getName());
-	}
-	
-	
-	public default void initModelForEdit() {
-		getInstances();
-		for (EStructuralFeature feat: getEcore().getAllFeatures()) {
-			getFeatureValues(feat);
+	public static void main(String[] args) throws IOException {
+		//Test ...
+		SymbolRegistry registry = new SymbolRegistryImpl(new SymbolRegistryTypeImpl());
+		Resource ecoreRes = OclExtractor.getEcore(new File("model/router.ecore"));
+		Resource xmiRes = OclExtractor.getXMI("model/router.xmi", ecoreRes);
+		ModelProviderType provType = new ModelProviderTypeImpl();
+		ModelProvider prov = new SimpleEcoreModelProviderImpl(provType,"routerXmi", ecoreRes);
+		
+		ModelProvider delta = new SimpleDeltaModelProviderImpl("routerXmiDelta", ecoreRes, prov);
+		registry.addProvider(prov);
+		registry.addProvider(delta);
+		
+		VEcoreFile ecore = new VEcoreFileImpl(ecoreRes);
+//		{
+//			SimpleModelView smv = new SimpleModelView(root, ecore);
+//			smv.loadResource(xmiRes);
+//			
+//			Resource newResource = xmiRes.getResourceSet().createResource(URI.createFileURI("model/router_saved.xmi"));
+//			smv.saveResource(newResource);
+//			newResource.save(new HashMap<>());
+//		}
+		{
+			SimpleModelView smv = new SimpleModelView(prov, ecore);
+			smv.loadResource(xmiRes);
+			
+			Resource newResource = xmiRes.getResourceSet().createResource(URI.createFileURI("model/router_saved.xmi"));
+			
+			SimpleModelView deltaV = new SimpleModelView(delta, ecore);
+			Resource deltaResource = xmiRes.getResourceSet().createResource(URI.createFileURI("model/router_deltasaved.xmi"));
+			List<EObject> exposed = deltaV.exposeContents();
+			for (EObject eobjRoot: exposed) {
+				for (EObject eobj: (Iterable<EObject>)()->eobjRoot.eAllContents()) {
+					EClass cl = eobj.eClass();
+					EStructuralFeature esf = cl.getEStructuralFeature("name");
+					if (esf != null) {
+						eobj.eSet(esf, "Bla"+eobj.eGet(esf));
+					}
+				}
+			}
+			deltaV.saveResource(deltaResource);
+			deltaResource.save(new HashMap<>());
+			
+			smv.saveResource(newResource);
+			newResource.save(new HashMap<>());	
+			
+			
 		}
 	}
 	
-	public VObjectValues getInstances();
+	public static  void noInverseAddAll(EList<EObject> savedValues, List<EObject> targets) {
+		if (savedValues instanceof NoInverse) {
+			((NoInverse<List>)savedValues).noInverse().addAll(targets);
+		} else {
+			savedValues.addAll(targets);
+		}
+	}
 	
-	public VEcoreFile getEcore();
 	
-	public VMEObject getEObject(Symbol x);
+	public default List<EObject> allInstances(EClass cl) {
+		List<EObject> ret = new ArrayList<>();
+		Set<EObject> retS = new HashSet<>(); 
+		for (EObject eobj: getAllEObjects()) {
+			if (eobj != null && eobj.eClass() != null && cl.isSuperTypeOf(eobj.eClass()) && retS.add(eobj)) {
+				ret.add(eobj);
+			}
+		}
+		return ret;
+	}
 	
-	public ModelProvider getMainProvider();
+	//Before you call synchronizeWithResource, then you change the xmiResource with that
+	public default void changeResource(Resource xmiResource, SimpleModelCorrespondance correspondance) {
+		List<EObject> sourceEObjects = getResourceEObjects();
+		//TODO: just to check things
+		//TODO: Own file for the things ... then you don't have this mixture problem
+		correspondance.removeResourceLess();
+		SimpleModelCorrespondance otherCorr = new SimpleModelCorrespondance();
+		//Works here, so the correspondance is wrong
+		SimpleModelEqualizer eq = new SimpleModelEqualizer(sourceEObjects, xmiResource.getContents(),
+				correspondance, otherCorr, 
+				InstanceCreator.DEFAULT);
+		eq.equalize();
+	}
 	
-	//Assume that functions are static
-	//If things have changd, you have to reload
-	public void reload();
+	public default EObject createEObject(EClass parameter) {
+		if (parameter == null) {
+			System.err.println("Wanting to create NULL class!");
+		}
+		Symbol newAttribute = getMainProvider().newSymbol(parameter==null?null:parameter.getName());
+		getInstances().add(newAttribute);
+		getInstances().setClass(newAttribute, parameter);
+		return getEObject(newAttribute);
+	}
+	
+	public default EObject createEObject(Symbol newAttribute, EClass parameter) {
+		if (parameter == null) {
+			System.err.println("Wanting to create NULL class "+newAttribute);
+		}
+		getInstances().add(newAttribute);
+		getInstances().setClass(newAttribute, parameter);
+		return getEObject(newAttribute);
+	}
+	
+	public default List<EObject> exposeContents() {
+		initModelForEdit();
+		//Now everything should be added, time to figure our what to add as root: Everything without container
+		Map<Symbol,EObject> eobj = new HashMap<>();
+		List<EObject> containerless = new ArrayList<>();
+		for (Symbol uuid: getInstances().existing()) {
+			eobj.put(uuid, getEObject(uuid));
+		}
+		for (EObject so: eobj.values()) {
+			//System.out.println("Container of "+so+": "+so.eContainer());
+			if (so.eContainer() == null) {
+				containerless.add(so);
+			}
+		}
+		return containerless;
+	}
+	
+	public default List<EObject> getAllEObjects() {
+		initModelForEdit();
+		//Now everything should be added, time to figure our what to add as root: Everything without container
+		List<EObject> ret = new ArrayList<>();
+		Set<Symbol> retS = new HashSet<>();
+		for (Symbol uuid: getInstances().existing()) {
+			if (retS.add(uuid)) {
+				ret.add(getEObject(uuid));
+			}
+		}
+		return ret;
+	}
 
+	public EReference getContainingFeature(Symbol uuid);
+	
 	public default EObject getContainingObject(Symbol uuid) {
 		Symbol ret = getContainingObjectUuid(uuid);
 		if (ret != null) {
@@ -81,34 +189,150 @@ public interface VModelView {
 		}
 		return null;
 	}
-	
+
 	public Symbol getContainingObjectUuid(Symbol uuid);
 
-	public EReference getContainingFeature(Symbol uuid);
-
-	public default List<EObject> wrapObjects(List<Symbol> base) {
-		return new ConvertingListImpl<EObject,Symbol>(base,
-				(x)->{if (x instanceof VMEObject) {
-						return ((VMEObject) x).getUUID();
-					  } else {
-						throw new RuntimeException("Adding real EObjects to Virtual Resource not yet implemented");
-					  }
-				},(x)->getEObject(x));
+	public default Map<String, Map<String, Map<String, String>>> getContainmentNameMap() {
+		Map<String, Map<String, Map<String, String>>> ret = new HashMap<>();
+//		for (String inst: getInstances()) {
+//			Set<String> names = getNames(inst);
+//			for (String name: names) {
+//				
+//			}
+//		}		
+		return ret;
 	}
 	
 
-	public default String toContentString() {
-		StringBuilder ret = new StringBuilder();
-		for (EObject eobj: getAllEObjects()) {
-			if (eobj.eContainer() != null) {continue;}
-			if (eobj instanceof VMEObject) {
-				VMEObject vme = (VMEObject)eobj;
-				if (ret.length()>0) {ret.append("\n");}
-				ret.append(vme.fullString());
-			} else {
-				System.err.println("Wrong type!");
+	public VEcoreFile getEcore();
+	
+	public VMEObject getEObject(Symbol x);
+	
+	public default VFeatureValues getFeatureValues(EStructuralFeature feat) {
+		return getFeatureValues(feat.getEContainingClass().getName(), feat.getName());
+	}
+	
+
+	public VFeatureValues getFeatureValues(String classname, String featureName);
+	
+	public VObjectValues getInstances();
+	
+	public ModelProvider getMainProvider();
+	
+	public default List<EObject> getResourceEObjects() {
+		Iterable<Symbol> symbols = getInstances().getRootObjects();
+		List<EObject> ret = new ArrayList<>();
+		for (Symbol sym: symbols) {
+			ret.add(getEObject(sym));
+		}
+		return ret;
+	}
+	
+	public default InstanceCreator getTransformationCreater(Symbol prefix, ModelCorrespondance parent, ModelCorrespondance sub) {
+		InstanceCreator creator = new InstanceCreator() {
+			
+			Map<Symbol,Map<EClass,Integer>> usedSymbols = new HashMap<>();
+			
+			
+			@Override
+			public EObject createInstance(EObject cont, EClass cl) {
+				ModelProvider prov = getMainProvider();
+				Symbol newSymbol = getSymbol(cont, cl); //Alles was erzeugt wird landed hier TODO: ?ndern, so dass es passt ... wie ist das?
+				VObjectValues val = getInstances();
+				val.add(newSymbol);
+				val.setClass(newSymbol, cl);
+				//System.out.println("Creating "+ cl.getName()+" for id "+newSymbol);
+				//if ("EClass".equals(cl.getName())) {
+//					System.err.println("Creating eclass?!");
+				//}
+				return getEObject(newSymbol);
+			}
+			
+			public Symbol getSymbol(EObject container, EClass cl) {
+				EObject vme = sub.getRightObject(container);
+				if (vme == null) {
+					vme = parent.getRightObject(container);
+				}
+				Symbol symbol = null;
+				if (vme instanceof VMEObject) {
+					VMEObject vmeo = (VMEObject)vme;
+					symbol = vmeo.getUUID();
+				}
+				Map<EClass,Integer> usedMap = usedSymbols.get(symbol);
+				if (usedMap == null) {
+					usedSymbols.put(symbol, usedMap = new HashMap<>());
+				}
+				Integer curInt = usedMap.getOrDefault(cl,1);
+				usedMap.put(cl, curInt+1);
+				Symbol postfix;
+				if (symbol == null) {
+					postfix = Symbol.buildFrom("post", cl.getName(), curInt);
+				} else {
+					postfix = Symbol.buildFrom("post", symbol, cl.getName(), curInt); 
+				}
+				return Symbol.buildFrom(getMainProvider().getMainSymbol(), prefix,postfix);
+			}
+		};
+		return creator;
+	}
+
+	public default void initModelForEdit() {
+		getInstances();
+		for (EStructuralFeature feat: getEcore().getAllFeatures()) {
+			getFeatureValues(feat);
+		}
+	}
+	
+	/**Loads the resource. Correspondance: Real Object --> Virtual Object*/
+	public default SimpleModelCorrespondance loadResource(Resource xmiResource) {
+		Map<EObject, Symbol> assignedIds = new HashMap<>();
+		VObjectValues instances = getInstances();
+		SimpleModelCorrespondance ret = new SimpleModelCorrespondance();
+		for (EObject eobj: (Iterable<EObject>)()->xmiResource.getAllContents()) {
+			Symbol myId = getMainProvider().newSymbol((eobj==null || eobj.eClass() == null)?null:eobj.eClass().getName());
+			assignedIds.put(eobj, myId);
+			instances.add(myId);
+			instances.setClass(myId, eobj.eClass());
+			ret.putCorrespondence(eobj, getEObject(myId));
+		}
+		for (EObject eobj: xmiResource.getContents()) {
+			Symbol myId = assignedIds.get(eobj);
+			getInstances().makeContainedInRoot(myId);
+		}
+		for (EObject eobj: (Iterable<EObject>)()->xmiResource.getAllContents()) {
+			Symbol myId = assignedIds.get(eobj);
+			for (EReference ref: eobj.eClass().getEAllReferences()) {
+				Collection<EObject> subEobjs = MyEcoreUtil.getAsCollection(eobj, ref);
+				VFeatureValues fv = getFeatureValues(ref);
+				List<Symbol> toAdd = new ArrayList<>();
+				for (EObject subEobj: subEobjs) {
+					Symbol uuid = assignedIds.get(subEobj);
+					toAdd.add(uuid);
+				}
+				List originalObjects = fv.getValueValue(myId);
+				//So wie ich das lade, werden automatisch die Inversen Sachen eingef?gt. Damit ich doppeltes einf?gen vermeide, l?sche ich die Liste
+				//So wie die Liste funktioniert, sollte es sein, dass beim indirekten hinzuf?gen durch die andere Liste die korrekte Reihenfolge wiederhergestellt wird
+				if (originalObjects instanceof NoInverse) {
+					List l2 = (List)((NoInverse)originalObjects).noInverse();
+					l2.addAll(toAdd);
+				} else {
+					throw new RuntimeException("Can only handle noInverse!");
+				}
+			}
+			for (EAttribute attr: eobj.eClass().getEAllAttributes()) {
+				Collection<Object> subEobjs = MyEcoreUtil.getAsCollection(eobj, attr);
+				VFeatureValues fv = getFeatureValues(attr);
+				List originalObjects = fv.getEcoreValue(myId);
+				//Attributes are values, so you can directly insert them
+				originalObjects.addAll(subEobjs);
 			}
 		}
+		return ret;
+	}
+	
+	public default String printModel() {
+		StringBuilder ret = new StringBuilder();
+		printModel(ret);
 		return ret.toString();
 	}
 	
@@ -127,7 +351,7 @@ public interface VModelView {
 		Map<Symbol,VMEObject> eobj = new HashMap<>();
 		for (Symbol uuid: getInstances().existing()) {
 			
-			eobj.put(uuid, (VMEObject)getEObject(uuid));
+			eobj.put(uuid, getEObject(uuid));
 		}
 		List<VMEObject> containerless = new ArrayList<>();
 		for (VMEObject so: eobj.values()) {
@@ -145,7 +369,7 @@ public interface VModelView {
 		while (!next.isEmpty()) {
 			Symbol uuid = next.pop();
 			sorted.add(uuid);
-			VMEObject veobj = (VMEObject) getEObject(uuid);
+			VMEObject veobj = getEObject(uuid);
 			EClass cl = getInstances().getClass(uuid);
 			if (cl == null) {
 				System.err.println("Null "+uuid);
@@ -155,7 +379,7 @@ public interface VModelView {
 				if (!esf.isContainment()) {
 					continue;
 				}
-				List<Symbol> strings = new ArrayList<>((List<Symbol>)(List)getFeatureValues(esf).getValueValue(uuid));
+				List<Symbol> strings = new ArrayList<>(getFeatureValues(esf).getValueValue(uuid));
 				Collections.reverse(strings);
 				for (Symbol s: strings) {
 					if (sortedSet.add(s)) {
@@ -179,8 +403,8 @@ public interface VModelView {
 				toString.append(toAppend);
 			}
 			for (EReference esf: cl.getEAllReferences()) {
-				List<Symbol> strings = (List<Symbol>)(List)getFeatureValues(esf).getValueValue(uuid);
-				List<Object> objects = new ArrayList<Object>();
+				List<Symbol> strings = getFeatureValues(esf).getValueValue(uuid);
+				List<Object> objects = new ArrayList<>();
 				for (Symbol str: strings) {
 					objects.add(eobjNames.get(str));
 				}
@@ -189,59 +413,15 @@ public interface VModelView {
 		}
 	}
 	
-	public default String printModel() {
-		StringBuilder ret = new StringBuilder();
-		printModel(ret);
-		return ret.toString();
-	}
-	
-
-	public default List<EObject> getAllEObjects() {
-		initModelForEdit();
-		//Now everything should be added, time to figure our what to add as root: Everything without container
-		List<EObject> ret = new ArrayList<>();
-		Set<Symbol> retS = new HashSet<>();
-		for (Symbol uuid: getInstances().existing()) {
-			if (retS.add(uuid)) {
-				ret.add(getEObject(uuid));
-			}
-		}
-		return ret;
-	}
-	
-	public default List<EObject> allInstances(EClass cl) {
-		List<EObject> ret = new ArrayList<>();
-		Set<EObject> retS = new HashSet<EObject>(); 
-		for (EObject eobj: getAllEObjects()) {
-			if (eobj != null && eobj.eClass() != null && cl.isSuperTypeOf(eobj.eClass()) && retS.add(eobj)) {
-				ret.add(eobj);
-			}
-		}
-		return ret;
-	}
-	
-	public default List<EObject> exposeContents() {
-		initModelForEdit();
-		//Now everything should be added, time to figure our what to add as root: Everything without container
-		Map<Symbol,EObject> eobj = new HashMap<>();
-		List<EObject> containerless = new ArrayList<EObject>();
-		for (Symbol uuid: getInstances().existing()) {
-			eobj.put(uuid, getEObject(uuid));
-		}
-		for (EObject so: eobj.values()) {
-			//System.out.println("Container of "+so+": "+so.eContainer());
-			if (so.eContainer() == null) {
-				containerless.add(so);
-			}
-		}
-		return containerless;
-	}
+	//Assume that functions are static
+	//If things have changd, you have to reload
+	public void reload();
 	
 	public default List<EObject> saveContents(Creater<EObject, EClass> creater, SimpleModelCorrespondance corr) {
 
 		//Create "real" objects
 		Map<Symbol,EObject> eobj = new HashMap<>();
-		List<EObject> containerless = new ArrayList<EObject>();
+		List<EObject> containerless = new ArrayList<>();
 		
 		for (Symbol uuid: getInstances().existing()) {
 			EClass cl = getInstances().getClass(uuid);
@@ -277,7 +457,7 @@ public interface VModelView {
 			for (EReference ref: cl.getEAllReferences()) {
 				List<?> curValues = getFeatureValues(ref).getEcoreValue(uuid);
 				if (ref.isMany()) {
-					List<EObject> targets = new ArrayList<EObject>();
+					List<EObject> targets = new ArrayList<>();
 					for (Object o: curValues) {
 						if (o instanceof VMEObject) {
 							VMEObject vm = (VMEObject)o;
@@ -350,14 +530,6 @@ public interface VModelView {
 		
 		return containerless;
 	}
-	
-	public static  void noInverseAddAll(EList<EObject> savedValues, List<EObject> targets) {
-		if (savedValues instanceof NoInverse) {
-			((NoInverse<List>)savedValues).noInverse().addAll(targets);
-		} else {
-			savedValues.addAll(targets);
-		}
-	}
 
 	public default SimpleModelCorrespondance saveResource(Resource xmiResource) {
 		MyResource res = MyResource.get(xmiResource);
@@ -366,35 +538,14 @@ public interface VModelView {
 		xmiResource.getContents().addAll(eobj);
 		return ret;
 	}
-	
-	public default List<EObject> getResourceEObjects() {
-		Iterable<Symbol> symbols = getInstances().getRootObjects();
-		List<EObject> ret = new ArrayList<>();
-		for (Symbol sym: symbols) {
-			ret.add(getEObject(sym));
-		}
-		return ret;
-	}
-	
-	//Before you call synchronizeWithResource, then you change the xmiResource with that
-	public default void changeResource(Resource xmiResource, SimpleModelCorrespondance correspondance) {
-		List<EObject> sourceEObjects = getResourceEObjects();
-		//TODO: just to check things
-		//TODO: Own file for the things ... then you don't have this mixture problem
-		correspondance.removeResourceLess();
-		SimpleModelCorrespondance otherCorr = new SimpleModelCorrespondance();
-		//Works here, so the correspondance is wrong
-		SimpleModelEqualizer eq = new SimpleModelEqualizer(sourceEObjects, xmiResource.getContents(),
-				correspondance, otherCorr, 
-				InstanceCreator.DEFAULT);
-		eq.equalize();
-	}
-	
+
+	public void selfClear();
+
 	public default SimpleModelCorrespondance synchronizeWithResource(Resource xmiResource, SimpleModelCorrespondance correspondance) {
 		List<EObject> targetEObjects = getResourceEObjects();
 		List<EObject> oldEObjects = new ArrayList<>(targetEObjects);
-		Map<EObject,Symbol> reuseSymbol = new HashMap<EObject, Symbol>();
-		Map<EObject,VMEObject> oldObj = new HashMap<EObject, VMEObject>();
+		Map<EObject,Symbol> reuseSymbol = new HashMap<>();
+		Map<EObject,VMEObject> oldObj = new HashMap<>();
 		for (EObject eobj: (Iterable<EObject>)()->xmiResource.getAllContents()) {
 			VMEObject oldObject = (VMEObject)correspondance.getLeftObject(eobj);
 			//Jetzt br?uchte ich aber
@@ -440,181 +591,30 @@ public interface VModelView {
 		}
 		return correspondance;
 	}
-	
-	/**Loads the resource. Correspondance: Real Object --> Virtual Object*/
-	public default SimpleModelCorrespondance loadResource(Resource xmiResource) {
-		Map<EObject, Symbol> assignedIds = new HashMap<>();
-		VObjectValues instances = getInstances();
-		SimpleModelCorrespondance ret = new SimpleModelCorrespondance();
-		for (EObject eobj: (Iterable<EObject>)()->xmiResource.getAllContents()) {
-			Symbol myId = getMainProvider().newSymbol((eobj==null || eobj.eClass() == null)?null:eobj.eClass().getName());
-			assignedIds.put(eobj, myId);
-			instances.add(myId);
-			instances.setClass(myId, eobj.eClass());
-			ret.putCorrespondence(eobj, getEObject(myId));
-		}
-		for (EObject eobj: xmiResource.getContents()) {
-			Symbol myId = assignedIds.get(eobj);
-			getInstances().makeContainedInRoot(myId);
-		}
-		for (EObject eobj: (Iterable<EObject>)()->xmiResource.getAllContents()) {
-			Symbol myId = assignedIds.get(eobj);
-			for (EReference ref: eobj.eClass().getEAllReferences()) {
-				Collection<EObject> subEobjs = MyEcoreUtil.getAsCollection(eobj, ref);
-				VFeatureValues fv = getFeatureValues(ref);
-				List<Symbol> toAdd = new ArrayList<>();
-				for (EObject subEobj: subEobjs) {
-					Symbol uuid = assignedIds.get(subEobj);
-					toAdd.add(uuid);
-				}
-				List originalObjects = fv.getValueValue(myId);
-				//So wie ich das lade, werden automatisch die Inversen Sachen eingef?gt. Damit ich doppeltes einf?gen vermeide, l?sche ich die Liste
-				//So wie die Liste funktioniert, sollte es sein, dass beim indirekten hinzuf?gen durch die andere Liste die korrekte Reihenfolge wiederhergestellt wird
-				if (originalObjects instanceof NoInverse) {
-					List l2 = (List)((NoInverse)originalObjects).noInverse();
-					l2.addAll(toAdd);
-				} else {
-					throw new RuntimeException("Can only handle noInverse!");
-				}
-			}
-			for (EAttribute attr: eobj.eClass().getEAllAttributes()) {
-				Collection<Object> subEobjs = MyEcoreUtil.getAsCollection(eobj, attr);
-				VFeatureValues fv = getFeatureValues(attr);
-				List originalObjects = fv.getEcoreValue(myId);
-				//Attributes are values, so you can directly insert them
-				originalObjects.addAll(subEobjs);
+
+	public default String toContentString() {
+		StringBuilder ret = new StringBuilder();
+		for (EObject eobj: getAllEObjects()) {
+			if (eobj.eContainer() != null) {continue;}
+			if (eobj instanceof VMEObject) {
+				VMEObject vme = (VMEObject)eobj;
+				if (ret.length()>0) {ret.append("\n");}
+				ret.append(vme.fullString());
+			} else {
+				System.err.println("Wrong type!");
 			}
 		}
-		return ret;
-	}
-	
-	public static void main(String[] args) throws IOException {
-		//Test ...
-		SymbolRegistry registry = new SymbolRegistryImpl(new SymbolRegistryTypeImpl());
-		Resource ecoreRes = OclExtractor.getEcore("model/router.ecore");
-		Resource xmiRes = OclExtractor.getXMI("model/router.xmi", ecoreRes);
-		ModelProviderType provType = new ModelProviderTypeImpl();
-		ModelProvider prov = new SimpleEcoreModelProviderImpl(provType,"routerXmi", ecoreRes);
-		
-		ModelProvider delta = new SimpleDeltaModelProviderImpl("routerXmiDelta", ecoreRes, prov);
-		registry.addProvider(prov);
-		registry.addProvider(delta);
-		
-		VEcoreFile ecore = new VEcoreFileImpl(ecoreRes);
-//		{
-//			SimpleModelView smv = new SimpleModelView(root, ecore);
-//			smv.loadResource(xmiRes);
-//			
-//			Resource newResource = xmiRes.getResourceSet().createResource(URI.createFileURI("model/router_saved.xmi"));
-//			smv.saveResource(newResource);
-//			newResource.save(new HashMap<>());
-//		}
-		{
-			SimpleModelView smv = new SimpleModelView(prov, ecore);
-			smv.loadResource(xmiRes);
-			
-			Resource newResource = xmiRes.getResourceSet().createResource(URI.createFileURI("model/router_saved.xmi"));
-			
-			SimpleModelView deltaV = new SimpleModelView(delta, ecore);
-			Resource deltaResource = xmiRes.getResourceSet().createResource(URI.createFileURI("model/router_deltasaved.xmi"));
-			List<EObject> exposed = deltaV.exposeContents();
-			for (EObject eobjRoot: exposed) {
-				for (EObject eobj: (Iterable<EObject>)()->eobjRoot.eAllContents()) {
-					EClass cl = eobj.eClass();
-					EStructuralFeature esf = cl.getEStructuralFeature("name");
-					if (esf != null) {
-						eobj.eSet(esf, "Bla"+eobj.eGet(esf));
-					}
-				}
-			}
-			deltaV.saveResource(deltaResource);
-			deltaResource.save(new HashMap<>());
-			
-			smv.saveResource(newResource);
-			newResource.save(new HashMap<>());	
-			
-			
-		}
+		return ret.toString();
 	}
 
-	public void selfClear();
-
-	public default Map<String, Map<String, Map<String, String>>> getContainmentNameMap() {
-		Map<String, Map<String, Map<String, String>>> ret = new HashMap<>();
-//		for (String inst: getInstances()) {
-//			Set<String> names = getNames(inst);
-//			for (String name: names) {
-//				
-//			}
-//		}		
-		return ret;
-	}
-
-	public default InstanceCreator getTransformationCreater(Symbol prefix, ModelCorrespondance parent, ModelCorrespondance sub) {
-		InstanceCreator creator = new InstanceCreator() {
-			
-			Map<Symbol,Map<EClass,Integer>> usedSymbols = new HashMap<>();
-			
-			
-			public Symbol getSymbol(EObject container, EClass cl) {
-				EObject vme = sub.getRightObject(container);
-				if (vme == null) {
-					vme = parent.getRightObject(container);
-				}
-				Symbol symbol = null;
-				if (vme instanceof VMEObject) {
-					VMEObject vmeo = (VMEObject)vme;
-					symbol = vmeo.getUUID();
-				}
-				Map<EClass,Integer> usedMap = usedSymbols.get(symbol);
-				if (usedMap == null) {
-					usedSymbols.put(symbol, usedMap = new HashMap<>());
-				}
-				Integer curInt = usedMap.getOrDefault(cl,1);
-				usedMap.put(cl, curInt+1);
-				Symbol postfix;
-				if (symbol == null) {
-					postfix = Symbol.buildFrom("post", cl.getName(), curInt);
-				} else {
-					postfix = Symbol.buildFrom("post", symbol, cl.getName(), curInt); 
-				}
-				return Symbol.buildFrom(getMainProvider().getMainSymbol(), prefix,postfix);
-			}
-			
-			@Override
-			public EObject createInstance(EObject cont, EClass cl) {
-				ModelProvider prov = getMainProvider();
-				Symbol newSymbol = getSymbol(cont, cl); //Alles was erzeugt wird landed hier TODO: ?ndern, so dass es passt ... wie ist das?
-				VObjectValues val = getInstances();
-				val.add(newSymbol);
-				val.setClass(newSymbol, cl);
-				//System.out.println("Creating "+ cl.getName()+" for id "+newSymbol);
-				//if ("EClass".equals(cl.getName())) {
-//					System.err.println("Creating eclass?!");
-				//}
-				return getEObject(newSymbol);
-			}
-		};
-		return creator;
-	}
-
-	public default EObject createEObject(Symbol newAttribute, EClass parameter) {
-		if (parameter == null) {
-			System.err.println("Wanting to create NULL class "+newAttribute);
-		}
-		getInstances().add(newAttribute);
-		getInstances().setClass(newAttribute, parameter);
-		return getEObject(newAttribute);
-	}
-
-	public default EObject createEObject(EClass parameter) {
-		if (parameter == null) {
-			System.err.println("Wanting to create NULL class!");
-		}
-		Symbol newAttribute = getMainProvider().newSymbol(parameter==null?null:parameter.getName());
-		getInstances().add(newAttribute);
-		getInstances().setClass(newAttribute, parameter);
-		return getEObject(newAttribute);
+	public default List<EObject> wrapObjects(List<Symbol> base) {
+		return new ConvertingListImpl<>(base,
+				(x)->{if (x instanceof VMEObject) {
+						return ((VMEObject) x).getUUID();
+					  } else {
+						throw new RuntimeException("Adding real EObjects to Virtual Resource not yet implemented");
+					  }
+				},(x)->getEObject(x));
 	}
 
 }

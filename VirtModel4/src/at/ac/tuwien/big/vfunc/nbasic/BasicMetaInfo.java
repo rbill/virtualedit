@@ -5,14 +5,22 @@ public class BasicMetaInfo implements MetaInfo {
 	private Reason reason;
 	private ConstraintViolations constraintViolations;
 	
+	public BasicMetaInfo() {
+	}
+	
+
+	public BasicMetaInfo(Reason reason) {
+		this.reason = reason;
+	}
+	
 	@Override
-	public Reason getReason() {
-		return reason;
+	public ConstraintViolations getConstraintViolations() {
+		return this.constraintViolations;
 	}
 
 	@Override
-	public ConstraintViolations getConstraintViolations() {
-		return constraintViolations;
+	public Reason getReason() {
+		return this.reason;
 	}
 
 }
