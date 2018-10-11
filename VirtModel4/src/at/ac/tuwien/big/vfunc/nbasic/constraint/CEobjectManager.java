@@ -47,6 +47,7 @@ import at.ac.tuwien.big.vfunc.nbasic.ecore.EObjectCreator;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.EObjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.ExistingEObjectCreator;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.IdentifierInfo;
+import at.ac.tuwien.big.vfunc.nbasic.ecore.NewEObjectCreator;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.ObjectCreatorCreator;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VirtualResource;
@@ -199,8 +200,10 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 	}
 	
 	public Collection<EObject> getAllContents() {
-		Set<EObject> eobjs = new HashSet<>();
-		this.existingObjects.values().forEach(x->x.values().forEach(y->eobjs.add(y)));
+		Collection<EObject> eobjs= new HashSet<>(emanager.getAllContents());
+		
+		/*Set<EObject> eobjs = new HashSet<>();
+		this.existingObjects.values().forEach(x->x.values().forEach(y->eobjs.add(y)));*/
 		eobjs.removeIf(x->{
 			if (x instanceof AbstractVMEObject) {
 				AbstractVMEObject avo = (AbstractVMEObject)x;
@@ -308,7 +311,11 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 					SampleEObject subret = getOrCreateBasic(oc, objPars);
 					subret.makeInitialized();
 					return subret;
-				}  else {
+				} else if (cr instanceof NewEObjectCreator) {
+					NewEObjectCreator occ = (NewEObjectCreator)cr;
+					
+					return generateBasic(vm.eClass());
+				}   else {
 					System.err.println("Unknown creator: "+cr+"!");
 					return MyEcoreUtil.newInstance(vm);
 				}

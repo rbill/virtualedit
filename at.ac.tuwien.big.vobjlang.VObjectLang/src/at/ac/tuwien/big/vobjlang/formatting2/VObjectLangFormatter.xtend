@@ -3,12 +3,13 @@
  */
 package at.ac.tuwien.big.vobjlang.formatting2
 
-import .VObjectModel
-import .VObjectModel.CompleteFile
-import .VObjectModel.Identifier
-import .VObjectModel.StoredFuncs
-import .VObjectModel.VObjDeltaModel
 import at.ac.tuwien.big.vobjlang.services.VObjectLangGrammarAccess
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CompleteFile
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.EcoreDef
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Function
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.StoredFuncs
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel
 import com.google.inject.Inject
 import org.eclipse.xtext.formatting2.AbstractFormatter2
 import org.eclipse.xtext.formatting2.IFormattableDocument
@@ -21,7 +22,7 @@ class VObjectLangFormatter extends AbstractFormatter2 {
 		// TODO: format HiddenRegions around keywords, attributes, cross references, etc. 
 		completeFile.getDeltamodel.format;
 		completeFile.getXtextlanguage.format;
-		for (VObjectModel.EcoreDef ecoreDef : completeFile.getEcoredef()) {
+		for (EcoreDef ecoreDef : completeFile.getEcoredef()) {
 			ecoreDef.format;
 		}
 		for (Identifier identifier : completeFile.getRootObjects()) {
@@ -31,7 +32,7 @@ class VObjectLangFormatter extends AbstractFormatter2 {
 
 	def dispatch void format(VObjDeltaModel vObjDeltaModel, extension IFormattableDocument document) {
 		// TODO: format HiddenRegions around keywords, attributes, cross references, etc. 
-		for (VObjectModel.Function function : vObjDeltaModel.getFunctions()) {
+		for (Function function : vObjDeltaModel.getFunctions()) {
 			function.format;
 		}
 		for (StoredFuncs storedFuncs : vObjDeltaModel.getStoredfuncs()) {

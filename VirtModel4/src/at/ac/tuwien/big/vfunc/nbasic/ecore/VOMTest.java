@@ -46,6 +46,7 @@ import at.ac.tuwien.big.vfunc.nbasic.constraint.ObjectCreatorGenerator;
 import at.ac.tuwien.big.vfunc.nbasic.xtext.CompleteFileHandler;
 import at.ac.tuwien.big.virtlang.VirtLangStandaloneSetup;
 import at.ac.tuwien.big.virtlang.virtLang.VirtLangFactory;
+import at.ac.tuwien.big.virtlang.virtLang.VirtualModel;
 import at.ac.tuwien.big.vmod.ecore.impl.SimpleVMEObject;
 import at.ac.tuwien.big.vobjlang.VObjectLangStandaloneSetup;
 import at.ac.tuwien.big.xmlintelledit.intelledit.xtext.DynamicValidator;
@@ -83,9 +84,12 @@ public class VOMTest {
 		file.getInputModels().add(rootVFile.getAbsolutePath()+"\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi");
 		file.getVirtModels().add(rootVFile.getAbsolutePath()+"\\Test\\test.virt");
 		File 	citFile = new File(rootVFile.getAbsolutePath()+"\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi");
+		VMEObject school = null; 
 		try {
 			EObjectManager manager = new EObjectManager();
+			manager.addKnown(SchoolPackage.eINSTANCE);
 			manager.addKnown(CitizenPackage.eINSTANCE);
+			manager.knowVirtualDefinition((VirtualModel)ConvertToXmi.getVirtLangResource(new File(rootVFile.getAbsolutePath()+"\\Test\\test.virt")).getContents().get(0));
 			Resource r = ConvertToXmi.getXmiResource(citFile);
 			VMEObject testCit = manager.getFakeVirtual(r.getContents().get(0));
 			Identifier id = VObjectModelFactory.eINSTANCE.createIdentifier();
@@ -96,7 +100,16 @@ public class VOMTest {
 			ir.setS_identifier(testCit.getIdentificator());
 			id.getIdentifierreforcmp().add(ir);
 			id.init();
-			file.getRootObjects().add(id);
+			
+			school = manager.getNewObject(SchoolPackage.eINSTANCE.getSchool());
+			school.eSet(SchoolPackage.eINSTANCE.getSchool_Pupils(), Collections.singleton(manager.getObject(id)));
+			
+			file.getRootObjects().add(school.getIdentificator());
+			VObjDeltaModel deltamodel = file.getDeltamodel();
+			if (deltamodel == null) {
+				file.setDeltamodel(deltamodel = VObjectModelFactory.eINSTANCE.createVObjDeltaModel());
+			}
+			manager.storeDelta(deltamodel);
 			file.setLastModelText("School {	pupils {		Pupil bla {			grades { Grade  { grade 4 course c1  } }		}	}	courses {		Course c1 , Course c2	}");
 			LanguageDef ld = VObjectModelFactory.eINSTANCE.createLanguageDef();
 			ld.setLangStandaloneSetup(SchoolTextStandaloneSetup.class.getCanonicalName());
@@ -127,9 +140,16 @@ public class VOMTest {
 	}
 	
 	public static Identifier containmentId(Identifier id) {
+		try {
 		Identifier ret = EcoreUtil.copy(id);
 		ret.getIdentifierreforcmp().replaceAll(x->containmentAv(x));
+		ret.init();
 		return ret;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Could not copy "+id+": "+e.getMessage());
+			return id;
+		}
 	}
 	
 	public static void doThingsWithVOM(CompleteFile file) {

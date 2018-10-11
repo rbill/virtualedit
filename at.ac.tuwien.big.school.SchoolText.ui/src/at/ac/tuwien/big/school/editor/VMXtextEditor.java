@@ -243,7 +243,7 @@ public class VMXtextEditor extends XtextEditor {
 	
 	Map<Resource,Integer> usedIntegers = new HashMap<>();
 	
-	public SimpleModelCorrespondance xtextToViewCorrespondance;
+	public SimpleModelCorrespondance xtextToViewCorrespondance = new SimpleModelCorrespondance();
 	
 	private void addFilesToResourceSet(ResourceSet rs, IContainer cont, List<Resource> toAdd) {
 		try {
@@ -727,7 +727,7 @@ public class VMXtextEditor extends XtextEditor {
 			final IPath cfilePath = mainpath.addFileExtension("cfile.xmi");
 			File cfile = cfilePath.toFile();
 			CompleteFile cf = VObjectModelFactory.eINSTANCE.createCompleteFile();
-			if (cfile.exists()) {
+			if (false && cfile.exists()) {
 				try {
 					Resource cfileRes = res.getResourceSet().getResource(URI.createFileURI(cfile.getCanonicalPath()), true);
 					cf = (CompleteFile)cfileRes.getContents().get(0);
