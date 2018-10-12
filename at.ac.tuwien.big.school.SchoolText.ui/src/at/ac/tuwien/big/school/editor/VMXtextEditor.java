@@ -135,7 +135,7 @@ public class VMXtextEditor extends XtextEditor {
 		System.out.println("I am used!");
 	}
 	
-	private static MethodHandle getStore;
+	private static MethodHandle getStore; 
 	
 	public static final int MAX_ANNOTATION_COLORS = 10;
 	public static Resource getEcoreRes(Resource my) {
@@ -528,6 +528,7 @@ public class VMXtextEditor extends XtextEditor {
 		}		
 		Resource fake = getFakeXtextResource();
 		fake.getContents().clear();
+		fake.getContents().addAll(EcoreUtil.copyAll(this.completeFile.exposeContents()));
 		System.err.println("get basic model text not implemented!");
 		/*SimpleModelCorrespondance smi = baseModel.saveResource(fake);
 		
@@ -602,7 +603,7 @@ public class VMXtextEditor extends XtextEditor {
 		}		
 		Resource fake = getFakeXtextResource();
 		fake.getContents().clear();
-		System.err.println("Not implemented!");
+		fake.getContents().addAll(this.completeFile.exposeContents());
 		/*SimpleModelCorrespondance smi = completeModel.saveResource(fake);
 		
 		Map<Identifier,EObject> symbolToSaved =new HashMap<>();
@@ -727,7 +728,7 @@ public class VMXtextEditor extends XtextEditor {
 			final IPath cfilePath = mainpath.addFileExtension("cfile.xmi");
 			File cfile = cfilePath.toFile();
 			CompleteFile cf = VObjectModelFactory.eINSTANCE.createCompleteFile();
-			if (false && cfile.exists()) {
+			if (cfile.exists()) {
 				try {
 					Resource cfileRes = res.getResourceSet().getResource(URI.createFileURI(cfile.getCanonicalPath()), true);
 					cf = (CompleteFile)cfileRes.getContents().get(0);
@@ -785,7 +786,7 @@ public class VMXtextEditor extends XtextEditor {
 			t.printStackTrace();
 			System.err.println("Error: "+t.getMessage());
 		}
-		if (!needUpdateXtext[0]) {
+		if (!needUpdateXtext[0]) { 
 			rerunTransformation();
 			updateVirtualModel(getXtextResource());
 		} else {

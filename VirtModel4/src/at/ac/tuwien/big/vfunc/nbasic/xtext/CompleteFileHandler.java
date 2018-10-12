@@ -145,6 +145,11 @@ public class CompleteFileHandler {
 	}
 
 	public void save() {
+		VObjDeltaModel dm = this.cf.getDeltamodel();
+		if (dm == null) {
+			this.cf.setDeltamodel(dm = VObjectModelFactory.eINSTANCE.createVObjDeltaModel());
+		}
+		getCManager().getEObjectManager().storeDelta(dm);
 		Resource res = this.cf.eResource();
 		if (res != null) {
 			try {

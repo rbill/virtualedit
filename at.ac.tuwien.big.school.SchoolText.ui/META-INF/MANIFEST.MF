@@ -8,6 +8,7 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: at.ac.tuwien.big.school.SchoolText,
  at.ac.tuwien.big.school.SchoolText.ide,
  at.ac.tuwien.big.virtlang.examples.school,
+ org.eclipse.emf.ecore,
  org.eclipse.xtext.ui,
  org.eclipse.xtext.ui.shared,
  org.eclipse.xtext.ui.codetemplates.ui,

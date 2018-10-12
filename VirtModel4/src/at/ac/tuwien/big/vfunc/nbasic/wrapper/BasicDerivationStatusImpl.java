@@ -15,4 +15,8 @@ public class BasicDerivationStatusImpl implements BasicDerivationStatus {
 		return this.status;
 	}
 
+	@Override
+	public String toString() {
+		return String.valueOf(this.status);
+	}
 }

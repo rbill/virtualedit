@@ -1,11 +1,11 @@
 School {
 	pupils {
-		Pupil bla {
+		Pupil Testname {
 			grades { Grade  { grade 4 course c1  } } 
 		}
 	}
 	courses {
-		Course c1 , Course c2
-	}
-	
-}
+		Course c1 ,
+		Course c2
+	} }
+

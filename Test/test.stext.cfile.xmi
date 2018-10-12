@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <vobjectmodel:CompleteFile xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:vobjectmodel="http://www.example.org/VObjectModel" lastModelText="School {&#x9;pupils {&#x9;&#x9;Pupil bla {&#x9;&#x9;&#x9;grades { Grade  { grade 4 course c1  } }&#x9;&#x9;}&#x9;}&#x9;courses {&#x9;&#x9;Course c1 , Course c2&#x9;}">
-  <virtModels>E:\patrick\virtualedit\Test\test.virt</virtModels>
-  <inputModels>E:\patrick\virtualedit\at.ac.tuwien.big.virtlang.examples.citizen\model\Citizen.xmi</inputModels>
+  <virtModels>C:\Users\Robert\Documents\eclipseMars\eclipseEcore2ASP\virtualedit\Test\test.virt</virtModels>
+  <inputModels>C:\Users\Robert\Documents\eclipseMars\eclipseEcore2ASP\virtualedit\at.ac.tuwien.big.virtlang.examples.citizen\model\Citizen.xmi</inputModels>
   <deltamodel>
     <functions xsi:type="vobjectmodel:BasicFunction"/>
     <functions xsi:type="vobjectmodel:BasicFunction"/>
@@ -13,12 +13,65 @@
       <values key="ACED00057372003161742E61632E74757769656E2E6269672E766972746D6F642E62617369632E696D706C2E53696D706C6554726565706F7339BC5E9931E2EF880200014C000676616C7565737400104C6A6176612F7574696C2F4C6973743B7870737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A6578700000000077040000000078" identifierValue="//@deltamodel/@storedfuncs.2/@identifier"/>
     </functions>
     <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
     <functions xsi:type="vobjectmodel:BasicFunction">
       <values key="ACED00057372003161742E61632E74757769656E2E6269672E766972746D6F642E62617369632E696D706C2E53696D706C6554726565706F7339BC5E9931E2EF880200014C000676616C7565737400104C6A6176612F7574696C2F4C6973743B7870737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A6578700000000077040000000078" value="ACED0005737200116A6176612E6C616E672E426F6F6C65616ECD207280D59CFAEE0200015A000576616C7565787001"/>
     </functions>
     <functions xsi:type="vobjectmodel:BasicFunction"/>
     <functions xsi:type="vobjectmodel:BasicFunction"/>
     <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction">
+      <values key="ACED00057372003161742E61632E74757769656E2E6269672E766972746D6F642E62617369632E696D706C2E53696D706C6554726565706F7339BC5E9931E2EF880200014C000676616C7565737400104C6A6176612F7574696C2F4C6973743B7870737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A6578700000000077040000000078" value="ACED0005737200116A6176612E6C616E672E426F6F6C65616ECD207280D59CFAEE0200015A000576616C7565787000"/>
+    </functions>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction">
+      <values key="ACED00057372003161742E61632E74757769656E2E6269672E766972746D6F642E62617369632E696D706C2E53696D706C6554726565706F7339BC5E9931E2EF880200014C000676616C7565737400104C6A6176612F7574696C2F4C6973743B7870737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A6578700000000077040000000078" identifierValue="//@deltamodel/@storedfuncs.2/@identifier"/>
+    </functions>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction">
+      <values key="ACED00057372003161742E61632E74757769656E2E6269672E766972746D6F642E62617369632E696D706C2E53696D706C6554726565706F7339BC5E9931E2EF880200014C000676616C7565737400104C6A6176612F7574696C2F4C6973743B7870737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A6578700000000077040000000078" value="ACED0005737200116A6176612E6C616E672E426F6F6C65616ECD207280D59CFAEE0200015A000576616C7565787000"/>
+    </functions>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <functions xsi:type="vobjectmodel:BasicFunction">
+      <values key="ACED00057372003161742E61632E74757769656E2E6269672E766972746D6F642E62617369632E696D706C2E53696D706C6554726565706F7339BC5E9931E2EF880200014C000676616C7565737400104C6A6176612F7574696C2F4C6973743B7870737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A6578700000000077040000000078" identifierValue="//@deltamodel/@storedfuncs.2/@identifier"/>
+    </functions>
+    <functions xsi:type="vobjectmodel:BasicFunction"/>
+    <storedfuncs>
+      <identifier>
+        <identifierreforcmp xsi:type="vobjectmodel:JavaValue" value="ACED000574008D66696C653A2F433A2F55736572732F526F626572742F446F63756D656E74732F65636C697073654D6172732F65636C6970736545636F7265324153502F7669727475616C656469742F61742E61632E74757769656E2E6269672E766972746C616E672E6578616D706C65732E636974697A656E2F6D6F64656C2F436974697A656E2E786D694275726765725F31"/>
+        <creatorid name="eobj"/>
+      </identifier>
+      <featurefunc name="address" classref="Burger" nsref="http://www.example.org/Citizen">
+        <deltastore addMap="//@deltamodel/@functions.27" filterScope="//@deltamodel/@functions.39"/>
+      </featurefunc>
+      <featurefunc name="name" classref="Burger" nsref="http://www.example.org/Citizen">
+        <deltastore addMap="//@deltamodel/@functions.34" filterScope="//@deltamodel/@functions.30"/>
+      </featurefunc>
+      <featurefunc name="svnr" classref="Burger" nsref="http://www.example.org/Citizen">
+        <deltastore addMap="//@deltamodel/@functions.29" filterScope="//@deltamodel/@functions.28"/>
+      </featurefunc>
+    </storedfuncs>
     <storedfuncs>
       <identifier>
         <identifierreforcmp xsi:type="vobjectmodel:JavaValue" value="ACED000574001D687474703A2F2F7777772E6578616D706C652E6F72672F7363686F6F6C"/>
@@ -26,35 +79,26 @@
         <identifierreforcmp xsi:type="vobjectmodel:JavaValue" value="ACED000574000131"/>
         <creatorid name="TempCreate"/>
       </identifier>
+      <featurefunc name="courses" classref="School" nsref="http://www.example.org/school">
+        <deltastore addMap="//@deltamodel/@functions.35" filterScope="//@deltamodel/@functions.36"/>
+      </featurefunc>
       <featurefunc name="pupils" classref="School" nsref="http://www.example.org/school">
-        <deltastore addMap="//@deltamodel/@functions.6" filterScope="//@deltamodel/@functions.8"/>
+        <deltastore addMap="//@deltamodel/@functions.40" filterScope="//@deltamodel/@functions.26"/>
       </featurefunc>
     </storedfuncs>
     <storedfuncs>
       <identifier>
-        <identifierreforcmp xsi:type="vobjectmodel:JavaValue" value="ACED000574006166696C653A2F453A2F7061747269636B2F7669727475616C656469742F61742E61632E74757769656E2E6269672E766972746C616E672E6578616D706C65732E636974697A656E2F6D6F64656C2F436974697A656E2E786D694275726765725F31"/>
-        <creatorid name="eobj"/>
-      </identifier>
-      <featurefunc name="address" classref="Burger" nsref="http://www.example.org/Citizen">
-        <deltastore addMap="//@deltamodel/@functions.11" filterScope="//@deltamodel/@functions.9"/>
-      </featurefunc>
-      <featurefunc name="name" classref="Burger" nsref="http://www.example.org/Citizen">
-        <deltastore addMap="//@deltamodel/@functions.10" filterScope="//@deltamodel/@functions.4"/>
-      </featurefunc>
-      <featurefunc name="svnr" classref="Burger" nsref="http://www.example.org/Citizen">
-        <deltastore addMap="//@deltamodel/@functions.3" filterScope="//@deltamodel/@functions.5"/>
-      </featurefunc>
-    </storedfuncs>
-    <storedfuncs>
-      <identifier>
-        <identifierreforcmp xsi:type="vobjectmodel:IdentifierRef" s_identifier="//@deltamodel/@storedfuncs.1/@identifier"/>
+        <identifierreforcmp xsi:type="vobjectmodel:IdentifierRef" s_identifier="//@deltamodel/@storedfuncs.0/@identifier"/>
         <creatorid name="CitizenPupils"/>
       </identifier>
+      <featurefunc name="grades" classref="Pupil" nsref="http://www.example.org/school">
+        <deltastore addMap="//@deltamodel/@functions.41" filterScope="//@deltamodel/@functions.38"/>
+      </featurefunc>
       <featurefunc name="inclass" classref="Pupil" nsref="http://www.example.org/school">
-        <deltastore addMap="//@deltamodel/@functions.1" filterScope="//@deltamodel/@functions.7"/>
+        <deltastore addMap="//@deltamodel/@functions.33" filterScope="//@deltamodel/@functions.37"/>
       </featurefunc>
       <featurefunc name="name" classref="Pupil" nsref="http://www.example.org/school">
-        <deltastore addMap="//@deltamodel/@functions.0" filterScope="//@deltamodel/@functions.2"/>
+        <deltastore addMap="//@deltamodel/@functions.31" filterScope="//@deltamodel/@functions.32"/>
       </featurefunc>
     </storedfuncs>
   </deltamodel>

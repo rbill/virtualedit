@@ -95,7 +95,7 @@ public class FunctionMultiAttributeHandler<Src,Target,RealTarget> extends BasicC
 			DerivationStatus retAdd = mi.getTotalDerivationStatus();
 			ret.add(new BasicDerivationStatusImpl(retAdd));
 		}
-		return Collections.emptyList();
+		return ret;
 	}
 	
 	@Override
