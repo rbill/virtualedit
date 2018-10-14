@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.DerivationStatus;
+
 public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Target> {
 
 	public static void main(String[] args) {
@@ -60,10 +62,16 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 	
 	public OperationBasedResult(Function<? super List<AllSource>, ? extends Target> function, List<? extends BasicValuedChangeNotifyer<? extends AllSource>> sources, MetaInfo mi, boolean acceptUndefined) {
 		super(mi);
+		
 		this.function = function;
 		this.sources = sources;
 		setSources(sources);
 		this.acceptUndefined = acceptUndefined;
+		Reason r = mi.getReason();
+		if (r instanceof ComposedReason) {
+			ComposedReason cr = (ComposedReason)r;
+			cr.addDefaultDerivation(DerivationStatus.DERIVED);
+		}
 	}
 	
 	
@@ -105,8 +113,9 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 		boolean[] subChanged = new boolean[1];
 		for (BasicValuedChangeNotifyer<? extends AllSource> bvc: this.sources) {
 			if (bvc != null) {
-				BasicValuedChangeNotifyer<? extends AllSource> newCN = bvc.evaluate(replacer, subChanged, BasicValuedChangeNotifyer.class);
-				newSources.add(newCN);
+				/*BasicValuedChangeNotifyer<? extends AllSource> newCN = bvc.evaluate(replacer, subChanged, BasicValuedChangeNotifyer.class);
+				newSources.add(newCN);*/
+				throw new UnsupportedOperationException();
 			} else {
 				newSources.add(null);
 			}
@@ -117,6 +126,7 @@ public class OperationBasedResult<AllSource,Target> extends BasicResultImpl<Targ
 		//TODO: Implement creating new meta info
 		MetaInfo newMetaInfo = getMetaInfo();
 		OperationBasedResult<AllSource,Target> ret = new OperationBasedResult<>(this.function, newSources, newMetaInfo, this.acceptUndefined);
+
 		return ret;
 	}
 

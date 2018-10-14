@@ -7,26 +7,32 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
 import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.ConvertToXmi;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.DeltaVMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.EObjectManager;
+import at.ac.tuwien.big.vfunc.nbasic.ecore.ModelDeltaVMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VOMTest;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VirtualResource;
 import at.ac.tuwien.big.vfunc.nbasic.wrapper.BasicDerivationStatus;
+import at.ac.tuwien.big.virtmod.basic.col.ConvertingList;
+import at.ac.tuwien.big.virtmod.basic.col.impl.ConvertingListImpl;
 import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.ExactDerivationStatus;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CompleteFile;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.EcoreDef;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
+import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 
 public class CompleteFileHandler {
 	
@@ -36,15 +42,16 @@ public class CompleteFileHandler {
 	private CompleteFile cf;
 
 	private CEobjectManager cmanager;
+	private ConvertingList<VMEObject,Identifier> vmConverter = null;
 	
 	public CompleteFileHandler(CompleteFile cf) {
 		this.cf = cf;
 		init();
 	}
 	
-	public List<EObject> exposeContents() {
-		//TODO: Ich glaube ich möchte die cf aktualisieren, wenn sich da was ändert, oder?
-		return this.cmanager.getContents();
+	public List<VMEObject> exposeContents() {
+		//TODO: Ich glaube ich mï¿½chte die cf aktualisieren, wenn sich da was ï¿½ndert, oder?
+		return vmConverter;
 	}
 	
 	public CEobjectManager getCManager() {
@@ -66,6 +73,12 @@ public class CompleteFileHandler {
 	private void init() {
 		CompleteFile file = this.cf;
 		String currentText = file.getCurrentModelText();
+
+		file.eAllContents().forEachRemaining(x->{
+			if (x instanceof Identifier) {
+				((Identifier)x).init();
+			}
+		});
 		VObjDeltaModel deltaModel = file.getDeltamodel();
 		if (file.getDeltamodel() == null) {
 			deltaModel = VObjectModelFactory.eINSTANCE.createVObjDeltaModel();
@@ -128,10 +141,26 @@ public class CompleteFileHandler {
 		this.cmanager = new CEobjectManager(manager);
 		this.cmanager.initWith(vr);
 		
-		for (EObject eobj: this.cmanager.getContents()) {
+		EObjectManager emanager = cmanager.getEObjectManager();
+
+		this.vmConverter = new ConvertingListImpl<VMEObject, Identifier>(file.getRootObjects(), x->{Identifier ret = EcoreUtil.copy(x.getIdentificator()); ret.init(); return ret;}, x->emanager.getObject(x));
+		
+		for (EObject eobj: vmConverter) {
 			System.out.println("Loaded: "+eobj);			
 		}
 		
+	}
+	
+	public void setRoot(List<? extends EObject> rootList) {
+		List<Identifier> vmeObjects = new ArrayList<>();
+		for (EObject eobj: rootList) {
+			if (eobj instanceof VMEObject) {
+				vmeObjects.add(((VMEObject) eobj).getIdentificator()); 
+			} else {
+				System.err.println("Require vmeobjects for root!");
+			}
+		}
+		PatchUtil.applyPatch(cf.getRootObjects(), vmeObjects);
 	}
 	
 	public void load(Resource from) {
@@ -150,6 +179,8 @@ public class CompleteFileHandler {
 			this.cf.setDeltamodel(dm = VObjectModelFactory.eINSTANCE.createVObjDeltaModel());
 		}
 		getCManager().getEObjectManager().storeDelta(dm);
+		Set<Identifier> identifiers = EObjectManager.getNoncomposite(this.cf, Identifier.class);
+		dm.getIdentifiers().addAll(identifiers);
 		Resource res = this.cf.eResource();
 		if (res != null) {
 			try {
@@ -157,6 +188,31 @@ public class CompleteFileHandler {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	/*public void replace(VMEObject replaced, VMEObject replacement) {
+		if (replacement instanceof DeltaVMEObject && replaced instanceof DeltaVMEObject) {
+			DeltaVMEObject dreplacement = (DeltaVMEObject)replacement;
+			DeltaVMEObject dreplaced = (DeltaVMEObject)replaced;
+			dreplacement.copyDeltaStore(dreplaced);
+		}		
+	}*/
+	
+	public void newSub(VMEObject replaced, VMEObject replacement) {
+		if (replacement instanceof DeltaVMEObject && replaced instanceof ModelDeltaVMEObject) {
+			ModelDeltaVMEObject context = (ModelDeltaVMEObject)replaced;
+			DeltaVMEObject newSub = (DeltaVMEObject)replacement;
+			context.setBaseEObject(replacement);
+		}		 else {
+			System.err.println("replaced must be ModelDeltaVMEobject, replacement DeltaVMEObject");
+		}
+	}
+
+	public void partialReset(VMEObject partialReset) {
+		if (partialReset instanceof DeltaVMEObject) {
+			DeltaVMEObject dvo = (DeltaVMEObject)partialReset;
+			dvo.partialReset();
 		}
 	}
 	

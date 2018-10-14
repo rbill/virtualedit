@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.StreamSupport;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -16,6 +19,7 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CreatorId;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.JavaValue;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
+import at.ac.tuwien.big.xtext.util.IteratorUtils;
 import at.ac.tuwien.big.virtmod.ecore.VirtualModel;
 
 
@@ -34,6 +38,10 @@ public class ExistingEObjectCreator implements EObjectCreator {
 	public ExistingEObjectCreator(EObjectManager manager, CreatorId cid) {
 		this.manager = manager;
 		this.cid = cid;
+	}
+	
+	public Iterable<EObject> getAllObjects() {
+		return ()->knownResources.stream().flatMap(x->StreamSupport.stream(Spliterators.spliteratorUnknownSize(x.getAllContents(), 0), false)).iterator();
 	}
 
 	@Override

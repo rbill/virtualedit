@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Citizen:Alle
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:Citizen="http://www.example.org/Citizen"
+    xsi:schemaLocation="http://www.example.org/Citizen Citizen.ecore">
+  <citizens
+      svnr="12345"
+      name="Burger 1"
+      address="Lichnowskygasse"/>
+  <citizens
+      svnr="64534"
+      name="Burger 2"
+      address="Blabla"/>
+</Citizen:Alle>

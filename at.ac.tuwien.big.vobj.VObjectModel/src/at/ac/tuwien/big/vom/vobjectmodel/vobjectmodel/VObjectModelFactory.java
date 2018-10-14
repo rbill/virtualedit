@@ -31,6 +31,15 @@ public interface VObjectModelFactory extends EFactory {
 	Identifier createIdentifier();
 
 	/**
+	 * Returns a new object of class '<em>Identifier Param</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Identifier Param</em>'.
+	 * @generated
+	 */
+	IdentifierParam createIdentifierParam();
+
+	/**
 	 * Returns a new object of class '<em>Identifier Ref Or Cmp</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

@@ -2,6 +2,7 @@ package at.ac.tuwien.big.vfunc.nbasic.ecore;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -9,12 +10,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.Function;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -29,6 +33,7 @@ import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.ocl.pivot.ids.TuplePartId;
 import org.eclipse.ocl.pivot.ids.TupleTypeId;
+import org.eclipse.ocl.pivot.internal.ids.WeakHashMapOfListOfWeakReference2;
 import org.eclipse.ocl.pivot.values.TupleValue;
 import org.eclipse.xtext.resource.XtextResourceSet;
 
@@ -40,6 +45,7 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CompleteFile;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CreatorId;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierCmp;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierRef;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierRefOrCmp;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.JavaValue;
@@ -47,6 +53,7 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.StoredFuncs;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage;
+import at.ac.tuwien.big.xmlintelledit.intelledit.virtmod.datatype.IteratorUtils;
 import at.ac.tuwien.big.vfunc.nbasic.DeltaVMEObjectStore;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.BasicCache.CacheType;
 import at.ac.tuwien.big.vfunc.nbasic.ocl.OclEvaluationList;
@@ -68,18 +75,33 @@ public class EObjectManager {
 
 	private static VObjectModelFactory vfact = VObjectModelFactory.eINSTANCE;
 	private static CreatorId TEMP_CREATION = VObjectModelFactory.eINSTANCE.createCreatorId();
+	
+	public static WeakReference<EObjectManager> INSTANCE;
+	
+	public static EObjectManager SINSTANCE;
+	
+	{
+		if (INSTANCE == null || INSTANCE.get() == null) {
+			INSTANCE = new WeakReference<>(this);
+		}
+		SINSTANCE = this;
+	}
+	
+	public static EObjectManager getInstance() {
+		return (INSTANCE == null || INSTANCE.get()==null)?SINSTANCE:INSTANCE.get();
+	}
 
 	static {
 		TEMP_CREATION.setName("TempCreate");
 	}
 
 	public static Identifier getIdentifier(String str) {
-		String complete = "CompleteFile { rootObjects { " + str + "}}";
+		String complete =  str ;
 		Resource res;
 		try {
 			res = VOMTest.getVirtLangResource(complete, VObjectLangStandaloneSetup.class);
 			if (!res.getContents().isEmpty()) {
-				Identifier ret = ((CompleteFile) res.getContents().get(0)).getRootObjects().get(0);
+				Identifier ret = ((Identifier) res.getContents().get(0));
 				ret.init();
 				return ret;
 			}
@@ -95,6 +117,34 @@ public class EObjectManager {
 		XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
 		Resource ecsslResource = rs.getResource(URI.createFileURI(ecsslFile.getCanonicalPath()), true);
 		return ecsslResource;
+	}
+	
+	
+	//Would have to be updated ...
+	private Map<EClass, List<VMEObject>> cachedAdmissable = new HashMap<>();
+	
+	public List<VMEObject> getAllAdmissible(EClass cl) {
+		boolean[] recheck = new boolean[]{false}; 
+		List<VMEObject> rret = cachedAdmissable.computeIfAbsent(cl, a->{
+		Iterable<EObject> existingObjects = this.eobjReader.getAllObjects();
+		Map<EClass, Set<EObject>> allAdmissible = ObjectCreatorCreator.getExistingObjectMap(existingObjects);
+		if (allAdmissible.isEmpty()) {
+			recheck[0]=true;
+			return null;
+		}
+		List<VMEObject> ret = new ArrayList<VMEObject>();
+		Set<EObjectCreator> had = new HashSet<EObjectCreator>();
+		eobjectCreators.values().forEach(x->x.values().forEach(cr->{
+			if (cr instanceof ObjectCreatorCreator && had.add(cr)) {
+				ObjectCreatorCreator occ = (ObjectCreatorCreator)cr;
+				ret.addAll(occ.getAllAdmissible(allAdmissible));
+			}
+		}));
+		ret.removeIf(x->x == null || x.eClass() == null || (!Objects.equals(x.eClass(),cl) && !cl.isSuperTypeOf(x.eClass())));
+		return ret;
+		});
+		
+		return rret==null?new ArrayList<VMEObject>():rret;
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -311,11 +361,22 @@ public class EObjectManager {
 		return eobjs;
 	}
 
-	private <T> void getAllReferenced(EObject start, Set<T> functions, Class<T> type) {
+	private static <T extends EObject> void getAllReferenced(EObject start, Map<T,Boolean> functions, Class<T> type, Map<EObject,Boolean> subGo) {
+		for (EObject eobj : start.eCrossReferences()) {
+			if (type.isInstance(eobj)) {
+				functions.put((T) eobj, true);
+			} 
+			if (subGo.put(eobj,true) == null) {
+				getAllReferenced(eobj, functions, type, subGo);
+			}
+		}
 		start.eAllContents().forEachRemaining(x -> {
 			for (EObject eobj : x.eCrossReferences()) {
 				if (type.isInstance(eobj)) {
-					functions.add((T) eobj);
+					functions.put((T) eobj, true);
+				} 
+				if (subGo.put(eobj,true) == null) {
+					getAllReferenced(eobj, functions, type, subGo);
 				}
 			}
 		});
@@ -509,12 +570,12 @@ public class EObjectManager {
 		return ret;
 	}
 
-	public VMEObject getNewObject(EClass ecl) {
+	public ModelDeltaVMEObject getNewObject(EClass ecl) {
 		Identifier id = getNewObjId(ecl);
 		VMEObject ret = getObject(id);
 		// TODO: ...
 		// ret.setEClass(ecl);
-		return ret;
+		return (ModelDeltaVMEObject)ret;
 	}
 
 	public Collection<VMEObject> getNewObjects() {
@@ -546,24 +607,24 @@ public class EObjectManager {
 		return ""+getNewObjNumb(cl);
 	}
 
-	public <T extends EObject> Set<T> getNoncomposite(EObject start, Class<T> type) {
-		Set<T> ret = new HashSet<>();
-		getAllReferenced(start, ret, type);
-		Set<T> included = new HashSet<>();
+	public static <T extends EObject> Set<T> getNoncomposite(EObject start, Class<T> type) {
+		IdentityHashMap<T,Boolean> ret = new IdentityHashMap();
+		getAllReferenced(start, ret, type, new IdentityHashMap<>());
+		IdentityHashMap<T,Boolean> included = new IdentityHashMap<>();
 		start.eAllContents().forEachRemaining(x -> {
 			if (type.isInstance(x)) {
-				included.add((T) x);
+				included.put((T) x, true);
 			}
 		});
-		for (T func : ret) {
+		for (T func : ret.keySet()) {
 			func.eAllContents().forEachRemaining(x -> {
 				if (type.isInstance(x)) {
-					included.add((T) x);
+					included.put((T) x, true);
 				}
 			});
 		}
-		ret.removeAll(included);
-		return ret;
+		ret.keySet().removeAll(included.keySet());
+		return ret.keySet();
 	}
 
 	public VMEObject getObject(Identifier id) {
@@ -613,6 +674,19 @@ public class EObjectManager {
 			DeltaVMEObjectStore store = getDeltaStore(id);
 			store.loadFrom(sf);
 		}
+		for (IdentifierParam ip: model.getIdentifierPars()) {
+			Identifier id = ip.getIdentifier();
+			VMEObject eobj = getObject(id);
+			if (eobj instanceof ModelDeltaVMEObject) {
+				ModelDeltaVMEObject mdve = (ModelDeltaVMEObject)eobj;
+				for (Identifier sub: ip.getIdentifierPars()) {
+					VMEObject base = getObject(sub);
+					mdve.addBaseEObject(base);
+				}
+			} else {
+				System.err.println("Wrong model type for "+id+": "+eobj+"!");
+			}
+		}
 	}
 
 	public void storeDelta(VObjDeltaModel model) {
@@ -638,7 +712,23 @@ public class EObjectManager {
 		model.getFunctions().addAll(functions);
 		Set<Identifier> identifiers = getNoncomposite(model, Identifier.class);
 		model.getIdentifiers().addAll(identifiers);
-
+		Set<Identifier> allIdentifiers = new HashSet<Identifier>();
+		model.getIdentifierPars().clear();
+		IteratorUtils.filterType(model.eAllContents(), Identifier.class).forEachRemaining(id->{
+			VMEObject vmeo = getObject(id);
+			if (vmeo instanceof ModelDeltaVMEObject) {
+				ModelDeltaVMEObject mdve = (ModelDeltaVMEObject)vmeo;
+				
+				IdentifierParam ip = VObjectModelFactory.eINSTANCE.createIdentifierParam();
+				ip.setIdentifier(id);
+				EList<Identifier> identifierPars = ip.getIdentifierPars();
+				for (VMEObject vme: mdve.getBaseObjects()) {
+					identifierPars.add(vme.getIdentificator());
+				}
+				model.getIdentifierPars().add(ip);
+			}
+			
+		});
 	}
 	
 

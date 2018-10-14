@@ -248,6 +248,9 @@ public class IdentifierRefImpl extends IdentifierRefOrCmpImpl implements Identif
 	@Override
 	public String toString() {
 		Identifier s_identifier2 = getS_identifier();
+		if (s_identifier2 == null) {
+			return "/*errornull*/";
+		}
 		if (s_identifier2.getName() != null) {
 			return "@"+s_identifier2.getName();
 		} else {

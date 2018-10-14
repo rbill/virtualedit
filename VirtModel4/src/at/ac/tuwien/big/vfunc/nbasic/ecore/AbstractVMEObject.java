@@ -38,7 +38,7 @@ public abstract class AbstractVMEObject  extends MinimalEObjectImpl implements I
 	private int hashCode;
 	protected List<ContainmentThing> containments = new ArrayList<>();
 	private IdentifierInfo identifierInfo;
-	
+		
 	protected Function<EObject, EObject> convertToVirtual = (eobj)->{
 		if (eobj  instanceof VMEObject) {
 			return (VMEObject)eobj;

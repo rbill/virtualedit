@@ -72,6 +72,10 @@ public class VObjectModelAdapterFactory extends AdapterFactoryImpl {
 				return createIdentifierAdapter();
 			}
 			@Override
+			public Adapter caseIdentifierParam(IdentifierParam object) {
+				return createIdentifierParamAdapter();
+			}
+			@Override
 			public Adapter caseIdentifierRefOrCmp(IdentifierRefOrCmp object) {
 				return createIdentifierRefOrCmpAdapter();
 			}
@@ -144,6 +148,10 @@ public class VObjectModelAdapterFactory extends AdapterFactoryImpl {
 				return createEcoreDefAdapter();
 			}
 			@Override
+			public Adapter caseAnyRoot(AnyRoot object) {
+				return createAnyRootAdapter();
+			}
+			@Override
 			public Adapter defaultCase(EObject object) {
 				return createEObjectAdapter();
 			}
@@ -174,6 +182,20 @@ public class VObjectModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIdentifierAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam <em>Identifier Param</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam
+	 * @generated
+	 */
+	public Adapter createIdentifierParamAdapter() {
 		return null;
 	}
 
@@ -426,6 +448,20 @@ public class VObjectModelAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createEcoreDefAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.AnyRoot <em>Any Root</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.AnyRoot
+	 * @generated
+	 */
+	public Adapter createAnyRootAdapter() {
 		return null;
 	}
 

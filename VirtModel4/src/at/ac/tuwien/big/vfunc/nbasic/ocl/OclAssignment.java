@@ -60,6 +60,7 @@ public class OclAssignment extends BasicResultImpl<Object> {
 	
 	@Override
 	public Object calcValue() {
+		try {
 		String variable = getName();
 		String expr = getOclExpression();
 		
@@ -119,6 +120,11 @@ public class OclAssignment extends BasicResultImpl<Object> {
 			cr.initSourceInfos(()->sources);
 		}
 		return ret;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Error: "+e.getMessage());
+			return null;
+		}
 	}
 
 	@Override

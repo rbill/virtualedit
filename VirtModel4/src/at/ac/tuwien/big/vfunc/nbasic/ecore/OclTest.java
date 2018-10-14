@@ -9,6 +9,7 @@ import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
+import Citizen.Alle;
 import Citizen.CitizenPackage;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CreatorId;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
@@ -48,7 +49,7 @@ public class OclTest {
 		Resource r = ConvertToXmi.getXmiResource(citFile);
 		manager.knowResource(r);
 		
-		VMEObject testCit = manager.getFakeVirtual(r.getContents().get(0));
+		VMEObject testCit = manager.getFakeVirtual(((Alle)r.getContents().get(0)).getCitizens().get(0));
 		
 		Identifier id = VObjectModelFactory.eINSTANCE.createIdentifier();
 		CreatorId cid = VObjectModelFactory.eINSTANCE.createCreatorId();

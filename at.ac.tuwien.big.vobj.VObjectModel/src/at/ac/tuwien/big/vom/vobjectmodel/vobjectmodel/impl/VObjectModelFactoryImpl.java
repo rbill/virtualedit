@@ -2,6 +2,7 @@
  */
 package at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl;
 
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.*;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -87,6 +88,7 @@ public class VObjectModelFactoryImpl extends EFactoryImpl implements VObjectMode
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
 			case VObjectModelPackage.IDENTIFIER: return createIdentifier();
+			case VObjectModelPackage.IDENTIFIER_PARAM: return createIdentifierParam();
 			case VObjectModelPackage.IDENTIFIER_REF_OR_CMP: return createIdentifierRefOrCmp();
 			case VObjectModelPackage.IDENTIFIER_REF: return createIdentifierRef();
 			case VObjectModelPackage.IDENTIFIER_CMP: return createIdentifierCmp();
@@ -217,6 +219,16 @@ public class VObjectModelFactoryImpl extends EFactoryImpl implements VObjectMode
 	public Identifier createIdentifier() {
 		IdentifierImpl identifier = new IdentifierImpl();
 		return identifier;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public IdentifierParam createIdentifierParam() {
+		IdentifierParamImpl identifierParam = new IdentifierParamImpl();
+		return identifierParam;
 	}
 
 	/**

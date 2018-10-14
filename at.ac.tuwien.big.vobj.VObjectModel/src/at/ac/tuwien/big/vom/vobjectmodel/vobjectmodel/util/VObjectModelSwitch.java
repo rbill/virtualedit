@@ -69,6 +69,13 @@ public class VObjectModelSwitch<T> extends Switch<T> {
 			case VObjectModelPackage.IDENTIFIER: {
 				Identifier identifier = (Identifier)theEObject;
 				T result = caseIdentifier(identifier);
+				if (result == null) result = caseAnyRoot(identifier);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.IDENTIFIER_PARAM: {
+				IdentifierParam identifierParam = (IdentifierParam)theEObject;
+				T result = caseIdentifierParam(identifierParam);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -172,6 +179,7 @@ public class VObjectModelSwitch<T> extends Switch<T> {
 			case VObjectModelPackage.COMPLETE_FILE: {
 				CompleteFile completeFile = (CompleteFile)theEObject;
 				T result = caseCompleteFile(completeFile);
+				if (result == null) result = caseAnyRoot(completeFile);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -184,6 +192,12 @@ public class VObjectModelSwitch<T> extends Switch<T> {
 			case VObjectModelPackage.ECORE_DEF: {
 				EcoreDef ecoreDef = (EcoreDef)theEObject;
 				T result = caseEcoreDef(ecoreDef);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case VObjectModelPackage.ANY_ROOT: {
+				AnyRoot anyRoot = (AnyRoot)theEObject;
+				T result = caseAnyRoot(anyRoot);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -203,6 +217,21 @@ public class VObjectModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseIdentifier(Identifier object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Identifier Param</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Identifier Param</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseIdentifierParam(IdentifierParam object) {
 		return null;
 	}
 
@@ -473,6 +502,21 @@ public class VObjectModelSwitch<T> extends Switch<T> {
 	 * @generated
 	 */
 	public T caseEcoreDef(EcoreDef object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpreting the object as an instance of '<em>Any Root</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpreting the object as an instance of '<em>Any Root</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public T caseAnyRoot(AnyRoot object) {
 		return null;
 	}
 

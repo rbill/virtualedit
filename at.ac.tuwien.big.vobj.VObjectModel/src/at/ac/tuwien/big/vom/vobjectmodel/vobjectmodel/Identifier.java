@@ -4,8 +4,6 @@ package at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.eclipse.emf.ecore.EObject;
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>Identifier</b></em>'.
@@ -25,7 +23,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface Identifier extends EObject {
+public interface Identifier extends AnyRoot {
 	/**
 	 * Returns the value of the '<em><b>Identifierreforcmp</b></em>' containment reference list.
 	 * The list contents are of type {@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.AnyValue}.

@@ -63,4 +63,5 @@ Require-Bundle: org.apache.httpcomponents.httpcore,
  org.eclipse.xtend;bundle-version="2.2.0",
  xmltext,
  at.ac.tuwien.big.school.SchoolText,
- at.ac.tuwien.big.vobjlang.VObjectLang
+ at.ac.tuwien.big.vobjlang.VObjectLang,
+ org.eclipse.xtext.ui

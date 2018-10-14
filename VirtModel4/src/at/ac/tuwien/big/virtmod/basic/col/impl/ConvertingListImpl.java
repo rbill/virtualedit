@@ -41,8 +41,15 @@ public class ConvertingListImpl<E,F> extends FakeInternalEList<E> implements Con
 		this.toDelegate = Converter.from(toDelegate);
 		this.fromDelegate = Converter.from(fromDelegate);
 		this.delegate = delegate;
-		if (delegate instanceof InternalEList && ((InternalEList) delegate).basicList() != delegate) {			
-			this.basicList = new ConvertingListImpl(((InternalEList) delegate).basicList(), toDelegate, fromDelegate);
+		//TODO: Manchmal darf man nicht, aber muss man manchmal ?
+		//Ist gar nicht so leicht zu erkennen
+		if (delegate instanceof InternalEList && ((InternalEList) delegate).basicList() != delegate) {
+			System.err.println("Check when necessary!");
+			if (false) {
+				this.basicList = new ConvertingListImpl(((InternalEList) delegate).basicList(), toDelegate, fromDelegate);
+			} else {
+				this.basicList = this;
+			}
 		} else {
 			this.basicList = this;
 		}

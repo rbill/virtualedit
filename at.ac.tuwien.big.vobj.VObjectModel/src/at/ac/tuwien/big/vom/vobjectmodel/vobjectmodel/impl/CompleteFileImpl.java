@@ -13,10 +13,9 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
 import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CompleteFile;
@@ -46,7 +45,7 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage;
  *
  * @generated
  */
-public class CompleteFileImpl extends MinimalEObjectImpl.Container implements CompleteFile {
+public class CompleteFileImpl extends AnyRootImpl implements CompleteFile {
 	/**
 	 * The cached value of the '{@link #getVirtModels() <em>Virt Models</em>}' attribute list.
 	 * <!-- begin-user-doc -->
@@ -138,7 +137,7 @@ public class CompleteFileImpl extends MinimalEObjectImpl.Container implements Co
 	protected EList<EcoreDef> ecoredef;
 
 	/**
-	 * The cached value of the '{@link #getRootObjects() <em>Root Objects</em>}' containment reference list.
+	 * The cached value of the '{@link #getRootObjects() <em>Root Objects</em>}' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getRootObjects()
@@ -337,7 +336,7 @@ public class CompleteFileImpl extends MinimalEObjectImpl.Container implements Co
 	 */
 	public EList<Identifier> getRootObjects() {
 		if (rootObjects == null) {
-			rootObjects = new EObjectContainmentEList<Identifier>(Identifier.class, this, VObjectModelPackage.COMPLETE_FILE__ROOT_OBJECTS);
+			rootObjects = new EObjectResolvingEList<Identifier>(Identifier.class, this, VObjectModelPackage.COMPLETE_FILE__ROOT_OBJECTS);
 		}
 		return rootObjects;
 	}
@@ -356,8 +355,6 @@ public class CompleteFileImpl extends MinimalEObjectImpl.Container implements Co
 				return basicSetXtextlanguage(null, msgs);
 			case VObjectModelPackage.COMPLETE_FILE__ECOREDEF:
 				return ((InternalEList<?>)getEcoredef()).basicRemove(otherEnd, msgs);
-			case VObjectModelPackage.COMPLETE_FILE__ROOT_OBJECTS:
-				return ((InternalEList<?>)getRootObjects()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}

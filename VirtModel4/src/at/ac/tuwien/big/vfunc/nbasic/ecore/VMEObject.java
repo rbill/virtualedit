@@ -24,5 +24,11 @@ public interface VMEObject extends Serializable, NotifyableEObject {
 	
 	public EObjectCreator getSourceOrNull();
 
+	public void resetCustom();
+
+	public default void resetCustomPartial() {
+		
+	}
+
 	//public void setEClass(EClass ecl); 
 }

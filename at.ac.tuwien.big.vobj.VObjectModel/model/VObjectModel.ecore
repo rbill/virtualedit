@@ -4,7 +4,7 @@
   <eAnnotations source="http://www.eclipse.org/OCL/Import">
     <details key="ecore" value="http://www.eclipse.org/emf/2002/Ecore"/>
   </eAnnotations>
-  <eClassifiers xsi:type="ecore:EClass" name="Identifier">
+  <eClassifiers xsi:type="ecore:EClass" name="Identifier" eSuperTypes="#//AnyRoot">
     <eOperations name="hashCode" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     <eOperations name="equals" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean">
       <eParameters name="id" eType="#//Identifier"/>
@@ -17,6 +17,12 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="hc" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
         transient="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IdentifierParam">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifier" lowerBound="1"
+        eType="#//Identifier"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifierPars" upperBound="-1"
+        eType="#//Identifier"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="IdentifierRefOrCmp" eSuperTypes="#//AnyValue">
     <eStructuralFeatures xsi:type="ecore:EReference" name="identifier" eType="#//Identifier"
@@ -45,6 +51,8 @@
         eType="#//StoredFuncs" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="identifiers" upperBound="-1"
         eType="#//Identifier" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="identifierPars" upperBound="-1"
+        eType="#//IdentifierParam" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="BasicFunction" eSuperTypes="#//Function">
     <eStructuralFeatures xsi:type="ecore:EReference" name="values" upperBound="-1"
@@ -82,7 +90,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="addMap" eType="#//BasicFunction"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="filterScope" eType="#//BasicFunction"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="CompleteFile">
+  <eClassifiers xsi:type="ecore:EClass" name="CompleteFile" eSuperTypes="#//AnyRoot">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="virtModels" upperBound="-1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="inputModels" upperBound="-1"
@@ -96,7 +104,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="ecoredef" upperBound="-1"
         eType="#//EcoreDef" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="rootObjects" upperBound="-1"
-        eType="#//Identifier" containment="true"/>
+        eType="#//Identifier"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="LanguageDef">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="langStandaloneSetup" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -105,4 +113,5 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="factoryPackage" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="packagePackage" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AnyRoot" abstract="true"/>
 </ecore:EPackage>

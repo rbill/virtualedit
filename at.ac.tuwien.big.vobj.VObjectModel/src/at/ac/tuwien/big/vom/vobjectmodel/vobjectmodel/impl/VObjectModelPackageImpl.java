@@ -2,6 +2,7 @@
  */
 package at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl;
 
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.AnyRoot;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EOperation;
@@ -22,6 +23,7 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.FiniteUnionFunction;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Function;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierCmp;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierRef;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierRefOrCmp;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.JavaValue;
@@ -45,6 +47,13 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 	 * @generated
 	 */
 	private EClass identifierEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass identifierParamEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -171,6 +180,13 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 	 * @generated
 	 */
 	private EClass ecoreDefEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass anyRootEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -303,6 +319,33 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 	 */
 	public EOperation getIdentifier__Init() {
 		return identifierEClass.getEOperations().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getIdentifierParam() {
+		return identifierParamEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getIdentifierParam_Identifier() {
+		return (EReference)identifierParamEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getIdentifierParam_IdentifierPars() {
+		return (EReference)identifierParamEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -456,6 +499,15 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 	 */
 	public EReference getVObjDeltaModel_Identifiers() {
 		return (EReference)vObjDeltaModelEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getVObjDeltaModel_IdentifierPars() {
+		return (EReference)vObjDeltaModelEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -796,6 +848,15 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getAnyRoot() {
+		return anyRootEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public VObjectModelFactory getVObjectModelFactory() {
 		return (VObjectModelFactory)getEFactoryInstance();
 	}
@@ -828,6 +889,10 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 		createEOperation(identifierEClass, IDENTIFIER___EQUALS__IDENTIFIER);
 		createEOperation(identifierEClass, IDENTIFIER___INIT);
 
+		identifierParamEClass = createEClass(IDENTIFIER_PARAM);
+		createEReference(identifierParamEClass, IDENTIFIER_PARAM__IDENTIFIER);
+		createEReference(identifierParamEClass, IDENTIFIER_PARAM__IDENTIFIER_PARS);
+
 		identifierRefOrCmpEClass = createEClass(IDENTIFIER_REF_OR_CMP);
 		createEReference(identifierRefOrCmpEClass, IDENTIFIER_REF_OR_CMP__IDENTIFIER);
 
@@ -851,6 +916,7 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 		createEReference(vObjDeltaModelEClass, VOBJ_DELTA_MODEL__FUNCTIONS);
 		createEReference(vObjDeltaModelEClass, VOBJ_DELTA_MODEL__STOREDFUNCS);
 		createEReference(vObjDeltaModelEClass, VOBJ_DELTA_MODEL__IDENTIFIERS);
+		createEReference(vObjDeltaModelEClass, VOBJ_DELTA_MODEL__IDENTIFIER_PARS);
 
 		basicFunctionEClass = createEClass(BASIC_FUNCTION);
 		createEReference(basicFunctionEClass, BASIC_FUNCTION__VALUES);
@@ -899,6 +965,8 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 		ecoreDefEClass = createEClass(ECORE_DEF);
 		createEAttribute(ecoreDefEClass, ECORE_DEF__FACTORY_PACKAGE);
 		createEAttribute(ecoreDefEClass, ECORE_DEF__PACKAGE_PACKAGE);
+
+		anyRootEClass = createEClass(ANY_ROOT);
 	}
 
 	/**
@@ -929,11 +997,13 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 		// Set bounds for type parameters
 
 		// Add supertypes to classes
+		identifierEClass.getESuperTypes().add(this.getAnyRoot());
 		identifierRefOrCmpEClass.getESuperTypes().add(this.getAnyValue());
 		identifierRefEClass.getESuperTypes().add(this.getIdentifierRefOrCmp());
 		identifierCmpEClass.getESuperTypes().add(this.getIdentifierRefOrCmp());
 		javaValueEClass.getESuperTypes().add(this.getAnyValue());
 		basicFunctionEClass.getESuperTypes().add(this.getFunction());
+		completeFileEClass.getESuperTypes().add(this.getAnyRoot());
 
 		// Initialize classes, features, and operations; add parameters
 		initEClass(identifierEClass, Identifier.class, "Identifier", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -948,6 +1018,10 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 		addEParameter(op, this.getIdentifier(), "id", 0, 1, IS_UNIQUE, IS_ORDERED);
 
 		initEOperation(getIdentifier__Init(), null, "init", 0, 1, IS_UNIQUE, IS_ORDERED);
+
+		initEClass(identifierParamEClass, IdentifierParam.class, "IdentifierParam", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getIdentifierParam_Identifier(), this.getIdentifier(), null, "identifier", null, 1, 1, IdentifierParam.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getIdentifierParam_IdentifierPars(), this.getIdentifier(), null, "identifierPars", null, 0, -1, IdentifierParam.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(identifierRefOrCmpEClass, IdentifierRefOrCmp.class, "IdentifierRefOrCmp", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getIdentifierRefOrCmp_Identifier(), this.getIdentifier(), null, "identifier", null, 0, 1, IdentifierRefOrCmp.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, IS_DERIVED, IS_ORDERED);
@@ -972,6 +1046,7 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 		initEReference(getVObjDeltaModel_Functions(), this.getFunction(), null, "functions", null, 0, -1, VObjDeltaModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getVObjDeltaModel_Storedfuncs(), this.getStoredFuncs(), null, "storedfuncs", null, 0, -1, VObjDeltaModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getVObjDeltaModel_Identifiers(), this.getIdentifier(), null, "identifiers", null, 0, -1, VObjDeltaModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getVObjDeltaModel_IdentifierPars(), this.getIdentifierParam(), null, "identifierPars", null, 0, -1, VObjDeltaModel.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(basicFunctionEClass, BasicFunction.class, "BasicFunction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getBasicFunction_Values(), this.getValuePair(), null, "values", null, 0, -1, BasicFunction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1012,7 +1087,7 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 		initEAttribute(getCompleteFile_CurrentModelText(), ecorePackage.getEString(), "currentModelText", null, 0, 1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getCompleteFile_Xtextlanguage(), this.getLanguageDef(), null, "xtextlanguage", null, 0, 1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getCompleteFile_Ecoredef(), this.getEcoreDef(), null, "ecoredef", null, 0, -1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getCompleteFile_RootObjects(), this.getIdentifier(), null, "rootObjects", null, 0, -1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getCompleteFile_RootObjects(), this.getIdentifier(), null, "rootObjects", null, 0, -1, CompleteFile.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(languageDefEClass, LanguageDef.class, "LanguageDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getLanguageDef_LangStandaloneSetup(), ecorePackage.getEString(), "langStandaloneSetup", null, 0, 1, LanguageDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -1020,6 +1095,8 @@ public class VObjectModelPackageImpl extends EPackageImpl implements VObjectMode
 		initEClass(ecoreDefEClass, EcoreDef.class, "EcoreDef", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getEcoreDef_FactoryPackage(), ecorePackage.getEString(), "factoryPackage", null, 0, 1, EcoreDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getEcoreDef_PackagePackage(), ecorePackage.getEString(), "packagePackage", null, 0, 1, EcoreDef.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(anyRootEClass, AnyRoot.class, "AnyRoot", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		// Create resource
 		createResource(eNS_URI);

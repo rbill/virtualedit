@@ -4,8 +4,6 @@ package at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.eclipse.emf.ecore.EObject;
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>Complete File</b></em>'.
@@ -29,7 +27,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface CompleteFile extends EObject {
+public interface CompleteFile extends AnyRoot {
 	/**
 	 * Returns the value of the '<em><b>Virt Models</b></em>' attribute list.
 	 * The list contents are of type {@link java.lang.String}.
@@ -183,7 +181,7 @@ public interface CompleteFile extends EObject {
 	EList<EcoreDef> getEcoredef();
 
 	/**
-	 * Returns the value of the '<em><b>Root Objects</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Root Objects</b></em>' reference list.
 	 * The list contents are of type {@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier}.
 	 * <!-- begin-user-doc -->
 	 * <p>
@@ -191,9 +189,9 @@ public interface CompleteFile extends EObject {
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Root Objects</em>' containment reference list.
+	 * @return the value of the '<em>Root Objects</em>' reference list.
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage#getCompleteFile_RootObjects()
-	 * @model containment="true"
+	 * @model
 	 * @generated
 	 */
 	EList<Identifier> getRootObjects();

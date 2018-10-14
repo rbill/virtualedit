@@ -214,7 +214,11 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 			}
 			return false;
 		});
-		return eobjs;
+		List<EObject> ret = new ArrayList<EObject>();
+		for (EObject eobj :eobjs) {
+			ret.add(getOrCreateFull(eobj));
+		}
+		return ret;
 	}
 	
 	private Class<? extends SampleEObject> getCompiledClass(EClass cl) {

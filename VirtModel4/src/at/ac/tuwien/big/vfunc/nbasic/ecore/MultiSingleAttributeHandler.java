@@ -14,6 +14,7 @@ import at.ac.tuwien.big.vfunc.basic.ChangeListenable;
 import at.ac.tuwien.big.vfunc.nbasic.AbstractFunc;
 import at.ac.tuwien.big.vfunc.nbasic.BasicChangeNotifyerWithLocalImpl;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
+import at.ac.tuwien.big.vfunc.nbasic.MetaInfo;
 import at.ac.tuwien.big.vfunc.nbasic.QueryResult;
 import at.ac.tuwien.big.vfunc.nbasic.wrapper.BasicDerivationStatus;
 import at.ac.tuwien.big.vmod.registry.ResourceSetInfo.ExactDerivationStatus;
@@ -97,6 +98,11 @@ public class MultiSingleAttributeHandler<T> implements SingleAttributeHandler<T>
 	@Override
 	public void unset() {
 		this.multiHandler.unset();
+	}
+
+	@Override
+	public MetaInfo getMetaInfo() {
+		return this.multiHandler.getMetaInfo();
 	}
 
 }

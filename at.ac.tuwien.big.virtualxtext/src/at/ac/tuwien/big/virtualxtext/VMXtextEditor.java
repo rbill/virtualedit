@@ -659,10 +659,10 @@ public class VMXtextEditor extends XtextEditor {
 		}		
 		Resource fake = getFakeXtextResource();
 		fake.getContents().clear();
-		SimpleModelCorrespondance smi = baseModel.saveResource(fake);
+		SimpleModelCorrespondance<EObject,EObject> smi = baseModel.saveResource(fake);
 		
 		Map<Symbol,EObject> symbolToSaved =new HashMap<>();
-		for (Entry<EObject,EObject> entry: smi.getEntriesL2R()) {
+		for (Entry<? extends EObject, ? extends EObject> entry: smi.getEntriesL2R()) {
 			VMEObject vme = (VMEObject)entry.getKey();
 			symbolToSaved.put(vme.getUUID(), entry.getValue());
 		}
@@ -684,10 +684,10 @@ public class VMXtextEditor extends XtextEditor {
 		}		
 		Resource fake = getFakeXtextResource();
 		fake.getContents().clear();
-		SimpleModelCorrespondance smi = completeModel.saveResource(fake);
+		SimpleModelCorrespondance<EObject,EObject> smi = completeModel.saveResource(fake);
 		
 		Map<Symbol,EObject> symbolToSaved =new HashMap<>();
-		for (Entry<EObject,EObject> entry: smi.getEntriesL2R()) {
+		for (Entry<? extends EObject, ? extends EObject> entry: smi.getEntriesL2R()) {
 			VMEObject vme = (VMEObject)entry.getKey();
 			symbolToSaved.put(vme.getUUID(), entry.getValue());
 		}
@@ -736,7 +736,7 @@ public class VMXtextEditor extends XtextEditor {
 		updateModelProvs();
 		try {
 		System.out.println("Basic model text: "+getBasicModelText());
-		SimpleModelCorrespondance newlyCreated = new SimpleModelCorrespondance();
+		SimpleModelCorrespondance<EObject,EObject> newlyCreated = new SimpleModelCorrespondance<>();
 		SimpleModelCorrespondance nullcorr = new SimpleModelCorrespondance();
 		ParentChildModelCorrespondance original = new ParentChildModelCorrespondance(nullcorr, xtextToViewCorrespondance);
 		ModelCorrespondance inverse = original.inverse();
@@ -771,7 +771,7 @@ public class VMXtextEditor extends XtextEditor {
 			SimpleModelEqualizer reverseEqualizer = new SimpleModelEqualizer(
 					myResourceList, state.getContents(), 
 					inverse, newlyCreated, myEcoreCreater);
-			for (Entry<EObject,EObject> entry: newlyCreated.getEntriesR2L()) {
+			for (Entry<? extends EObject, ? extends EObject> entry: newlyCreated.getEntriesR2L()) {
 				xtextToViewCorrespondance.putCorrespondence(entry.getKey(), entry.getValue());
 			}
 			

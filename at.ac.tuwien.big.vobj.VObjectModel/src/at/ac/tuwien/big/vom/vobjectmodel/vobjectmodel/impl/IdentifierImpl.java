@@ -17,8 +17,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
@@ -47,7 +45,7 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage;
  *
  * @generated
  */
-public class IdentifierImpl extends MinimalEObjectImpl.Container implements Identifier {
+public class IdentifierImpl extends AnyRootImpl implements Identifier {
 	/**
 	 * The cached value of the '{@link #getIdentifierreforcmp() <em>Identifierreforcmp</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
@@ -87,6 +85,8 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 * @ordered
 	 */
 	protected CreatorId creatorid;
+	
+	private java.util.List<Exception> creator = new java.util.ArrayList<>();
 
 	/**
 	 * The default value of the '{@link #getHc() <em>Hc</em>}' attribute.
@@ -265,7 +265,9 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 					throw new UnsupportedOperationException("Don't know roc type "+ av);
 				}
 				if (first == null || second == null) {
-					if (first != second) {return false;}
+					if (first != second) {
+						return false;
+					}
 				} else {
 					if (!first.equals(second)) {
 						return false;
@@ -409,12 +411,25 @@ public class IdentifierImpl extends MinimalEObjectImpl.Container implements Iden
 	 */
 	@Override
 	public void init() {
+		this.identifierreforcmp.forEach(x->{
+			if (x instanceof IdentifierCmp) {
+				IdentifierCmp ic = (IdentifierCmp)x;
+				Identifier sub = ic.getS_identifier();
+				if (sub != null) {
+					sub.init();
+				}
+			}
+		});
 		if (this.creatorid != null) {
 			this.hc = Objects.hash(this.creatorid.getNamespace(),this.creatorid.getName(),this.identifierreforcmp);
 		} else {
 			this.hc = Objects.hash(this.identifierreforcmp);
 		}
-		
+		if (this.hc == 0) {
+			System.out.println("Premature init!");
+		}
+		this.creator.add(new Exception());
+		this.creator.get(this.creator.size()-1).getStackTrace();
 	}
 
 	/**

@@ -128,6 +128,7 @@ public class FunctionListWrapper<Func extends AbstractFunc<Src, Trg, ?>, Src,Trg
 		Src rightSrc = getSrcOrNull(index+1);
 		Src newSrc = newSrcCalculator.apply(leftSrc, rightSrc);
 		Util.unsupportedIfNot(this.valueSetter).consume(this.func, newSrc, value);
+//		this.list.add(index,new BasicEntry<Src,Trg>(newSrc, this.func.evaluate(newSrc)));
 	}
 	
 	private void addSource(Src src) {

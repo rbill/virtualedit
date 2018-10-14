@@ -6,6 +6,7 @@ package at.ac.tuwien.big.school.ui
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
 import at.ac.tuwien.big.school.editor.VMXtextEditor
 import org.eclipse.xtext.ui.editor.XtextEditor
+import at.ac.tuwien.big.school.ui.quickfix.SchoolTextQuickfixProvider
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
@@ -17,4 +18,10 @@ class SchoolTextUiModule extends AbstractSchoolTextUiModule {
 	 def Class<? extends XtextEditor> bindXtextEditor() {
   		return VMXtextEditor;
 	 }  
+	 
+	 
+	override Class<? extends org.eclipse.xtext.ui.editor.quickfix.IssueResolutionProvider> bindIssueResolutionProvider() {
+		return  SchoolTextQuickfixProvider;
+	}
+	
 }

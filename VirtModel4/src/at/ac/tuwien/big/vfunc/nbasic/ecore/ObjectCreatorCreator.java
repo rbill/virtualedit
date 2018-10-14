@@ -112,7 +112,7 @@ public class ObjectCreatorCreator implements EObjectCreator {
 		return targetObject;
 	}
 	
-	public Collection<VMEObject> getAllAdmissible(Iterable<EObject> existingObjects) {
+	public static Map<EClass, Set<EObject>> getExistingObjectMap(Iterable<EObject> existingObjects) {
 		Map<EClass, Set<EObject>> existingObjectMap = new HashMap<>();
 		for (EObject eobj: existingObjects) {
 			existingObjectMap.computeIfAbsent(eobj.eClass(), x->new HashSet<>()).add(eobj);
@@ -120,6 +120,11 @@ public class ObjectCreatorCreator implements EObjectCreator {
 				existingObjectMap.computeIfAbsent(sc, x->new HashSet<>()).add(eobj);
 			});
 		}
+		return existingObjectMap;
+	}
+	
+	public Collection<VMEObject> getAllAdmissible(Iterable<EObject> existingObjects) {
+		Map<EClass, Set<EObject>> existingObjectMap = getExistingObjectMap(existingObjects);
 		return getAllAdmissible(existingObjectMap);
 	}
 	

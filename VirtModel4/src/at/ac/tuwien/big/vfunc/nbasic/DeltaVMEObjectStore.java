@@ -2,8 +2,10 @@ package at.ac.tuwien.big.vfunc.nbasic;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.event.TreeSelectionEvent;
@@ -17,6 +19,7 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.StoredFuncs;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.ValuePair;
+import at.ac.tuwien.big.util.SetUtils;
 import at.ac.tuwien.big.vfunc.basic.FixedFinitScope;
 import at.ac.tuwien.big.vfunc.basic.Scope;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.AttributeHandler;
@@ -97,6 +100,31 @@ public class DeltaVMEObjectStore {
 
 		public BasicMapFunc<Treepos, T> getValueFunc() {
 			return this.valueFunc;
+		}
+		
+		public String toString() {
+			Set everything = new HashSet<>();
+			SetUtils.addIfIterable(everything, scopeFunc.getScope());
+			SetUtils.addIfIterable(everything, valueFunc.getScope());
+			StringBuilder ret = new StringBuilder();
+			boolean first = true;
+			for (Object otp: everything) {
+				if (!(otp instanceof Treepos)) {continue;}
+				Treepos tp = (Treepos)otp;
+				if (first) {first=false;} else {ret.append(",");}
+				Boolean scope = scopeFunc.apply(tp);
+				ret.append(tp);
+				if (scope != null) {
+					if (scope) {
+						ret.append(":="+valueFunc.apply(tp));
+					} else {
+						ret.append(" deleted");
+					}
+				} else {
+					ret.append(" ="+valueFunc.apply(tp));
+				}
+			}
+			return ret.toString();
 		}
 
 	}
@@ -238,6 +266,14 @@ public class DeltaVMEObjectStore {
 			this.storedDeltas.put(bff, ff.getDeltastore());
 		}
 	}
+	
+	public String toString() {
+		StringBuilder ret = new StringBuilder();
+		storedDeltas.forEach((k,v)->{
+			ret.append(k+" = "+v+"\n");
+		});
+		return ret.toString();
+	}
 
 	public void storeIn(BasicMapFunc from, BasicFunction to) {
 		Scope scope = from.getScope();
@@ -255,5 +291,6 @@ public class DeltaVMEObjectStore {
 			System.err.println("Cannot do it ...");
 		}
 	}
+
 
 }

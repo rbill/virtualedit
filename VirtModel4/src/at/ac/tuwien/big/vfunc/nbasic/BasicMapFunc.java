@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import at.ac.tuwien.big.vfunc.basic.FixedFinitScope;
@@ -105,4 +106,26 @@ public class BasicMapFunc<Src, Target> extends AbstractFunc<Src, Target, QueryRe
 		}
 	}
 
+	public String toString() {
+		StringBuilder ret = new StringBuilder();
+		boolean[] first = new boolean[]{true};
+		resultMap.forEach((k,v)->{
+			if (first[0]) {first[0]=false;} else {ret.append(", ");}
+			ret.append(k+"="+v.value());
+		});
+		return ret.toString();
+	}
+
+	public void clear() {
+		for (Entry<Src,BasicResult<Target>> entr: resultMap.entrySet()) {
+			putBasic(entr.getKey(), null);
+		}
+	}
+
+	/**Should only be used by closely related functions*/
+	@Deprecated
+	
+	public Map<Src, BasicResult<Target>> getStoredMap() {
+		return resultMap;
+	}
 }

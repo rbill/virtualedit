@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel#getFunctions <em>Functions</em>}</li>
  *   <li>{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel#getStoredfuncs <em>Storedfuncs</em>}</li>
  *   <li>{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel#getIdentifiers <em>Identifiers</em>}</li>
+ *   <li>{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel#getIdentifierPars <em>Identifier Pars</em>}</li>
  * </ul>
  *
  * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage#getVObjDeltaModel()
@@ -72,5 +73,21 @@ public interface VObjDeltaModel extends EObject {
 	 * @generated
 	 */
 	EList<Identifier> getIdentifiers();
+
+	/**
+	 * Returns the value of the '<em><b>Identifier Pars</b></em>' containment reference list.
+	 * The list contents are of type {@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Identifier Pars</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Identifier Pars</em>' containment reference list.
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage#getVObjDeltaModel_IdentifierPars()
+	 * @model containment="true"
+	 * @generated
+	 */
+	EList<IdentifierParam> getIdentifierPars();
 
 } // VObjDeltaModel

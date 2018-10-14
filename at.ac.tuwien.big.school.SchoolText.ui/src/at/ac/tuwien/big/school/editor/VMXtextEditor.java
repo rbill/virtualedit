@@ -1,6 +1,7 @@
 package at.ac.tuwien.big.school.editor;
 
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -43,6 +46,7 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.AbstractDocument;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IEventConsumer;
@@ -50,10 +54,17 @@ import org.eclipse.jface.text.ITextStore;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationAccess;
+import org.eclipse.jface.text.source.IAnnotationAccessExtension;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.jface.text.source.IAnnotationModelExtension2;
+import org.eclipse.jface.text.source.ImageUtilities;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -62,6 +73,7 @@ import org.eclipse.ui.texteditor.DefaultMarkerAnnotationAccess;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.eclipse.ui.texteditor.SimpleMarkerAnnotation;
+import org.eclipse.xtext.builder.builderState.EObjectDescription;
 import org.eclipse.xtext.nodemodel.ICompositeNode;
 import org.eclipse.xtext.nodemodel.ILeafNode;
 import org.eclipse.xtext.nodemodel.INode;
@@ -73,11 +85,16 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.serializer.ISerializer;
 import org.eclipse.xtext.ui.editor.XtextEditor;
 import org.eclipse.xtext.ui.editor.model.IXtextDocument;
+import org.eclipse.xtext.ui.editor.validation.XtextAnnotation;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.eclipse.xtext.validation.IConcreteSyntaxValidator.InvalidConcreteSyntaxException;
+import org.omg.CORBA.IdentifierHelper;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.io.Files;
 
+import at.ac.tuwien.big.vfunc.nbasic.DeltaVMEObjectStore;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.EObjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VOMTest;
@@ -91,6 +108,9 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CompleteFile;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage;
+import at.ac.tuwien.big.xmlintelledit.intelledit.proposal.ProposalList;
+import at.ac.tuwien.big.xmlintelledit.intelledit.xtext.DynamicValidator;
+import at.ac.tuwien.big.xmlintelledit.intelledit.xtext.ExpressionQuickfixInfo;
 /*import at.ac.tuwien.big.vmod.ModelResource;
 import at.ac.tuwien.big.vmod.ecore.NoInverse;
 import at.ac.tuwien.big.vmod.ecore.VFeatureValues;
@@ -118,8 +138,7 @@ import at.ac.tuwien.big.xtext.util.IteratorUtils;
 import at.ac.tuwien.big.xtext.util.ui.AnnotationTree;
 
 public class VMXtextEditor extends XtextEditor {
-	
-	
+
 	public static final String ANNOTATION_TYPE_TARGET = "GENERATED_MODEL_ANNOTATION_TARGET";
 	public static final String ANNOTATION_TYPE_GENERATED = "GENERATED_MODEL_ANNOTATION_GENERATED";
 	public static final String ANNOTATION_TYPE_FULLGENERATED = "GENERATED_MODEL_ANNOTATION_FULLGENERATED";
@@ -130,35 +149,36 @@ public class VMXtextEditor extends XtextEditor {
 	public static final String MARKER_TYPE_NONGENERATED = "simplejava.isgenerated.nongenerated";
 
 	private static Object watchObject;
-	
+
 	static {
 		System.out.println("I am used!");
 	}
-	
-	private static MethodHandle getStore; 
-	
+
+	private static MethodHandle getStore;
+
 	public static final int MAX_ANNOTATION_COLORS = 10;
+
 	public static Resource getEcoreRes(Resource my) {
-		//TODO: W???re es nicht viel gescheiter, die ECore-Resource irgendwo statisch zu hinterlegen?
+		// TODO: W???re es nicht viel gescheiter, die ECore-Resource irgendwo
+		// statisch zu hinterlegen?
 		Resource ecoreRes = null;
-		/*for (Resource subres: my.getResourceSet().getResources()) {
-			List<EObject> contents = subres.getContents();
-			if (!contents.isEmpty() && contents.iterator().next() instanceof EPackage) {
-				//It's an ecore!
-				System.out.println("Found ecore!");
-				ecoreRes = subres;
-			}
-		}*/
+		/*
+		 * for (Resource subres: my.getResourceSet().getResources()) {
+		 * List<EObject> contents = subres.getContents(); if
+		 * (!contents.isEmpty() && contents.iterator().next() instanceof
+		 * EPackage) { //It's an ecore! System.out.println("Found ecore!");
+		 * ecoreRes = subres; } }
+		 */
 		if (ecoreRes == null) {
 			List<EObject> contents = my.getContents();
 			if (!contents.isEmpty()) {
 				ecoreRes = contents.iterator().next().eClass().eResource();
 				System.out.println("Found ecore with checking file ...");
 			}
-		} 
+		}
 		return ecoreRes;
 	}
-	
+
 	public static ITextStore getStore(AbstractDocument doc) {
 		if (getStore == null) {
 			Method m;
@@ -166,136 +186,134 @@ public class VMXtextEditor extends XtextEditor {
 				m = AbstractDocument.class.getDeclaredMethod("getStore");
 				m.setAccessible(true);
 				getStore = MethodHandles.lookup().unreflect(m);
-				
+
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			} 
+			}
 		}
 		try {
-			return (ITextStore)getStore.invoke(doc);
+			return (ITextStore) getStore.invoke(doc);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
-	private static URI nrm(java.net.URI from)  {
-		return nrm (URI.createURI(from.toString()));
+
+	private static URI nrm(java.net.URI from) {
+		return nrm(URI.createURI(from.toString()));
 	}
-	
-	private static URI nrm(URI from)  {
+
+	private static URI nrm(URI from) {
 		return URIConverter.INSTANCE.normalize(from);
 	}
-	
+
 	public static URI switchFile(URI fromFile, String newFile) {
 		String str = fromFile.toString();
 		int lastInd = str.lastIndexOf('/');
 		if (lastInd >= 0) {
-			return URIConverter.INSTANCE.normalize(URI.createURI(str.substring(0,lastInd+1)+newFile)); 			
+			return URIConverter.INSTANCE.normalize(URI.createURI(str.substring(0, lastInd + 1) + newFile));
 		}
 		return null;
-				
+
 	}
-	
-	/*private ModelProvider completeModelProv;
-	private ModelProvider viewModelProv;
-	private ModelProvider baseModelProv;
-	private VModelView completeModel;
-	private VModelView viewModel;
-	private VModelView baseModel;
-	private ViewState resourceViewState;
-	private VEcoreFile ecoreFile;*/
+
+	/*
+	 * private ModelProvider completeModelProv; private ModelProvider
+	 * viewModelProv; private ModelProvider baseModelProv; private VModelView
+	 * completeModel; private VModelView viewModel; private VModelView
+	 * baseModel; private ViewState resourceViewState; private VEcoreFile
+	 * ecoreFile;
+	 */
 	private String basicModelText;
 	private String fullModelText;
 	private long lastAspectChange = -1;
-	
-	
-	//CompleteFile must be loaded ...
+
+	// CompleteFile must be loaded ...
 	private CompleteFileHandler completeFile;
-	
-	
-	
-	/*private ResourceSetInfo curInfo;
-	
-	private ResourceInfo curResourceInfo;*/
-	
-	
-	private List<EObject> myResourceList = new ArrayList<>();
-	
+
+	/*
+	 * private ResourceSetInfo curInfo;
+	 * 
+	 * private ResourceInfo curResourceInfo;
+	 */
+
+	private List<VMEObject> myResourceList = new ArrayList<>();
+
 	private boolean inInit = false;
-	
-	/*IXtextModelListener listener = new IXtextModelListener() {
-		
-		@Override
-		public void modelChanged(XtextResource resource) {
-			refreshMarkers();
-		}
-	};*/
-	
+
+	/*
+	 * IXtextModelListener listener = new IXtextModelListener() {
+	 * 
+	 * @Override public void modelChanged(XtextResource resource) {
+	 * refreshMarkers(); } };
+	 */
+
 	private boolean ignore = false;
-	
+
 	private IXtextDocument lastDoc = null;
-	
+
 	private List<Annotation> toRemove = new ArrayList<>();
-	
+
 	Resource fake;
-	
-	Map<Resource,Integer> usedIntegers = new HashMap<>();
-	
-	public SimpleModelCorrespondance xtextToViewCorrespondance = new SimpleModelCorrespondance();
-	
+
+	Map<Resource, Integer> usedIntegers = new HashMap<>();
+
+	public SimpleModelCorrespondance<EObject, VMEObject> xtextToViewCorrespondance = new SimpleModelCorrespondance<>();
+
 	private void addFilesToResourceSet(ResourceSet rs, IContainer cont, List<Resource> toAdd) {
 		try {
-			for (IResource res: cont.members()) {
+			for (IResource res : cont.members()) {
 				if (!res.isAccessible() || res.isHidden()) {
 					continue;
 				}
 				if (res instanceof IProject) {
-					IProject proj = (IProject)res;
+					IProject proj = (IProject) res;
 					if (!proj.isOpen()) {
 						continue;
 					}
-					
+
 				}
 				if (res instanceof IContainer) {
-					addFilesToResourceSet(rs,(IContainer)res,toAdd);
-				} else if (res instanceof IFile){
-					IFile ifile = (IFile)res;
+					addFilesToResourceSet(rs, (IContainer) res, toAdd);
+				} else if (res instanceof IFile) {
+					IFile ifile = (IFile) res;
 					long mod = ifile.getModificationStamp();
 					this.lastAspectChange = Math.max(mod, this.lastAspectChange);
 					String fn = ifile.getName();
-					/*if (fn.startsWith("simple") && fn.endsWith(".xmi")) {
-						//take it
-						toAdd.add(rs.getResource(nrm(ifile.getLocationURI()),true));
-					}*/
+					/*
+					 * if (fn.startsWith("simple") && fn.endsWith(".xmi")) {
+					 * //take it
+					 * toAdd.add(rs.getResource(nrm(ifile.getLocationURI()),true
+					 * )); }
+					 */
 					if (fn.endsWith(".vaspect")) {
-						toAdd.add(rs.getResource(nrm(ifile.getLocationURI()),true));
+						toAdd.add(rs.getResource(nrm(ifile.getLocationURI()), true));
 					}
 					if (fn.endsWith(".henshin")) {
-						toAdd.add(rs.getResource(nrm(ifile.getLocationURI()),true));
+						toAdd.add(rs.getResource(nrm(ifile.getLocationURI()), true));
 					}
-					
+
 				} else {
-					System.err.println("Unknown resource "+res);
+					System.err.println("Unknown resource " + res);
 				}
 			}
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public void bla() {
 		super.getDocumentProvider();
 	}
-	
+
 	public SimpleModelCorrespondance buildCorrespondanceFromXtext(SimpleModelCorrespondance ret, Resource state) {
-		//Get positions of elements
+		// Get positions of elements
 		AnnotationTree<MarkerAnnotation> fakeTree = new AnnotationTree<>(null, null, 0, Integer.MAX_VALUE);
-		Map<MarkerAnnotation,Integer> annotationSize = getAnnotationSizeUpdateRemove();
+		Map<MarkerAnnotation, Integer> annotationSize = getAnnotationSizeUpdateRemove();
 		IAnnotationModel annotationmodel = getSourceViewer().getAnnotationModel();
-		
+
 		List<MarkerAnnotation> annotationList = new ArrayList<>();
 		annotationList.addAll(annotationSize.keySet());
 		Collections.sort(annotationList, new Comparator<Annotation>() {
@@ -306,42 +324,47 @@ public class VMXtextEditor extends XtextEditor {
 			}
 		});
 
-		for (MarkerAnnotation an: annotationList) {
+		for (MarkerAnnotation an : annotationList) {
 			Position pos = annotationmodel.getPosition(an);
-			fakeTree.tryAdd(an, pos.getOffset(), pos.getOffset()+pos.getLength());
+			fakeTree.tryAdd(an, pos.getOffset(), pos.getOffset() + pos.getLength());
 		}
-	
-		//Map<String,Map<String,Map<String,String>>> containmentMap = changeBaseModel.getContainmentNameMap();
-		//Type, Container, Name, Object
-		
-		for (EObject eobj: (Iterable<EObject>)()->state.getAllContents()) {
+
+		// Map<String,Map<String,Map<String,String>>> containmentMap =
+		// changeBaseModel.getContainmentNameMap();
+		// Type, Container, Name, Object
+
+		for (EObject eobj : (Iterable<EObject>) () -> state.getAllContents()) {
 			ICompositeNode node = NodeModelUtils.findActualNodeFor(eobj);
 			if (node == null) {
-				System.err.println("No node found for "+eobj+"!");
+				System.err.println("No node found for " + eobj + "!");
 				continue;
 			}
 			int start = node.getTotalOffset();
 			int end = node.getTotalEndOffset();
 			start = node.getOffset();
 			end = node.getEndOffset();
-			//mit etwas gl???ck ist das mit dem offset nichts komplett anderes sondern noch immer
-			//in der datei und damit nur etwas kleiner und hat eine h???here Wahrscheinlichkeit, eine passende Annotation zu erhalten
-			
-			//Suche: kleinste Annotation, die das vollst???ndig enth???lt
+			// mit etwas gl???ck ist das mit dem offset nichts komplett anderes
+			// sondern noch immer
+			// in der datei und damit nur etwas kleiner und hat eine h???here
+			// Wahrscheinlichkeit, eine passende Annotation zu erhalten
+
+			// Suche: kleinste Annotation, die das vollst???ndig enth???lt
 			List<MarkerAnnotation> candidates = fakeTree.getMostSpecificAnnotations(start, end);
 			List<Identifier> uuids = new ArrayList<>();
-			for (MarkerAnnotation annot: candidates) {
+			for (MarkerAnnotation annot : candidates) {
 				Identifier uuid = getReferencedUUID(annot);
 				if (uuid != null) {
+					uuid = replacementMap.getOrDefault(uuid, uuid);
 					uuids.add(uuid);
+					uuid = replacementMap.getOrDefault(uuid, uuid);
 				} else {
-					System.err.println("Strange Marker Annotation: "+annot);
+					System.err.println("Strange Marker Annotation: " + annot);
 					IMarker marker = annot.getMarker();
 					Map<String, Object> attrs;
 					try {
 						attrs = marker.getAttributes();
-						System.out.println("Attributes: "+attrs);
-						System.out.println("UUID: "+attrs.get("uuid"));
+						System.out.println("Attributes: " + attrs);
+						System.out.println("UUID: " + attrs.get("uuid"));
 					} catch (CoreException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -349,73 +372,71 @@ public class VMXtextEditor extends XtextEditor {
 				}
 			}
 			if (uuids.isEmpty()) {
-				//No match, that's fine ... - the element has been newly inserted
-				System.out.println("NO match for "+eobj+"!");
+				// No match, that's fine ... - the element has been newly
+				// inserted
+				System.out.println("NO match for " + eobj + "!");
 			} else {
-				//You need to pick the correct one, i.e. the most deeply nested one
+				// You need to pick the correct one, i.e. the most deeply nested
+				// one
 				Identifier pickedStr = pickDeepest(uuids);
 				if (pickedStr != null) {
 					EObject pickedView = getEManager().getObject(pickedStr);
-					//Check if this is not at the same time a match of a contained object
+					// Check if this is not at the same time a match of a
+					// contained object
 					EObject curComp = eobj.eContainer();
-					//Da muss man nicht irgendwie zwischenspeichern, weil der Iterator zuerst parent, dann child traversiert
+					// Da muss man nicht irgendwie zwischenspeichern, weil der
+					// Iterator zuerst parent, dann child traversiert
 					while (curComp != null) {
-						if (Objects.equals(ret.getRightObject(curComp),pickedView)) {
+						if (Objects.equals(ret.getRightObject(curComp), pickedView)) {
 							pickedView = null;
-							System.out.println("NO real match for "+eobj+"!");									
+							System.out.println("NO real match for " + eobj + "!");
 							break;
 						}
 						curComp = curComp.eContainer();
 					}
 					if (pickedView != null) {
 						ret.putCorrespondence(eobj, pickedView);
-						System.out.println("Associate: "+Arrays.toString(uuids.toArray())+" --> "+pickedView+ " for "+eobj);
+						System.out.println("Associate: " + Arrays.toString(uuids.toArray()) + " --> " + pickedView
+								+ " for " + eobj);
 					}
 				} else {
-					System.err.println("Could not pick deepest for "+uuids);
+					System.err.println("Could not pick deepest for " + uuids);
 					pickDeepest(uuids);
 				}
-			} 
+			}
 		}
+		ret.getEntriesL2R().forEach(e -> {
+			Entry en = (Entry) e;
+			EObject src = (EObject) en.getKey();
+			allStored.put(src.eResource().getURIFragment(src), (VMEObject) en.getValue());
+		});
 		return ret;
 	}
-	
 
 	@Override
-	protected IAnnotationAccess createAnnotationAccess() {
-		
-			return new DefaultMarkerAnnotationAccess() {
-				
-				{
-					
-				}
-			};
-		
-	}
-	
-	@Override
-    public void createPartControl(Composite parent) {
+	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-        getSourceViewer().setEventConsumer(new IEventConsumer() {
-			
+		getSourceViewer().setEventConsumer(new IEventConsumer() {
+
 			@Override
 			public void processEvent(VerifyEvent event) {
 				boolean onlywhite = true;
 				if (event.text.trim().isEmpty()) {
-					//Only whitespaces inserted
+					// Only whitespaces inserted
 				} else {
 					onlywhite = false;
 				}
 				try {
-					String curText = getDocument().get(event.start, event.end-event.start);
+					String curText = getDocument().get(event.start, event.end - event.start);
 					if (!curText.trim().isEmpty()) {
 						onlywhite = false;
 					}
 					boolean subWhite = false;
-					if (event.start > 0 && Character.isWhitespace(getDocument().getChar(event.start-1))) {
+					if (event.start > 0 && Character.isWhitespace(getDocument().getChar(event.start - 1))) {
 						subWhite = true;
 					}
-					if (event.end < getDocument().getLength() && Character.isWhitespace(getDocument().getChar(event.end))) {
+					if (event.end < getDocument().getLength()
+							&& Character.isWhitespace(getDocument().getChar(event.end))) {
 						subWhite = true;
 					}
 					if (!subWhite) {
@@ -425,28 +446,30 @@ public class VMXtextEditor extends XtextEditor {
 					e.printStackTrace();
 					System.err.println(e.getMessage());
 				}
-				if (onlywhite) { //Insertion and deletion of Whitespace always possible
-					//TODO: Also support between tokens ...
+				if (onlywhite) { // Insertion and deletion of Whitespace always
+									// possible
+					// TODO: Also support between tokens ...
 					return;
 				}
 				IAnnotationModel model = getSourceViewer().getAnnotationModel();
 				if (model instanceof IAnnotationModelExtension) {
-					IAnnotationModelExtension mext = (IAnnotationModelExtension)model;
+					IAnnotationModelExtension mext = (IAnnotationModelExtension) model;
 				}
 				if (model instanceof IAnnotationModelExtension2) {
-					IAnnotationModelExtension2 mext = (IAnnotationModelExtension2)model;
-					Iterator anIt = mext.getAnnotationIterator(event.start, event.end-event.start, true, true);
+					IAnnotationModelExtension2 mext = (IAnnotationModelExtension2) model;
+					Iterator anIt = mext.getAnnotationIterator(event.start, event.end - event.start, true, true);
 					while (anIt.hasNext()) {
 						Object o = anIt.next();
 						if (o instanceof Annotation) {
-							if (ANNOTATION_TYPE_GENERATED.equals(((Annotation)o).getType()) || ANNOTATION_TYPE_FULLGENERATED.equals(((Annotation)o).getType())) {
+							if (ANNOTATION_TYPE_GENERATED.equals(((Annotation) o).getType())
+									|| ANNOTATION_TYPE_FULLGENERATED.equals(((Annotation) o).getType())) {
 								event.doit = false;
 								return;
 							}
 						}
 					}
 				}
-				
+
 			}
 		});
 	}
@@ -455,7 +478,7 @@ public class VMXtextEditor extends XtextEditor {
 	public void doSave(IProgressMonitor monitor) {
 		try {
 			refreshMarkers();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -484,31 +507,34 @@ public class VMXtextEditor extends XtextEditor {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
-	
+
 	@Override
 	public void doSaveAs() {
 		super.doSaveAs();
-	}	
-	
-	public Map<MarkerAnnotation,Integer> getAnnotationSizeUpdateRemove() {
+	}
+
+	public Map<MarkerAnnotation, Integer> getAnnotationSizeUpdateRemove() {
 		IAnnotationModel annotationmodel = getSourceViewer().getAnnotationModel();
-		Map<MarkerAnnotation,Integer> annotationSize = new HashMap<>();
+		Map<MarkerAnnotation, Integer> annotationSize = new HashMap<>();
 		this.toRemove = new ArrayList<>();
-		
+
 		{
 			Iterator<?> it = annotationmodel.getAnnotationIterator();
-			//Sortiere zuerst nach Gr??????e
+			// Sortiere zuerst nach Gr??????e
 			while (it.hasNext()) {
-				Object o  = it.next();
-				if (o instanceof MarkerAnnotation ) {
+				Object o = it.next();
+				if (o instanceof MarkerAnnotation) {
 
-					MarkerAnnotation ann = (MarkerAnnotation)o;
+					MarkerAnnotation ann = (MarkerAnnotation) o;
 					String type = ann.getType();
-					if (type == null) {continue;}
-					if (type.startsWith(ANNOTATION_TYPE_GENERATED) || type.startsWith(ANNOTATION_TYPE_FULLGENERATED) ||  
-							type.startsWith(ANNOTATION_TYPE_NONGENERATED) || type.startsWith(ANNOTATION_TYPE_TARGET)) {
+					if (type == null) {
+						continue;
+					}
+					if (type.startsWith(ANNOTATION_TYPE_GENERATED) || type.startsWith(ANNOTATION_TYPE_FULLGENERATED)
+							|| type.startsWith(ANNOTATION_TYPE_NONGENERATED)
+							|| type.startsWith(ANNOTATION_TYPE_TARGET)) {
 						this.toRemove.add(ann);
 					}
 					if (!ANNOTATION_TYPE_TARGET.equals(type)) {
@@ -521,23 +547,24 @@ public class VMXtextEditor extends XtextEditor {
 		}
 		return annotationSize;
 	}
-	
+
 	public String getBasicModelText() {
 		if (this.ignore) {
 			return "";
-		}		
+		}
 		Resource fake = getFakeXtextResource();
 		fake.getContents().clear();
 		fake.getContents().addAll(EcoreUtil.copyAll(this.completeFile.exposeContents()));
 		System.err.println("get basic model text not implemented!");
-		/*SimpleModelCorrespondance smi = baseModel.saveResource(fake);
-		
-		Map<Symbol,EObject> symbolToSaved =new HashMap<>();
-		for (Entry<EObject,EObject> entry: smi.getEntriesL2R()) {
-			VMEObject vme = (VMEObject)entry.getKey();
-			symbolToSaved.put(vme.getUUID(), entry.getValue());
-		}*/
-		//TODO: Add Annotations ...
+		/*
+		 * SimpleModelCorrespondance smi = baseModel.saveResource(fake);
+		 * 
+		 * Map<Symbol,EObject> symbolToSaved =new HashMap<>(); for
+		 * (Entry<EObject,EObject> entry: smi.getEntriesL2R()) { VMEObject vme =
+		 * (VMEObject)entry.getKey(); symbolToSaved.put(vme.getUUID(),
+		 * entry.getValue()); }
+		 */
+		// TODO: Add Annotations ...
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
 			fake.save(bos, Collections.emptyMap());
@@ -545,7 +572,7 @@ public class VMXtextEditor extends XtextEditor {
 			e.printStackTrace();
 		}
 		this.basicModelText = bos.toString();
-		System.out.println("Converted result string: "+this.basicModelText);
+		System.out.println("Converted result string: " + this.basicModelText);
 		return this.basicModelText;
 	}
 
@@ -555,13 +582,12 @@ public class VMXtextEditor extends XtextEditor {
 		if (vmeo != null) {
 			EObject econt = vmeo.eContainer();
 			if (econt instanceof VMEObject) {
-				return ((VMEObject)econt).getIdentificator();
+				return ((VMEObject) econt).getIdentificator();
 			}
 		}
 		return null;
 	}
-	
-	
+
 	private String getContent(XtextResource state) {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
@@ -571,7 +597,7 @@ public class VMXtextEditor extends XtextEditor {
 		}
 		return new String(bos.toByteArray());
 	}
-	
+
 	@Override
 	public IXtextDocument getDocument() {
 		IXtextDocument doc = super.getDocument();
@@ -579,39 +605,41 @@ public class VMXtextEditor extends XtextEditor {
 			initModel(doc);
 			this.lastDoc = super.getDocument();
 		}
-		/*if (doc != null) {
-			doc.addModelListener(listener);
-		}*/
+		/*
+		 * if (doc != null) { doc.addModelListener(listener); }
+		 */
 		return doc;
 	}
-	
+
 	private EObjectManager getEManager() {
 		return this.completeFile.getEManager();
 	}
-	
+
 	public Resource getFakeXtextResource() {
 		if (this.fake == null) {
 			String thisExtension = getResource().getFileExtension();
-			this.fake = getXtextResource().getResourceSet().createResource(URI.createURI("test://tempresource/temp."+thisExtension));
+			this.fake = getXtextResource().getResourceSet()
+					.createResource(URI.createURI("test://tempresource/temp." + thisExtension));
 		}
 		return this.fake;
 	}
-	
+
 	public String getFullModelText() {
 		if (this.ignore) {
 			return "";
-		}		
+		}
 		Resource fake = getFakeXtextResource();
 		fake.getContents().clear();
-		fake.getContents().addAll(this.completeFile.exposeContents());
-		/*SimpleModelCorrespondance smi = completeModel.saveResource(fake);
-		
-		Map<Identifier,EObject> symbolToSaved =new HashMap<>();
-		for (Entry<EObject,EObject> entry: smi.getEntriesL2R()) {
-			VMEObject vme = (VMEObject)entry.getKey();
-			symbolToSaved.put(vme.getIdentificator(), entry.getValue());
-		}*/
-		//TODO: Add Annotations ...
+		fake.getContents().addAll(EcoreUtil.copyAll(this.completeFile.exposeContents()));
+		/*
+		 * SimpleModelCorrespondance smi = completeModel.saveResource(fake);
+		 * 
+		 * Map<Identifier,EObject> symbolToSaved =new HashMap<>(); for
+		 * (Entry<EObject,EObject> entry: smi.getEntriesL2R()) { VMEObject vme =
+		 * (VMEObject)entry.getKey(); symbolToSaved.put(vme.getIdentificator(),
+		 * entry.getValue()); }
+		 */
+		// TODO: Add Annotations ...
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try {
 			fake.save(bos, Collections.emptyMap());
@@ -619,18 +647,18 @@ public class VMXtextEditor extends XtextEditor {
 			e.printStackTrace();
 		}
 		this.fullModelText = bos.toString();
-		System.out.println("Converted result string: "+this.fullModelText);
+		System.out.println("Converted result string: " + this.fullModelText);
 		return this.fullModelText;
 	}
-	
+
 	private Identifier getIdentifierFromString(String str) {
 		return getEManager().getIdentifier(str);
 	}
-	
+
 	public int getImageIndex(Resource aspectResource) {
 		return getInteger(aspectResource);
 	}
-	
+
 	private int getInteger(Resource myRes) {
 		if (myRes == null) {
 			return -1;
@@ -639,8 +667,8 @@ public class VMXtextEditor extends XtextEditor {
 		if (ret != null) {
 			return ret;
 		}
-		boolean[] usedIntegersB = new boolean[MAX_ANNOTATION_COLORS]; 
-		for (Integer val: this.usedIntegers.values()) {
+		boolean[] usedIntegersB = new boolean[MAX_ANNOTATION_COLORS];
+		for (Integer val : this.usedIntegers.values()) {
 			if (val != null && val >= 0 && val < usedIntegersB.length) {
 				usedIntegersB[val] = true;
 			}
@@ -654,7 +682,7 @@ public class VMXtextEditor extends XtextEditor {
 		this.usedIntegers.put(myRes, -1);
 		return -1;
 	}
-	
+
 	public Identifier getReferencedUUID(MarkerAnnotation annotation) {
 		Object ret;
 		try {
@@ -663,9 +691,9 @@ public class VMXtextEditor extends XtextEditor {
 				return null;
 			}
 			if (ret instanceof Identifier) {
-				return (Identifier)ret;
+				return (Identifier) ret;
 			} else {
-				return getIdentifierFromString(String.valueOf(ret)); 
+				return getIdentifierFromString(String.valueOf(ret));
 			}
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
@@ -674,28 +702,30 @@ public class VMXtextEditor extends XtextEditor {
 		}
 	}
 	/*
-	public ResourceSetInfo getResourceInfo() {
-		return this.curInfo;
-	}*/
-	
+	 * public ResourceSetInfo getResourceInfo() { return this.curInfo; }
+	 */
+
 	public IXtextDocument getSuperDocument() {
 		return super.getDocument();
 	}
-	
+
 	public XtextResource getXtextResource() {
 		IXtextDocument doc = super.getDocument();
-		return doc.readOnly((x)->x);
+		return doc.readOnly((x) -> x);
 	}
-	
-	public void initModel(IXtextDocument doc) { 
-		if (this.inInit) {return;}
+
+	public void initModel(IXtextDocument doc) {
+		if (this.inInit) {
+			return;
+		}
 		this.inInit = true;
 		boolean[] needUpdateXtext = new boolean[1];
 
 		IPath mainpath = getResource().getRawLocation();
 		final IPath path = mainpath.addFileExtension("basic");
 		File basicFile = path.toFile();
-		if (basicFile.exists()  && (basicFile.lastModified() == 0 || this.lastAspectChange < basicFile.lastModified())) {
+		if (false && basicFile.exists()
+				&& (basicFile.lastModified() == 0 || this.lastAspectChange < basicFile.lastModified())) {
 			try {
 				doc.set(Files.toString(basicFile, Charset.forName("UTF-8")));
 			} catch (IOException e) {
@@ -704,89 +734,95 @@ public class VMXtextEditor extends XtextEditor {
 			basicFile.delete();
 		}
 		try {
-		
-		boolean wantModel = doc.readOnly((res)->{
-			//DeltaManager manager = SimpleDeltaManager.createDefaultManager();
-			Resource ecoreRes = getEcoreRes(res);
-	
-			if (ecoreRes == null) {
-				System.err.println("Did not find any ecore ... exiting");
-				return false;
-			}
-			ResourceSet rs = res.getResourceSet();
-			//Add resources ...
-			IContainer cont;
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			IWorkspaceRoot root = workspace.getRoot();
-			List<Resource> toAdd = new ArrayList<>();
-			addFilesToResourceSet(rs,root,toAdd);
-			
-			EObjectManager man = new EObjectManager();
-			man.addKnown(VObjectModelPackage.eINSTANCE);
-			
-			
-			final IPath cfilePath = mainpath.addFileExtension("cfile.xmi");
-			File cfile = cfilePath.toFile();
-			CompleteFile cf = VObjectModelFactory.eINSTANCE.createCompleteFile();
-			if (cfile.exists()) {
-				try {
-					Resource cfileRes = res.getResourceSet().getResource(URI.createFileURI(cfile.getCanonicalPath()), true);
-					cf = (CompleteFile)cfileRes.getContents().get(0);
-				} catch (Exception e) {
-					System.err.println("Could not load "+cfile.getCanonicalPath()+": "+e.getMessage());
-					
-				}
-			} else {
-				Resource cfileRes = res.getResourceSet().createResource(URI.createFileURI(cfile.getCanonicalPath()));
-				cfileRes.getContents().add(cf);
-				//TODO: ...
-				VOMTest.buildVOMFile(cf);
-			}
-			this.completeFile = new CompleteFileHandler(cf);
-			
-			/*
-			ecoreFile = new VEcoreFileImpl(ecoreRes);
-			this.curInfo = ResourceSetInfo.getResourceSetInfo(rs, ecoreRes);
-			this.curResourceInfo = this.curInfo.getResourceInfo(res);
-			if (!this.curInfo.getBaseModels().contains(res)) {
-				return false;
-			}
-			
-			if (basicFile.exists() && (basicFile.lastModified() == 0 || this.lastAspectChange < basicFile.lastModified())) {
-				Resource fake = getFakeXtextResource();
-				fake.load(new FileInputStream(basicFile), Collections.emptyMap());
-				this.curResourceInfo.resetBasicContent(fake);
-				fake.getContents().clear();
-				needUpdateXtext[0] = false;
-				//you can't use it, have to rely on desparate assoc!
-				this.xtextToViewCorrespondance = new SimpleModelCorrespondance();
-			} else {
-				this.xtextToViewCorrespondance = this.curResourceInfo.getBaseCorresponcance();
-				needUpdateXtext[0] = true;
-			}
-			try {
-				Resource asXmi = rs.createResource(URI.createURI(res.getURI().toString()+".xmi"));
-				asXmi.getContents().addAll(EcoreUtil.copyAll(res.getContents()));
-				//asXmi.save(Collections.emptyMap());
-			} catch (Exception e) {
-				
-			}
 
-			baseModelProv = this.curInfo.getBaseProvider(res);
-			baseModel = baseModelProv.simpleModelView(ecoreFile);*/
-			
-			return true;
-		});
-		if (!wantModel) {
-			//It is intentional that isInit remains false to make getDocument not call initModel again!
-			this.ignore = true;
-			return;
-		}
+			boolean wantModel = doc.readOnly((res) -> {
+				// DeltaManager manager =
+				// SimpleDeltaManager.createDefaultManager();
+				Resource ecoreRes = getEcoreRes(res);
+
+				if (ecoreRes == null) {
+					System.err.println("Did not find any ecore ... exiting");
+					return false;
+				}
+				ResourceSet rs = res.getResourceSet();
+				// Add resources ...
+				IContainer cont;
+				IWorkspace workspace = ResourcesPlugin.getWorkspace();
+				IWorkspaceRoot root = workspace.getRoot();
+				List<Resource> toAdd = new ArrayList<>();
+				addFilesToResourceSet(rs, root, toAdd);
+
+				EObjectManager man = new EObjectManager();
+				man.addKnown(VObjectModelPackage.eINSTANCE);
+
+				final IPath cfilePath = mainpath.addFileExtension("cfile.xmi");
+				File cfile = cfilePath.toFile();
+				CompleteFile cf = VObjectModelFactory.eINSTANCE.createCompleteFile();
+				if (cfile.exists()) {
+					try {
+						Resource cfileRes = res.getResourceSet()
+								.getResource(URI.createFileURI(cfile.getCanonicalPath()), true);
+						cf = (CompleteFile) cfileRes.getContents().get(0);
+					} catch (Exception e) {
+						System.err.println("Could not load " + cfile.getCanonicalPath() + ": " + e.getMessage());
+
+					}
+				} else {
+					Resource cfileRes = res.getResourceSet()
+							.createResource(URI.createFileURI(cfile.getCanonicalPath()));
+					cfileRes.getContents().add(cf);
+					// TODO: ...
+					VOMTest.buildVOMFile(cf);
+				}
+				this.completeFile = new CompleteFileHandler(cf);
+				this.myResourceList = this.completeFile.exposeContents();
+
+				/*
+				 * ecoreFile = new VEcoreFileImpl(ecoreRes); this.curInfo =
+				 * ResourceSetInfo.getResourceSetInfo(rs, ecoreRes);
+				 * this.curResourceInfo = this.curInfo.getResourceInfo(res); if
+				 * (!this.curInfo.getBaseModels().contains(res)) { return false;
+				 * }
+				 * 
+				 * if (basicFile.exists() && (basicFile.lastModified() == 0 ||
+				 * this.lastAspectChange < basicFile.lastModified())) { Resource
+				 * fake = getFakeXtextResource(); fake.load(new
+				 * FileInputStream(basicFile), Collections.emptyMap());
+				 * this.curResourceInfo.resetBasicContent(fake);
+				 * fake.getContents().clear(); needUpdateXtext[0] = false; //you
+				 * can't use it, have to rely on desparate assoc!
+				 * this.xtextToViewCorrespondance = new
+				 * SimpleModelCorrespondance(); } else {
+				 * this.xtextToViewCorrespondance =
+				 * this.curResourceInfo.getBaseCorresponcance();
+				 * needUpdateXtext[0] = true; } try { Resource asXmi =
+				 * rs.createResource(URI.createURI(res.getURI().toString()+
+				 * ".xmi"));
+				 * asXmi.getContents().addAll(EcoreUtil.copyAll(res.getContents(
+				 * ))); //asXmi.save(Collections.emptyMap()); } catch (Exception
+				 * e) {
+				 * 
+				 * }
+				 * 
+				 * baseModelProv = this.curInfo.getBaseProvider(res); baseModel
+				 * = baseModelProv.simpleModelView(ecoreFile);
+				 */
+
+				return true;
+			});
+			if (!wantModel) {
+				// It is intentional that isInit remains false to make
+				// getDocument not call initModel again!
+				this.ignore = true;
+				return;
+			}
 		} catch (Throwable t) {
 			t.printStackTrace();
-			System.err.println("Error: "+t.getMessage());
+			System.err.println("Error: " + t.getMessage());
 		}
-		if (!needUpdateXtext[0]) { 
+		//
+		needUpdateXtext[0] = true;
+		if (!needUpdateXtext[0]) {
 			rerunTransformation();
 			updateVirtualModel(getXtextResource());
 		} else {
@@ -794,7 +830,9 @@ public class VMXtextEditor extends XtextEditor {
 		}
 		rerunTransformation();
 		updateXtext(getDocument());
+		refreshMarkers();
 		this.inInit = false;
+
 	}
 
 	public Identifier pickDeepest(List<Identifier> str) {
@@ -804,10 +842,10 @@ public class VMXtextEditor extends XtextEditor {
 		}
 		return null;
 	}
-	
+
 	public Identifier pickDeepestUuid(List<Identifier> uuids) {
 		Set<Identifier> possible = new HashSet<>(uuids);
-		for (Identifier sub: uuids) {
+		for (Identifier sub : uuids) {
 			possible.remove(getContainingIdentifier(sub));
 		}
 		if (!possible.isEmpty()) {
@@ -815,7 +853,7 @@ public class VMXtextEditor extends XtextEditor {
 		}
 		return null;
 	}
-	
+
 	public void recalculateFile(boolean reruntrafo) {
 		if (this.inInit) {
 			return;
@@ -824,7 +862,7 @@ public class VMXtextEditor extends XtextEditor {
 		IXtextDocument doc = getDocument();
 		if (reruntrafo) {
 			updateModelProvs();
-			doc.readOnly((state)->{ 
+			doc.readOnly((state) -> {
 				updateVirtualModel(state);
 				return null;
 			});
@@ -833,383 +871,666 @@ public class VMXtextEditor extends XtextEditor {
 			getAnnotationSizeUpdateRemove();
 		}
 		updateXtext(getDocument());
-		
+
 		this.inInit = false;
-		/*XtextResource prev = getDocument().readOnly(new IUnitOfWork<XtextResource, XtextResource>(){
-
-			@Override
-			public XtextResource exec(XtextResource state) throws Exception {
-
-				
-				runAfter[0] = ()->{
-				 };
-				return state;
-			}
-		});
-		 runAfter[0].run();
-		 if (basicViewState != resourceViewState) {
-			 basicViewState = resourceViewState;
-			 viewModelProv = curInfo.getViewProvider(getXtextResource(), basicViewState);
-			 viewModel = viewModelProv.simpleModelView(ecoreFile);	
-		 }*/
+		/*
+		 * XtextResource prev = getDocument().readOnly(new
+		 * IUnitOfWork<XtextResource, XtextResource>(){
+		 * 
+		 * @Override public XtextResource exec(XtextResource state) throws
+		 * Exception {
+		 * 
+		 * 
+		 * runAfter[0] = ()->{ }; return state; } }); runAfter[0].run(); if
+		 * (basicViewState != resourceViewState) { basicViewState =
+		 * resourceViewState; viewModelProv =
+		 * curInfo.getViewProvider(getXtextResource(), basicViewState);
+		 * viewModel = viewModelProv.simpleModelView(ecoreFile); }
+		 */
 	}
-	
-	
-	
+
 	public void refreshMarkers() {
 		recalculateFile(true);
 	}
-	
-	
+
 	public void rerunTransformation() {
-		//this.curInfo.thingSaved(getXtextResource());
+		// this.curInfo.thingSaved(getXtextResource());
 		updateModelProvs();
-	} 
+	}
 
 	public void updateModelProvs() {
-		getDocument().readOnly((res)->{
-			/*viewModelProv = this.curInfo.getViewProvider(res, this.curInfo.getContainedViewState());
-			completeModelProv = this.curInfo.getCompleteProvider(res);
-			ViewState state = this.curInfo.createDefaultViewState();
-			state.deleteFromView(this.curInfo.getChangeModels());
-			baseModelProv = this.curInfo.getViewProvider(res, state);
-			viewModel = viewModelProv.simpleModelView(ecoreFile);
-			completeModel = completeModelProv.simpleModelView(ecoreFile);			
-			baseModel = baseModelProv.simpleModelView(ecoreFile);*/
+		getDocument().readOnly((res) -> {
+			/*
+			 * viewModelProv = this.curInfo.getViewProvider(res,
+			 * this.curInfo.getContainedViewState()); completeModelProv =
+			 * this.curInfo.getCompleteProvider(res); ViewState state =
+			 * this.curInfo.createDefaultViewState();
+			 * state.deleteFromView(this.curInfo.getChangeModels());
+			 * baseModelProv = this.curInfo.getViewProvider(res, state);
+			 * viewModel = viewModelProv.simpleModelView(ecoreFile);
+			 * completeModel = completeModelProv.simpleModelView(ecoreFile);
+			 * baseModel = baseModelProv.simpleModelView(ecoreFile);
+			 */
 			return null;
 		});
 	}
 
 	public void updateVirtualModel(XtextResource state) {
-		
-		this.xtextToViewCorrespondance = buildCorrespondanceFromXtext(this.xtextToViewCorrespondance,state);
-		//TODO: Clear from time to time
-		//Build correspondance map based on annotations
-		
+
+		this.xtextToViewCorrespondance = buildCorrespondanceFromXtext(this.xtextToViewCorrespondance, state);
+		// TODO: Clear from time to time
+		// Build correspondance map based on annotations
+
 		SimpleModelCorrespondance nullcorr = new SimpleModelCorrespondance();
-		
-		//F???r die doch nicht existierenden
+
+		// F???r die doch nicht existierenden
 		InstanceCreator creator = new InstanceCreator() {
-			
+
 			@Override
 			public EObject createInstance(EObject cont, EClass cl) {
 				CompleteFileHandler fileHandler = VMXtextEditor.this.completeFile;
-				/*if (cont != null && cont instanceof VMEObject) {
-					VMEObject vme = (VMEObject)cont;
-					Symbol symbol = vme.getUUID();
-					ModelProvider alternative = baseModelProv.getRegistry().getProvider(symbol);
-					if (alternative != null) {
-						prov = alternative;
-					}
-				}
-				Symbol newSymbol = prov.newSymbol(cl!=null?cl.getName():null); //Alles was erzeugt wird landed hier TODO: ???ndern, so dass es passt ... wie ist das?
-				VObjectValues val = viewModel.getInstances();
-				val.add(newSymbol);
-				val.setClass(newSymbol, cl);
-				//System.out.println("Creating "+ cl.getName()+" for id "+newSymbol);
-				//if ("EClass".equals(cl.getName())) {
-//					System.err.println("Creating eclass?!");
-				//}
-				return viewModel.getEObject(newSymbol);*/
+				/*
+				 * if (cont != null && cont instanceof VMEObject) { VMEObject
+				 * vme = (VMEObject)cont; Symbol symbol = vme.getUUID();
+				 * ModelProvider alternative =
+				 * baseModelProv.getRegistry().getProvider(symbol); if
+				 * (alternative != null) { prov = alternative; } } Symbol
+				 * newSymbol = prov.newSymbol(cl!=null?cl.getName():null);
+				 * //Alles was erzeugt wird landed hier TODO: ???ndern, so dass
+				 * es passt ... wie ist das? VObjectValues val =
+				 * viewModel.getInstances(); val.add(newSymbol);
+				 * val.setClass(newSymbol, cl);
+				 * //System.out.println("Creating "+
+				 * cl.getName()+" for id "+newSymbol); //if
+				 * ("EClass".equals(cl.getName())) { //
+				 * System.err.println("Creating eclass?!"); //} return
+				 * viewModel.getEObject(newSymbol);
+				 */
 				return getEManager().getNewObject(cl);
 			}
 		};
-		System.out.println("Root objects init: "+this.myResourceList+" VS "+state.getContents());
-		
-		
-		/*Resource test1 = new ResourceImpl();
-		viewModel.saveResource(test1);
-		System.out.println("View model before equalizing");*/
-		
+		System.out.println("Root objects init: " + this.myResourceList + " VS " + state.getContents());
+
+		/*
+		 * Resource test1 = new ResourceImpl(); viewModel.saveResource(test1);
+		 * System.out.println("View model before equalizing");
+		 */
+
 		this.myResourceList = this.completeFile.exposeContents();
-		
-		SimpleModelEqualizer equalizer = new SimpleModelEqualizer(
-				state.getContents(), this.myResourceList,
-				nullcorr, this.xtextToViewCorrespondance, creator);
-		
+
+		SimpleModelEqualizer equalizer = new SimpleModelEqualizer(state.getContents(), this.myResourceList, nullcorr,
+				this.xtextToViewCorrespondance, creator);
+
 		equalizer.equalize();
+
+		this.xtextToViewCorrespondance.getEntriesL2R().forEach(entry -> {
+			allStored.put(entry.getKey().eResource().getURIFragment(entry.getKey()), entry.getValue());
+		});
+
 		this.completeFile.save();
 		/*
-		System.out.println("Equalized model: "+viewModel);
-		
-		System.out.println("Base model: "+baseModel);*/
+		 * System.out.println("Equalized model: "+viewModel);
+		 * 
+		 * System.out.println("Base model: "+baseModel);
+		 */
 	}
+
+	public static VMXtextEditor INSTANCE;
+	public static Map<String, VMEObject> allStored = new HashMap<>();
+
+	public VMEObject getEObject(EObject stateObject) {
+		return allStored.get(stateObject.eResource().getURIFragment(stateObject));
+	}
+
+	{
+		INSTANCE = this;
+	}
+
+	// TODO: This will certainly be buggy ... for example if you replace A by B,
+	// and then C (another) by D and then B by C ...
+	private Map<Identifier, Identifier> replacementMap = new HashMap<>();
 
 	public void updateXtext(IXtextDocument doc) {
 		updateModelProvs();
 		try {
-		System.out.println("Basic model text: "+getBasicModelText());
-		SimpleModelCorrespondance newlyCreated = new SimpleModelCorrespondance();
-		SimpleModelCorrespondance nullcorr = new SimpleModelCorrespondance();
-		ParentChildModelCorrespondance original = new ParentChildModelCorrespondance(nullcorr, this.xtextToViewCorrespondance);
-		ModelCorrespondance inverse = original.inverse();
-		Map<String,EObject> oldObjects = new HashMap<>();
-		XtextResource[] lastState = new XtextResource[1];
-		boolean cont = doc.readOnly((state)->{
-			lastState[0] = state;
-			
-			InstanceCreator myEcoreCreater = new MyEcoreUtilInstanceCreator();
-			
-			/*
-			System.out.println("Regenerated model: "+viewModel);
-			
-			Resource test = new ResourceImpl();
-			viewModel.saveResource(test); 
-			
-			EObject simpleJava = null;
-			for (EObject eobj: test.getContents()) {
-//				if (eobj.eClass() != null && "SimpleJava".equals(eobj.eClass().getName())) {
-					//simpleJava = eobj;
-				//}
-			}*/
-						
-			//Now there are new things ... regenerate the model and annotations
-			//Use the inverse correspondance map
+			System.out.println("Basic model text: " + getBasicModelText());
+			SimpleModelCorrespondance<VMEObject, EObject> newlyCreated = new SimpleModelCorrespondance();
+			SimpleModelCorrespondance nullcorr = new SimpleModelCorrespondance();
+			ParentChildModelCorrespondance original = new ParentChildModelCorrespondance(nullcorr,
+					this.xtextToViewCorrespondance);
+			ModelCorrespondance inverse = original.inverse();
+			Map<String, EObject> oldObjects = new HashMap<>();
+			XtextResource[] lastState = new XtextResource[1];
+			boolean cont = doc.readOnly((state) -> {
+				lastState[0] = state;
 
-			this.myResourceList = this.completeFile.exposeContents();
-			
-			
-			
-			//System.out.println("Root objects before rev: "+myResourceList+" VS "+state.getContents());
-			SimpleModelEqualizer reverseEqualizer = new SimpleModelEqualizer(
-					this.myResourceList, state.getContents(), 
-					inverse, newlyCreated, myEcoreCreater);
-			for (Entry<EObject,EObject> entry: newlyCreated.getEntriesR2L()) {
-				this.xtextToViewCorrespondance.putCorrespondence(entry.getKey(), entry.getValue());
-			}
-			
-			String oldCont = getDocument().get();
-			reverseEqualizer.equalize();
-			String newContent;
-			try {
-				newContent = getContent(state);				
-				//System.out.println("New content: "+newContent);
-			} catch (Exception e) {
-				e.printStackTrace();
-				//runAfter[0] = ()->{};
-				return false;
-			}
-			
-			for (EObject eobj: (Iterable<EObject>)()->state.getAllContents()) {
-				oldObjects.put(state.getURIFragment(eobj),eobj);
-			}
-			DocumentChanger.modify(oldCont, newContent, getDocument());
-			XtextResource oldState = state;
-			System.out.println("Root objects After execute: "+this.myResourceList+" VS "+state.getContents());
-			return true;
-		});
-		
-		
-		
-		//RunAfter
+				InstanceCreator myEcoreCreater = new MyEcoreUtilInstanceCreator();
 
-		 doc.modify(new IUnitOfWork<Object, XtextResource>(){	
+				/*
+				 * System.out.println("Regenerated model: "+viewModel);
+				 * 
+				 * Resource test = new ResourceImpl();
+				 * viewModel.saveResource(test);
+				 * 
+				 * EObject simpleJava = null; for (EObject eobj:
+				 * test.getContents()) { // if (eobj.eClass() != null &&
+				 * "SimpleJava".equals(eobj.eClass().getName())) { //simpleJava
+				 * = eobj; //} }
+				 */
+
+				// Now there are new things ... regenerate the model and
+				// annotations
+				// Use the inverse correspondance map
+
+				this.myResourceList = this.completeFile.exposeContents();
+
+				// System.out.println("Root objects before rev:
+				// "+myResourceList+" VS "+state.getContents());
+				SimpleModelEqualizer<VMEObject, EObject> reverseEqualizer = new SimpleModelEqualizer<VMEObject, EObject>(
+						this.myResourceList, state.getContents(), inverse, newlyCreated, myEcoreCreater);
+
+				String oldCont = getDocument().get();
+				reverseEqualizer.equalize();
+
+				for (Entry<? extends EObject, ? extends VMEObject> entry : newlyCreated.getEntriesR2L()) {
+					this.xtextToViewCorrespondance.putCorrespondence(entry.getKey(), entry.getValue());
+					allStored.put(entry.getKey().eResource().getURIFragment(entry.getKey()), entry.getValue());
+				}
+
+				System.out.println("Old Content: " + oldCont);
+				String newContent;
+				try {
+					newContent = getContent(state);
+					System.out.println("New content: " + newContent);
+				} catch (Exception e) {
+					e.printStackTrace();
+					// runAfter[0] = ()->{};
+					return false;
+				}
+
+				for (EObject eobj : (Iterable<EObject>) () -> state.getAllContents()) {
+					oldObjects.put(state.getURIFragment(eobj), eobj);
+				}
+				DocumentChanger.modify(oldCont, newContent, getDocument());
+				XtextResource oldState = state;
+				System.out.println("Root objects After execute: " + this.myResourceList + " VS " + state.getContents());
+				return true;
+			});
+
+			// RunAfter
+
+			doc.modify(new IUnitOfWork<Object, XtextResource>() {
 
 				@Override
 				public Object exec(XtextResource state) throws Exception {
-					
-					//System.out.println("Root objects After execute II: "+myResourceList+" VS "+state.getContents());
-					for (EObject eobj: state.getContents()) {
+
+					// System.out.println("Root objects After execute II:
+					// "+myResourceList+" VS "+state.getContents());
+					for (EObject eobj : state.getContents()) {
 						try {
-							//System.out.println("Contained in Resource: "+state.getSerializer().serialize(eobj));
-						}  catch (Exception e) {
+							// System.out.println("Contained in Resource:
+							// "+state.getSerializer().serialize(eobj));
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 						break;
-					} 
-					
-				String newContent = doc.get();
-				System.out.println(newContent);
-				//Now you have the new model, set the document to the new Model and update the annotations accordingly
-				
-				//Change the document now
-				//reverseEqualizer.equalize();
-				
-				//DocumentChanger.modify(doc.get(), doc, ()->reverseEqualizer.equalize(),	state);
-				
-				//TODO: In principle, you could derive annotations from modifications base --> final
-				//It's not as exact, but faster and many aspects can be implemented easier
-				
-				ParentChildModelCorrespondance targetCorrespondance = new ParentChildModelCorrespondance(inverse, newlyCreated);
-				
-				//This correspondance will tell you for each EObject the corresponding EObject
-				//You can assume that the structure of both models is the same, so you can derive sources
-				
-				//You need to associate a function ICompositeNode[offset,length] --> Annotation
-				//It is easy for Objects (target), but what about features?
-				
-				Map<Annotation,Position> newAnnotations = new HashMap<>();
-				List<EObject> targetEObject = new ArrayList<>();
-				IResource res = getResource();  
-				for (EObject eobj: (Iterable<EObject>)()->state.getAllContents()) {
-					targetEObject.add(eobj);
-					ICompositeNode node = NodeModelUtils.findActualNodeFor(eobj);
-					if (node == null) {
-						System.err.println("Could not find node for "+eobj);
-						continue;
 					}
-					int start = node.getOffset();
-					int end = node.getEndOffset();
-					
-					//Targets
-					VMEObject uuidObj = (VMEObject)targetCorrespondance.getLeftObject(eobj);
-					EObject searchObj = null;
-					if (uuidObj == null) {
-						searchObj = oldObjects.get(eobj.eResource().getURIFragment(eobj));
-						uuidObj = (VMEObject)targetCorrespondance.getLeftObject(searchObj);
-					}
-					if (uuidObj == null) {
-						System.err.println("Could not find object for "+eobj);
-						continue;
-					}
-					String uriFragment = eobj.eResource().getURIFragment(eobj);
-					Identifier uuid = uuidObj.getIdentificator();
-					String uuidString = getEManager().getIdentifierString(uuid);
-					IMarker marker = res.createMarker(MARKER_TYPE_TARGET);
-					marker.setAttribute(IMarker.MESSAGE, "Target Object: "+uuid);
-					marker.setAttribute("uuid", uuidString);
-					marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-					marker.setAttribute(IMarker.CHAR_START, start);
-					marker.setAttribute(IMarker.CHAR_END, end);
-					SimpleMarkerAnnotation annotation = new SimpleMarkerAnnotation(ANNOTATION_TYPE_TARGET, marker);
-					newAnnotations.put(annotation, new Position(start, end-start));
-					
-					//node.getChildren()
-					
-					
-					EClass cl = eobj.eClass();
-					//List<ModelResource> userModelResources = completeModelProv.getUserEditModels();
-					//How to calculate?
-					
-					
-					for (EStructuralFeature esf: cl.getEAllStructuralFeatures()) {
-						List<INode> inodes = NodeModelUtils.findNodesForFeature(eobj, esf);
-						/*VFeatureValues vfv = viewModel.getFeatureValues(esf);
-						List<Object> vfvList = vfv.getValueValue(uuid);*/
-						
-						
-						
-						//System.out.println("Values: "+Arrays.toString(vfvList.toArray())+ " For feature "+esf.getEContainingClass().getName()+"."+esf.getName());
-						//if (esf.getName().equals("source")) {
-							//watchObject = vfv;
-							//System.out.print("xx");
-						//}
-						/*List<ResourceSetInfo.ExactDerivationStatus> derivationStatus = new ArrayList<>();
-						if (vfvList instanceof NoInverse) {
-							derivationStatus = ((NoInverse) vfvList).getDerivationStatus(userModelResources);
-						}*/
-						
-						List<BasicDerivationStatus> derivationStatus = new ArrayList<>();
-						derivationStatus.addAll(VMXtextEditor.this.completeFile.getDerivationStatus(uuidObj,esf));
-						int index = 0;
-						for (INode supnode: inodes) {
-							Iterable<ILeafNode> leafNodes;
-							if (supnode instanceof ILeafNode) {
-								leafNodes = Collections.singleton((ILeafNode)supnode);
-							} else {
-								leafNodes = supnode.getLeafNodes();
-								//Eigentlich nur die Leaf-Nodes, die nicht von Unteren erzeugt werden ...
-							}
 
-							BasicDerivationStatus fullgenstate = derivationStatus.size()<=index?new BasicDerivationStatusImpl(DerivationStatus.UNSPECIFIED):derivationStatus.get(index);
-							ResourceSetInfo.DerivationStatus genstate = fullgenstate.getStatus(); 
-							boolean isGenerated = genstate != ResourceSetInfo.DerivationStatus.NONDERIVED && genstate != DerivationStatus.UNSPECIFIED;
-							boolean isFullGenerated = genstate == DerivationStatus.DERIVED;
-							if (isGenerated) {
-								//derivationStatus = ((NoInverse) vfvList).getDerivationStatus(userModelResources);
-							}
-							String markerType = isGenerated?(isFullGenerated?MARKER_TYPE_FULLGENERATED:MARKER_TYPE_GENERATED):MARKER_TYPE_NONGENERATED;		
+					String newContent = doc.get();
+					System.out.println(newContent);
+					// Now you have the new model, set the document to the new
+					// Model and update the annotations accordingly
 
-							Resource symbolResource = null;
-							int symbolIndex = -1; //I need to check what that means
+					// Change the document now
+					// reverseEqualizer.equalize();
+
+					// DocumentChanger.modify(doc.get(), doc,
+					// ()->reverseEqualizer.equalize(), state);
+
+					// TODO: In principle, you could derive annotations from
+					// modifications base --> final
+					// It's not as exact, but faster and many aspects can be
+					// implemented easier
+
+					ParentChildModelCorrespondance targetCorrespondance = new ParentChildModelCorrespondance(inverse,
+							newlyCreated);
+
+					// This correspondance will tell you for each EObject the
+					// corresponding EObject
+					// You can assume that the structure of both models is the
+					// same, so you can derive sources
+
+					// You need to associate a function
+					// ICompositeNode[offset,length] --> Annotation
+					// It is easy for Objects (target), but what about features?
+
+					Map<Annotation, Position> newAnnotations = new HashMap<>();
+					List<EObject> targetEObject = new ArrayList<>();
+					IResource res = getResource();
+					for (EObject eobj : (Iterable<EObject>) () -> state.getAllContents()) {
+						targetEObject.add(eobj);
+						ICompositeNode node = NodeModelUtils.findActualNodeFor(eobj);
+						if (node == null) {
+							System.err.println("Could not find node for " + eobj);
+							continue;
+						}
+						int start = node.getOffset();
+						int end = node.getEndOffset();
+
+						// Targets
+						VMEObject uuidObj = (VMEObject) targetCorrespondance.getLeftObject(eobj);
+						EObject searchObj = null;
+						if (uuidObj == null) {
+							searchObj = oldObjects.get(eobj.eResource().getURIFragment(eobj));
+							uuidObj = (VMEObject) targetCorrespondance.getLeftObject(searchObj);
+						}
+						if (uuidObj == null) {
+							System.err.println("Could not find object for " + eobj);
+							continue;
+						}
+						String uriFragment = eobj.eResource().getURIFragment(eobj);
+						Identifier uuid = uuidObj.getIdentificator();
+						String uuidString = getEManager().getIdentifierString(uuid);
+						IMarker marker = res.createMarker(MARKER_TYPE_TARGET);
+						marker.setAttribute(IMarker.MESSAGE, "Target Object: " + uuid);
+						marker.setAttribute("uuid", uuidString);
+						marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+						marker.setAttribute(IMarker.CHAR_START, start);
+						marker.setAttribute(IMarker.CHAR_END, end);
+						SimpleMarkerAnnotation annotation = new SimpleMarkerAnnotation(ANNOTATION_TYPE_TARGET, marker);
+						newAnnotations.put(annotation, new Position(start, end - start));
+
+						// node.getChildren()
+
+						EClass cl = eobj.eClass();
+						// List<ModelResource> userModelResources =
+						// completeModelProv.getUserEditModels();
+						// How to calculate?
+
+						for (EStructuralFeature esf : cl.getEAllStructuralFeatures()) {
+							List<INode> inodes = NodeModelUtils.findNodesForFeature(eobj, esf);
 							/*
-							for (DerivationSource ds: fullgenstate.getTransformationProviders()) {
-								Resource symbolResource_ = VMXtextEditor.this.curInfo.getAspectResource(ds.resource);
-								if (symbolResource != null && symbolResource != symbolResource_) {
-									symbolResource = null;
-									break;
-								} else {
-									symbolResource = symbolResource_;
-								}
-							}
-							int symbolIndex = getInteger(symbolResource);
-							if (symbolIndex != -1 && isGenerated) {
-								markerType = markerType+symbolIndex; 
-							}*/
-							for (ILeafNode inode: leafNodes) {
-								//TODO: Irgendwie besser: Es sollten nur die Leaf-Nodes verwendet werden, die nicht von unteren erzeugt werden ...
-								ICompositeNode parent = inode.getParent();
-								while (parent != null && parent != supnode && !(parent instanceof CompositeNodeWithSemanticElement || parent instanceof SyntheticCompositeNode)) {
-									parent = parent.getParent();
-								};
-								boolean equal = false;
-								if (parent != null && supnode != null && (parent == supnode || (parent.getOffset() == supnode.getOffset() && parent.getLength() == supnode.getLength()))) {
-									equal = true;
-								}
-								if (supnode != null && inode!= null && (inode == supnode || (inode.getOffset() == supnode.getOffset() && inode.getLength() == supnode.getLength()))) {
-									equal = true;
-								}
-								if (!equal && parent != supnode && supnode != inode) {
-									continue;
-								}
-								if (inode.isHidden()) {
-									continue;
-								}
-								IMarker featureMarker = res.createMarker(markerType);
-								String postfix = "";
-								String fn = "A feature ";
-								if (esf != null) {
-									if (esf.getEContainingClass() != null) {
-										fn = esf.getEContainingClass().getName()+"."+esf.getName();
-									} else {
-										fn = esf.getName();
-									}
-									if (esf.isMany()) {
-										fn = fn +"["+index+"] ";
-									}
-									
-								}
-								featureMarker.setAttribute(IMarker.MESSAGE, fn+"was " + ((!isGenerated)?"not ":(isFullGenerated?"fully ":""))+"generated "+postfix+"!");
-								featureMarker.setAttribute("uuid", uuid);
-								featureMarker.setAttribute("featureName", esf.getName());
-								featureMarker.setAttribute("featureIndex", index);
-								featureMarker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
-								int nstart = inode.getOffset();
-								int nend = inode.getEndOffset();
-							
-								featureMarker.setAttribute(IMarker.CHAR_START, nstart);
-								featureMarker.setAttribute(IMarker.CHAR_END, nend);
-								
-								String annotationType = isGenerated?(isFullGenerated?ANNOTATION_TYPE_FULLGENERATED:ANNOTATION_TYPE_GENERATED):ANNOTATION_TYPE_NONGENERATED;
+							 * VFeatureValues vfv =
+							 * viewModel.getFeatureValues(esf); List<Object>
+							 * vfvList = vfv.getValueValue(uuid);
+							 */
 
-								//System.out.println("Feature "+esf.getEContainingClass().getName()+"."+esf.getName()+": "+genstate+" from "+nstart+" to "+nend+
-								//		", index: "+symbolIndex);
-								//System.out.println(inode.getStartLine()+" - "+inode.getEndLine());
-								if (isGenerated && symbolIndex != -1) {
-									annotationType = annotationType+symbolIndex;
+							// System.out.println("Values:
+							// "+Arrays.toString(vfvList.toArray())+ " For
+							// feature
+							// "+esf.getEContainingClass().getName()+"."+esf.getName());
+							// if (esf.getName().equals("source")) {
+							// watchObject = vfv;
+							// System.out.print("xx");
+							// }
+							/*
+							 * List<ResourceSetInfo.ExactDerivationStatus>
+							 * derivationStatus = new ArrayList<>(); if (vfvList
+							 * instanceof NoInverse) { derivationStatus =
+							 * ((NoInverse)
+							 * vfvList).getDerivationStatus(userModelResources);
+							 * }
+							 */
+
+							List<BasicDerivationStatus> derivationStatus = new ArrayList<>();
+							derivationStatus.addAll(VMXtextEditor.this.completeFile.getDerivationStatus(uuidObj, esf));
+							int index = 0;
+							for (INode supnode : inodes) {
+								Iterable<ILeafNode> leafNodes;
+								if (supnode instanceof ILeafNode) {
+									leafNodes = Collections.singleton((ILeafNode) supnode);
+								} else {
+									leafNodes = supnode.getLeafNodes();
+									// Eigentlich nur die Leaf-Nodes, die nicht
+									// von Unteren erzeugt werden ...
 								}
-								SimpleMarkerAnnotation nannotation = new SimpleMarkerAnnotation(annotationType, marker);
-								newAnnotations.put(nannotation, new Position(nstart, nend-nstart));
-							}								
-							++index;
+
+								BasicDerivationStatus fullgenstate = derivationStatus.size() <= index
+										? new BasicDerivationStatusImpl(DerivationStatus.UNSPECIFIED)
+										: derivationStatus.get(index);
+								ResourceSetInfo.DerivationStatus genstate = fullgenstate.getStatus();
+								boolean isGenerated = genstate != ResourceSetInfo.DerivationStatus.NONDERIVED
+										&& genstate != DerivationStatus.UNSPECIFIED;
+								boolean isFullGenerated = genstate == DerivationStatus.DERIVED;
+								if (isGenerated) {
+									// derivationStatus = ((NoInverse)
+									// vfvList).getDerivationStatus(userModelResources);
+								}
+								String markerType = isGenerated
+										? (isFullGenerated ? MARKER_TYPE_FULLGENERATED : MARKER_TYPE_GENERATED)
+										: MARKER_TYPE_NONGENERATED;
+
+								Resource symbolResource = null;
+								int symbolIndex = -1; // I need to check what
+														// that means
+								/*
+								 * for (DerivationSource ds:
+								 * fullgenstate.getTransformationProviders()) {
+								 * Resource symbolResource_ =
+								 * VMXtextEditor.this.curInfo.getAspectResource(
+								 * ds.resource); if (symbolResource != null &&
+								 * symbolResource != symbolResource_) {
+								 * symbolResource = null; break; } else {
+								 * symbolResource = symbolResource_; } } int
+								 * symbolIndex = getInteger(symbolResource); if
+								 * (symbolIndex != -1 && isGenerated) {
+								 * markerType = markerType+symbolIndex; }
+								 */
+								for (ILeafNode inode : leafNodes) {
+									// TODO: Irgendwie besser: Es sollten nur
+									// die Leaf-Nodes verwendet werden, die
+									// nicht von unteren erzeugt werden ...
+									ICompositeNode parent = inode.getParent();
+									while (parent != null && parent != supnode
+											&& !(parent instanceof CompositeNodeWithSemanticElement
+													|| parent instanceof SyntheticCompositeNode)) {
+										parent = parent.getParent();
+									}
+									;
+									boolean equal = false;
+									if (parent != null && supnode != null
+											&& (parent == supnode || (parent.getOffset() == supnode.getOffset()
+													&& parent.getLength() == supnode.getLength()))) {
+										equal = true;
+									}
+									if (supnode != null && inode != null
+											&& (inode == supnode || (inode.getOffset() == supnode.getOffset()
+													&& inode.getLength() == supnode.getLength()))) {
+										equal = true;
+									}
+									if (!equal && parent != supnode && supnode != inode) {
+										continue;
+									}
+									if (inode.isHidden()) {
+										continue;
+									}
+									IMarker featureMarker = res.createMarker(markerType);
+									String postfix = "";
+									String fn = "A feature ";
+									if (esf != null) {
+										if (esf.getEContainingClass() != null) {
+											fn = esf.getEContainingClass().getName() + "." + esf.getName();
+										} else {
+											fn = esf.getName();
+										}
+										if (esf.isMany()) {
+											fn = fn + "[" + index + "] ";
+										}
+
+									}
+									featureMarker.setAttribute(IMarker.MESSAGE,
+											fn + "was " + ((!isGenerated) ? "not " : (isFullGenerated ? "fully " : ""))
+													+ "generated " + postfix + "!");
+									featureMarker.setAttribute("uuid", uuid);
+									featureMarker.setAttribute("featureName", esf.getName());
+									featureMarker.setAttribute("featureIndex", index);
+									featureMarker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_WARNING);
+									int nstart = inode.getOffset();
+									int nend = inode.getEndOffset();
+
+									featureMarker.setAttribute(IMarker.CHAR_START, nstart);
+									featureMarker.setAttribute(IMarker.CHAR_END, nend);
+
+									String annotationType = isGenerated ? (isFullGenerated
+											? ANNOTATION_TYPE_FULLGENERATED : ANNOTATION_TYPE_GENERATED)
+											: ANNOTATION_TYPE_NONGENERATED;
+
+									// System.out.println("Feature
+									// "+esf.getEContainingClass().getName()+"."+esf.getName()+":
+									// "+genstate+" from "+nstart+" to "+nend+
+									// ", index: "+symbolIndex);
+									// System.out.println(inode.getStartLine()+"
+									// - "+inode.getEndLine());
+									if (isGenerated && symbolIndex != -1) {
+										annotationType = annotationType + symbolIndex;
+									}
+									SimpleMarkerAnnotation nannotation = new SimpleMarkerAnnotation(annotationType,
+											marker);
+									newAnnotations.put(nannotation, new Position(nstart, nend - nstart));
+								}
+								++index;
+							}
 						}
 					}
-			}
-			IAnnotationModel model = getSourceViewer().getAnnotationModel();
-			if (model instanceof IAnnotationModelExtension) {
-				IAnnotationModelExtension ext = (IAnnotationModelExtension)model;
-				ext.replaceAnnotations(VMXtextEditor.this.toRemove.toArray(new Annotation[]{}),newAnnotations);
-			} else {
-				System.err.println("I want an extension!");
-			}
-			return null;
-				
-			}});
+					IAnnotationModel model = getSourceViewer().getAnnotationModel();
+					if (model instanceof IAnnotationModelExtension) {
+						IAnnotationModelExtension ext = (IAnnotationModelExtension) model;
+						ext.replaceAnnotations(VMXtextEditor.this.toRemove.toArray(new Annotation[] {}),
+								newAnnotations);
+					} else {
+						System.err.println("I want an extension!");
+					}
+					return null;
+
+				}
+			});
 		} catch (InvalidConcreteSyntaxException e) {
-			System.err.println("Invalid concrete syntax: "+e.getMessage());
+			System.err.println("Invalid concrete syntax: " + e.getMessage());
 		}
-		this.xtextToViewCorrespondance = new SimpleModelCorrespondance(); //New correspondance, old might yield to strange results!
+		this.xtextToViewCorrespondance = new SimpleModelCorrespondance(); // New
+																			// correspondance,
+																			// old
+																			// might
+																			// yield
+																			// to
+																			// strange
+																			// results!
 		this.completeFile.save();
+		replacementMap.clear();
 	}
 
+	public void replace(VMEObject replaced, VMEObject newSub) {
+		completeFile.newSub(replaced, newSub);
+		refreshText();
+		// updateXtext(getDocument());
+	}
+
+	public void partialReset(VMEObject partialReset) {
+		completeFile.partialReset(partialReset);
+		updateXtext(getDocument());
+	}
+
+	public void refreshVirtual() {
+		updateVirtualModel(getXtextResource());
+	}
+
+	public void refreshText() {
+		updateXtext(getDocument());
+		// refreshMarkers();
+		updateState(getEditorInput());
+		validateState(getEditorInput());
+		updateXtext(getDocument());
+
+	}
+
+	// From IntellEdit
+
+	private static WeakHashMap<IMarker, Boolean> knownMarkers = new WeakHashMap<IMarker, Boolean>();
+
+	/*
+	@Override
+	protected IAnnotationAccess createAnnotationAccess() {
+		return new DefaultMarkerAnnotationAccess() {
+
+			public void paint(Annotation annotation, GC gc, Canvas canvas, Rectangle bounds) {
+
+				Image image = getImage(annotation);
+				if (image != null) {
+					ImageUtilities.drawImage(image, gc, canvas, bounds, SWT.CENTER, SWT.TOP);
+					return;
+				}
+				super.paint(annotation, gc, canvas, bounds);
+			}
+
+			Image[] image;
+
+			public synchronized void initImages() {
+				if (image != null) {
+					return;
+				}
+				String[] names = new String[] { "icons/marker.png", "icons/markertrue.png", "icons/genetic.png",
+						"icons/transparent.png" };
+				image = new Image[names.length];
+				for (int i = 0; i < image.length; ++i) {
+					Bundle bundle = FrameworkUtil.getBundle(VMXtextEditor.class);
+					final URL fullPathString = bundle.getEntry(names[i]);
+					try {
+						ImageDescriptor imageDesc = ImageDescriptor.createFromURL(fullPathString);
+						image[i] = imageDesc.createImage();
+					} catch (Exception e) {
+						System.err.println("Could not load " + fullPathString + ": " + e.getMessage());
+					}
+				}
+
+			}
+
+			private Map<Annotation, Integer> imageType = new WeakHashMap<Annotation, Integer>();
+
+			public String[] parseData(String dataKey) {
+				int curInd = 0;
+				List<String> ret = new ArrayList<>();
+				for (;;) {
+					int firstCol = dataKey.indexOf(':', curInd);
+					if (firstCol == -1) {
+						return ret.toArray(new String[] {});
+					}
+					Integer num = Integer.valueOf(dataKey.substring(curInd, firstCol));
+					ret.add(dataKey.substring(firstCol + 1, firstCol + 1 + num));
+					curInd = firstCol + num + 1;
+					if (curInd >= dataKey.length()) {
+						return ret.toArray(new String[] {});
+					}
+				}
+			}
+
+			public Integer getImageType(Annotation annot) {
+				String codeKey = null;
+				String otherCodeKey = null;
+				String dataKey = null;
+				String validator = null;
+				String issueSubId = null;
+				String[] data = null;
+				if (annot instanceof XtextAnnotation) {
+					XtextAnnotation xa = (XtextAnnotation) annot;
+					data = xa.getIssueData();
+					codeKey = xa.getIssueCode();
+				}
+				if (annot instanceof MarkerAnnotation) {
+					try {
+
+						MarkerAnnotation ma = (MarkerAnnotation) annot;
+						IMarker marker = ma.getMarker();
+
+						try {
+							Map<String, Object> attr = marker.getAttributes();
+
+							codeKey = String.valueOf(attr.get("CODE_KEY"));
+							dataKey = String.valueOf(attr.get("DATA_KEY"));
+							data = parseData(dataKey);
+
+						} catch (CoreException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} catch (Exception e) {
+
+					}
+				}
+				if (data == null) {
+					return -1;
+				}
+				initImages();
+				boolean hasProposals = false;
+				boolean isGenetic = false;
+				if (data != null && data.length > 2) {
+					validator = data[0];
+					otherCodeKey = data[1];
+					issueSubId = data[2];
+				}
+
+				if (codeKey != null && codeKey.startsWith("DYNISSUE_ANY_GENETIC")) {
+					isGenetic = true;
+				}
+				if (validator != null) {
+					if (validator.length() > 36) {
+						validator = validator.substring(0, 36);
+					}
+					DynamicValidator dval = DynamicValidator.getValidator(validator);
+					if (dval != null) {
+						if (isGenetic) {
+							ExpressionQuickfixInfo info = dval.getQuickfixes(otherCodeKey);
+							hasProposals = !info.getChanges(issueSubId).isEmpty();
+						} else {
+							ExpressionQuickfixInfo info = dval.getQuickfixes(otherCodeKey);
+							ProposalList list = info.getChanges(issueSubId);
+							hasProposals = !list.isEmpty();
+						}
+
+					} else {
+						annot.markDeleted(true);
+					}
+				}
+				if (annot.isMarkedDeleted()) {
+					return -1;
+				}
+				if (annot instanceof MarkerAnnotation) {
+					MarkerAnnotation ma = (MarkerAnnotation) annot;
+					IMarker marker = ma.getMarker();
+					Boolean lastGen = knownMarkers.get(marker);
+					if (lastGen != null && lastGen != isGenetic) {
+						System.err.println("Marker switched!");
+					}
+					if (lastGen == null) {
+						knownMarkers.put(marker, isGenetic);
+						try {
+							System.out.println("Marker for " + isGenetic + ": " + marker);
+							marker.setAttribute("textPreferenceKey", "MarkerHighlight" + isGenetic);
+							if (isGenetic) {
+								marker.setAttribute("textPreferenceValue", false);
+							} else {
+								marker.setAttribute("textPreferenceValue", true);
+							}
+							marker.setAttribute("textStylePreferenceKey", "highlight.text.style");
+							if (isGenetic) {
+								marker.setAttribute("textStylePreferenceValue", "UNDERLINE");
+							}
+						} catch (Exception e) {
+							System.err.println(e.getMessage());
+						}
+					}
+				}
+				int num = isGenetic ? (hasProposals ? 2 : 3) : (hasProposals ? 1 : 0);
+				return num;
+			}
+
+			public Image getImage(Annotation annotation) {
+				int num = getImageType(annotation);
+				if (num != -1) {
+					return image[num];
+				}
+				return null;
+
+			}
+
+			@Override
+			public int getLayer(Annotation annotation) {
+				int num = getImageType(annotation);
+				if (annotation.isMarkedDeleted()) {
+					return IAnnotationAccessExtension.DEFAULT_LAYER;
+				}
+				if (num != -1) {
+					if (num == 2) {
+						return 110;
+					} else if (num == 1) {
+						return 120;
+					} else if (num == 0) {
+						return 1;
+					} else if (num == 3) {
+						return 2;
+					}
+				}
+				return super.getLayer(annotation);
+			}
+		};
+	}*/
 }

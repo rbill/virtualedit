@@ -64,7 +64,7 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 			for (Src added: isc.getAdded()) {
 				add(isc.source(), added);
 			}
-			for (Src deleted: isc.getAdded()) {
+			for (Src deleted: isc.getDeleted()) {
 				remove(isc.source(), deleted);
 			}
 		}
@@ -88,7 +88,7 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 		private void remove(Object source, Src src) {
 			boolean[] removed = new boolean[]{false};
 			this.scopeNumb.computeIfPresent(src,(key,val)->{
-				if (val.remove(key)) {
+				if (val.remove(source)) {
 					if (val.isEmpty()) {
 						removed[0]=true;
 					}			
@@ -172,6 +172,14 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 		});
 	}
 	
+	public void removeBase(AbstractFunc<Src, ? extends Target, ? extends QueryResult<Src,Target>> func) {
+		FixedFinitScope<Src> ffs = removeBaseNoRefresh(func);
+		((List)this.baseFunc).remove(func);
+		ffs.forEach(x->{
+			this.myScope.remove(ffs, x);
+		});
+	}
+	
 	private FixedFinitScope<Src> addBaseNoRefresh(AbstractFunc<Src, ? extends Target, ? extends QueryResult<Src,Target>> func) {
 		Scope<Src> subScope = func.getScope();
 		if (!(subScope instanceof FixedFinitScope))  {
@@ -180,6 +188,17 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 		FixedFinitScope<Src> ffs = (FixedFinitScope<Src>)subScope;
 		this.subScopes.add(ffs);
 		ffs.addChangeListener(this.scl);
+		return ffs;
+	}
+	
+	private FixedFinitScope<Src> removeBaseNoRefresh(AbstractFunc<Src, ? extends Target, ? extends QueryResult<Src,Target>> func) {
+		Scope<Src> subScope = func.getScope();
+		if (!(subScope instanceof FixedFinitScope))  {
+			throw new RuntimeException("Union can only be built from functions with finite scope");
+		}
+		FixedFinitScope<Src> ffs = (FixedFinitScope<Src>)subScope;
+		this.subScopes.remove(ffs);
+		ffs.removeChangeListener(this.scl);
 		return ffs;
 	}
 	
@@ -193,7 +212,7 @@ public class BasicFiniteUnionFunc<Src,Target> extends AbstractFunc< Src, Target,
 		for (AbstractFunc<Src, Target, ? extends QueryResult<Src, Target>> s: this.baseFunc) {
 			//TODO: Eigentlich sollte es reichen, das von getScope zu benutzen
 			
-			//Nimmt das nicht an, dass sich der Scope nicht ändert? - vermutlich egal, weil es recalct wird
+			//Nimmt das nicht an, dass sich der Scope nicht ï¿½ndert? - vermutlich egal, weil es recalct wird
 			if (s.contains(src)) {
 				sources.add(s.evaluate(src));
 			}

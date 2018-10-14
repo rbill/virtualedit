@@ -28,6 +28,7 @@ import org.eclipse.xtext.resource.XtextResourceSet;
 
 import com.google.inject.Injector;
 
+import Citizen.Alle;
 import Citizen.CitizenPackage;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.AnyValue;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CompleteFile;
@@ -91,7 +92,7 @@ public class VOMTest {
 			manager.addKnown(CitizenPackage.eINSTANCE);
 			manager.knowVirtualDefinition((VirtualModel)ConvertToXmi.getVirtLangResource(new File(rootVFile.getAbsolutePath()+"\\Test\\test.virt")).getContents().get(0));
 			Resource r = ConvertToXmi.getXmiResource(citFile);
-			VMEObject testCit = manager.getFakeVirtual(r.getContents().get(0));
+			VMEObject testCit = manager.getFakeVirtual(((Alle)r.getContents().get(0)).getCitizens().get(0));
 			Identifier id = VObjectModelFactory.eINSTANCE.createIdentifier();
 			CreatorId cid = VObjectModelFactory.eINSTANCE.createCreatorId();
 			cid.setName("CitizenPupils");
@@ -101,8 +102,12 @@ public class VOMTest {
 			id.getIdentifierreforcmp().add(ir);
 			id.init();
 			
+			ModelDeltaVMEObject newObject = manager.getNewObject(SchoolPackage.eINSTANCE.getPupil());
+			VMEObject baseObject = manager.getObject(id);
+			newObject.addBaseEObject(baseObject);
+			
 			school = manager.getNewObject(SchoolPackage.eINSTANCE.getSchool());
-			school.eSet(SchoolPackage.eINSTANCE.getSchool_Pupils(), Collections.singleton(manager.getObject(id)));
+			school.eSet(SchoolPackage.eINSTANCE.getSchool_Pupils(), Collections.singleton(newObject));
 			
 			file.getRootObjects().add(school.getIdentificator());
 			VObjDeltaModel deltamodel = file.getDeltamodel();
@@ -178,8 +183,12 @@ public class VOMTest {
 				((Collection)testSchool.eGet(SchoolPackage.eINSTANCE.getSchool_Pupils())).addAll(allObjs.stream().filter(x->(x.eClass().getName().equals("Pupil"))).collect(Collectors.toList()));
 				SimpleModelEqualizer sme = new SimpleModelEqualizer(new ArrayList<>(Arrays.asList(testSchool)), res.getContents(), corr, subCor, creator);
 				sme.equalize();
-				String newText = DocumentChanger.getContent(res);
-				System.out.println("New text: "+newText);
+				try {
+					String newText = DocumentChanger.getContent(res);
+					System.out.println("New text: "+newText);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -211,32 +220,16 @@ public class VOMTest {
 	public static String getIdentifierString(Identifier id) {
 		id = containmentId(id);
 		//TODO: ....
-		CompleteFile file = VObjectModelFactory.eINSTANCE.createCompleteFile();
-		file.getRootObjects().add(id);
 		ISetup standaloneSetup = new VObjectLangStandaloneSetup();
 		Injector injector = standaloneSetup.createInjectorAndDoEMFRegistration();
 		IResourceFactory resourceFactory = injector.getInstance(IResourceFactory.class);
 		//XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
 		//XtextResource ecsslResource = (XtextResource)rs.getResource(URI.createFileURI(ecsslFile.getCanonicalPath()), true);
 		Resource ecsslResource = resourceFactory.createResource(URI.createFileURI("fake://resource.bla"));
-		ecsslResource.getContents().add(file);
+		ecsslResource.getContents().add(id);
 		String ret = DocumentChanger.getContent(ecsslResource);
 		System.out.println("Ret: "+ret);
-		String[] arr = ret.split("\\{",3);
-		if (arr.length < 3) {
-			return "???";
-		} else {
-			ret = arr[2].trim();
-			int last = ret.lastIndexOf('}');
-			if (last != -1) {
-				ret = ret.substring(0,ret.lastIndexOf('}'));
-				last = ret.lastIndexOf('}');
-				if (last != -1) {
-					ret = ret.substring(0,ret.lastIndexOf('}'));
-				}
-			}
-			return ret.trim();
-		}
+		return ret.trim();
 	}
 	
 	public static XtextResource getVirtLangResource(File ecsslFile, Class<? extends ISetup> setupClass) throws IOException {

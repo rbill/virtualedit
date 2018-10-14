@@ -2,7 +2,11 @@ package at.ac.tuwien.big.vfunc.nbasic;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 
 import at.ac.tuwien.big.vfunc.basic.Change;
@@ -15,6 +19,7 @@ import at.ac.tuwien.big.vfunc.basic.Scope;
 import at.ac.tuwien.big.vfunc.basic.ScopeChange;
 import at.ac.tuwien.big.vfunc.basic.ScopeChangeListenable;
 import at.ac.tuwien.big.vfunc.basic.ScopeNotifyer;
+import at.ac.tuwien.big.virtmod.basic.Treepos;
 
 public class BasicDeltaFunc<Src,Target> extends AbstractFunc<Src, Target, BasicQueryResult<Src,Target>> {
 
@@ -107,8 +112,10 @@ public class BasicDeltaFunc<Src,Target> extends AbstractFunc<Src, Target, BasicQ
 					Change<? extends FunctionNotifyer<?, Src, Target>, ? extends Src, ? extends Target> change) {
 				if (filterScope.evaluateBasic(change.source(), Boolean.TRUE)) {
 					QueryResult<Src, Target> thing  = getCacheIfExists(change.source());
-					thing.refresh();
-					BasicDeltaFunc.this.getChangeNotifyer().notifyChanged(change.source(), change.oldValue(), change.newValue());
+					if (thing != null) {
+						thing.refresh();
+						BasicDeltaFunc.this.getChangeNotifyer().notifyChanged(change.source(), change.oldValue(), change.newValue());
+					}
 				}
 			}
 		};
@@ -166,8 +173,8 @@ public class BasicDeltaFunc<Src,Target> extends AbstractFunc<Src, Target, BasicQ
 						bdf.filterScope.putBasic(src, false);
 						bdf.addMap.putBasic(src, null);
 					} else {
-						bdf.filterScope.putBasic(src, true);
 						bdf.addMap.putBasic(src, newValue);
+						bdf.filterScope.putBasic(src, true);
 					}
 				}
 			}
@@ -193,5 +200,61 @@ public class BasicDeltaFunc<Src,Target> extends AbstractFunc<Src, Target, BasicQ
 	public BasicDeltaFunc<Src, Target> reapplyFor(AbstractFunc<Src, Target, ?> newOriginal) {
 		return new BasicDeltaFunc<>(this.sourceClass, newOriginal, this.addMap, this.filterScope);
 	}
+
+
+	public void clearCustom() {
+		filterScope.clear();
+		addMap.clear();
+	}
+
+
+	public void partialReset() {
+		Map<Src, BasicResult<Target>> storedMap = addMap.getStoredMap();
+		Set<Src> deleteStored = new HashSet<>();
+		storedMap.forEach((k,v)->{
+			//Delete what is not in scope or what is equal to the other value
+			boolean delete = !getScope().contains(k) || Objects.equals(originalFunc.evaluateBasic(k),v.value());
+			if (delete) {
+				deleteStored.add(k);
+			}
+		});
+		Map<Src, BasicResult<Boolean>> filterMap = filterScope.getStoredMap();
+		Set<Src> deleteFilter = new HashSet<>();  
+		filterMap.forEach((k,v)->{
+			Boolean b = v.value();
+			if (b  == null) {
+				deleteFilter.add(k);
+			} else if (b) {
+				if (originalFunc.getScope().contains(k)) {
+					deleteFilter.add(k);
+				}
+			} else {
+				if (!originalFunc.getScope().contains(k)) {
+					deleteFilter.add(k);
+				}
+			}
+		});
+		for (Src ds: deleteStored) {
+			addMap.putBasic(ds, null);
+		}
+		for (Src ds: deleteFilter) {
+			filterScope.putBasic(ds, null);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public void mergeDelta(BasicDeltaFunc<Src, ? extends Target> deltaFunc) {
+		Map<Src, ? extends BasicResult<? extends Target>> storedMap = deltaFunc.addMap.getStoredMap();
+		storedMap.forEach((k,v)->{
+			addMap.putBasic(k, v.value());
+		});
+		Map<Src, ? extends BasicResult<? extends Boolean>> filterMap = deltaFunc.filterScope.getStoredMap();
+		filterMap.forEach((k,v)->{
+			filterScope.putBasic(k, v.value());
+		});
+		
+	}
+
+
 
 }

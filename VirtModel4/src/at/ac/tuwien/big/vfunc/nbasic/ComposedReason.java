@@ -41,4 +41,8 @@ public class ComposedReason implements Reason {
 		this.sourceInfos = sourceInfos;
 	}
 
+	public void addDefaultDerivation(DerivationStatus derived) {
+		this.addDerivationStatus.add(derived);
+	}
+
 }

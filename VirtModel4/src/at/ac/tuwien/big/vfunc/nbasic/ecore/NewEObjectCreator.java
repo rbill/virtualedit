@@ -24,7 +24,7 @@ public class NewEObjectCreator implements EObjectCreator {
 	
 	private Set<Resource> knownResources = new HashSet<>();
 	private Map<List<String>, EObject> existingObjects = new HashMap<>();
-	private Map<Identifier, DeltaVMEObject> existingObjectMap = new HashMap<>();
+	private Map<Identifier, ModelDeltaVMEObject> existingObjectMap = new HashMap<>();
 	private Map<Identifier, EObject> realObjects = new HashMap<>();
 	
 	private Map<Resource, Map<String,Integer>> objectCount = new HashMap<>();
@@ -37,13 +37,13 @@ public class NewEObjectCreator implements EObjectCreator {
 	}
 	
 	@Override
-	public VMEObject createEObject(Identifier ide, Object... parameters) {
+	public ModelDeltaVMEObject createEObject(Identifier ide, Object... parameters) {
 		String epkgUri = (String)parameters[0];
 		String name = (String)parameters[1];
 		String subId = (String)parameters[2];
 		List<String> strList = Arrays.asList(epkgUri, name, subId);
 		EClass cl = getEClass(epkgUri, name);
-		DeltaVMEObject ret = getVMEObject(ide, cl, subId, Arrays.asList(parameters));
+		ModelDeltaVMEObject ret = getVMEObject(ide, cl, subId, Arrays.asList(parameters));
 		return ret;
 	}
 
@@ -67,10 +67,10 @@ public class NewEObjectCreator implements EObjectCreator {
 		return this.realObjects.get(identificator);
 	}
 	
-	private DeltaVMEObject getVMEObject(Identifier ide, EClass cl, String subId, List<?> parameters) {
+	private ModelDeltaVMEObject getVMEObject(Identifier ide, EClass cl, String subId, List<?> parameters) {
 		return this.existingObjectMap.computeIfAbsent(ide, (id)->{ 
 		EClass ecl = cl;
-		DeltaVMEObject ret = new DeltaVMEObject(this.manager, this, ide, ecl, parameters);
+		ModelDeltaVMEObject ret = new ModelDeltaVMEObject(this.manager, this, ide, ecl, parameters);
 		this.existingObjectMap.put(ide, ret);
 		return ret;
 		});

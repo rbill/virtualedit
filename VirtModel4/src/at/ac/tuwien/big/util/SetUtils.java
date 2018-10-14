@@ -15,7 +15,9 @@ import java.util.function.Function;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 
+import at.ac.tuwien.big.vfunc.basic.Scope;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.AbstractVMEObject;
+import at.ac.tuwien.big.virtmod.basic.Treepos;
 
 public class SetUtils {
 
@@ -145,5 +147,16 @@ public class SetUtils {
 				;
 		strList.forEach(x->System.out.println(x));
 		
+	}
+
+
+	public static<T> void addIfIterable(Set<T> everything, Object scope) {
+		if (scope instanceof Collection) {
+			everything.addAll((Collection)scope);
+		} else if (scope instanceof Iterable) {
+			for (Object o: (Iterable)scope) {
+				everything.add((T)o);
+			}
+		}
 	}
 }

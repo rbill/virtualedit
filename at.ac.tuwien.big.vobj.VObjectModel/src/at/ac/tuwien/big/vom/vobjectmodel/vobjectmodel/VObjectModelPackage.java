@@ -59,6 +59,34 @@ public interface VObjectModelPackage extends EPackage {
 	VObjectModelPackage eINSTANCE = at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl.init();
 
 	/**
+	 * The meta object id for the '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.AnyRootImpl <em>Any Root</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.AnyRootImpl
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getAnyRoot()
+	 * @generated
+	 */
+	int ANY_ROOT = 20;
+
+	/**
+	 * The number of structural features of the '<em>Any Root</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ANY_ROOT_FEATURE_COUNT = 0;
+
+	/**
+	 * The number of operations of the '<em>Any Root</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ANY_ROOT_OPERATION_COUNT = 0;
+
+	/**
 	 * The meta object id for the '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.IdentifierImpl <em>Identifier</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -75,7 +103,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IDENTIFIER__IDENTIFIERREFORCMP = 0;
+	int IDENTIFIER__IDENTIFIERREFORCMP = ANY_ROOT_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -84,7 +112,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IDENTIFIER__NAME = 1;
+	int IDENTIFIER__NAME = ANY_ROOT_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Creatorid</b></em>' containment reference.
@@ -93,7 +121,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IDENTIFIER__CREATORID = 2;
+	int IDENTIFIER__CREATORID = ANY_ROOT_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Hc</b></em>' attribute.
@@ -102,7 +130,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IDENTIFIER__HC = 3;
+	int IDENTIFIER__HC = ANY_ROOT_FEATURE_COUNT + 3;
 
 	/**
 	 * The number of structural features of the '<em>Identifier</em>' class.
@@ -111,7 +139,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IDENTIFIER_FEATURE_COUNT = 4;
+	int IDENTIFIER_FEATURE_COUNT = ANY_ROOT_FEATURE_COUNT + 4;
 
 	/**
 	 * The operation id for the '<em>Hash Code</em>' operation.
@@ -120,7 +148,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IDENTIFIER___HASH_CODE = 0;
+	int IDENTIFIER___HASH_CODE = ANY_ROOT_OPERATION_COUNT + 0;
 
 	/**
 	 * The operation id for the '<em>Equals</em>' operation.
@@ -129,7 +157,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IDENTIFIER___EQUALS__IDENTIFIER = 1;
+	int IDENTIFIER___EQUALS__IDENTIFIER = ANY_ROOT_OPERATION_COUNT + 1;
 
 	/**
 	 * The operation id for the '<em>Init</em>' operation.
@@ -138,7 +166,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IDENTIFIER___INIT = 2;
+	int IDENTIFIER___INIT = ANY_ROOT_OPERATION_COUNT + 2;
 
 	/**
 	 * The number of operations of the '<em>Identifier</em>' class.
@@ -147,7 +175,53 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int IDENTIFIER_OPERATION_COUNT = 3;
+	int IDENTIFIER_OPERATION_COUNT = ANY_ROOT_OPERATION_COUNT + 3;
+
+	/**
+	 * The meta object id for the '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.IdentifierParamImpl <em>Identifier Param</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.IdentifierParamImpl
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getIdentifierParam()
+	 * @generated
+	 */
+	int IDENTIFIER_PARAM = 1;
+
+	/**
+	 * The feature id for the '<em><b>Identifier</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IDENTIFIER_PARAM__IDENTIFIER = 0;
+
+	/**
+	 * The feature id for the '<em><b>Identifier Pars</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IDENTIFIER_PARAM__IDENTIFIER_PARS = 1;
+
+	/**
+	 * The number of structural features of the '<em>Identifier Param</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IDENTIFIER_PARAM_FEATURE_COUNT = 2;
+
+	/**
+	 * The number of operations of the '<em>Identifier Param</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int IDENTIFIER_PARAM_OPERATION_COUNT = 0;
 
 	/**
 	 * The meta object id for the '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.AnyValueImpl <em>Any Value</em>}' class.
@@ -157,7 +231,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getAnyValue()
 	 * @generated
 	 */
-	int ANY_VALUE = 5;
+	int ANY_VALUE = 6;
 
 	/**
 	 * The number of structural features of the '<em>Any Value</em>' class.
@@ -185,7 +259,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getIdentifierRefOrCmp()
 	 * @generated
 	 */
-	int IDENTIFIER_REF_OR_CMP = 1;
+	int IDENTIFIER_REF_OR_CMP = 2;
 
 	/**
 	 * The feature id for the '<em><b>Identifier</b></em>' reference.
@@ -222,7 +296,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getIdentifierRef()
 	 * @generated
 	 */
-	int IDENTIFIER_REF = 2;
+	int IDENTIFIER_REF = 3;
 
 	/**
 	 * The feature id for the '<em><b>Identifier</b></em>' reference.
@@ -277,7 +351,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getIdentifierCmp()
 	 * @generated
 	 */
-	int IDENTIFIER_CMP = 3;
+	int IDENTIFIER_CMP = 4;
 
 	/**
 	 * The feature id for the '<em><b>Identifier</b></em>' reference.
@@ -323,7 +397,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getCreatorId()
 	 * @generated
 	 */
-	int CREATOR_ID = 4;
+	int CREATOR_ID = 5;
 
 	/**
 	 * The feature id for the '<em><b>Namespace</b></em>' attribute.
@@ -369,7 +443,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getJavaValue()
 	 * @generated
 	 */
-	int JAVA_VALUE = 6;
+	int JAVA_VALUE = 7;
 
 	/**
 	 * The feature id for the '<em><b>Value</b></em>' attribute.
@@ -406,7 +480,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getVObjDeltaModel()
 	 * @generated
 	 */
-	int VOBJ_DELTA_MODEL = 7;
+	int VOBJ_DELTA_MODEL = 8;
 
 	/**
 	 * The feature id for the '<em><b>Functions</b></em>' containment reference list.
@@ -436,13 +510,22 @@ public interface VObjectModelPackage extends EPackage {
 	int VOBJ_DELTA_MODEL__IDENTIFIERS = 2;
 
 	/**
+	 * The feature id for the '<em><b>Identifier Pars</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int VOBJ_DELTA_MODEL__IDENTIFIER_PARS = 3;
+
+	/**
 	 * The number of structural features of the '<em>VObj Delta Model</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int VOBJ_DELTA_MODEL_FEATURE_COUNT = 3;
+	int VOBJ_DELTA_MODEL_FEATURE_COUNT = 4;
 
 	/**
 	 * The number of operations of the '<em>VObj Delta Model</em>' class.
@@ -461,7 +544,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getFunction()
 	 * @generated
 	 */
-	int FUNCTION = 9;
+	int FUNCTION = 10;
 
 	/**
 	 * The number of structural features of the '<em>Function</em>' class.
@@ -489,7 +572,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getBasicFunction()
 	 * @generated
 	 */
-	int BASIC_FUNCTION = 8;
+	int BASIC_FUNCTION = 9;
 
 	/**
 	 * The feature id for the '<em><b>Values</b></em>' containment reference list.
@@ -526,7 +609,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getValuePair()
 	 * @generated
 	 */
-	int VALUE_PAIR = 10;
+	int VALUE_PAIR = 11;
 
 	/**
 	 * The feature id for the '<em><b>Key</b></em>' attribute.
@@ -581,7 +664,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getFiniteUnionFunction()
 	 * @generated
 	 */
-	int FINITE_UNION_FUNCTION = 11;
+	int FINITE_UNION_FUNCTION = 12;
 
 	/**
 	 * The feature id for the '<em><b>Base Func</b></em>' reference list.
@@ -618,7 +701,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getDeltaFunction()
 	 * @generated
 	 */
-	int DELTA_FUNCTION = 12;
+	int DELTA_FUNCTION = 13;
 
 	/**
 	 * The feature id for the '<em><b>Wrapped</b></em>' reference.
@@ -664,7 +747,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getStoredFuncs()
 	 * @generated
 	 */
-	int STORED_FUNCS = 13;
+	int STORED_FUNCS = 14;
 
 	/**
 	 * The feature id for the '<em><b>Identifier</b></em>' containment reference.
@@ -710,7 +793,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getFeatureFunc()
 	 * @generated
 	 */
-	int FEATURE_FUNC = 14;
+	int FEATURE_FUNC = 15;
 
 	/**
 	 * The feature id for the '<em><b>Deltastore</b></em>' containment reference.
@@ -774,7 +857,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getDeltaStore()
 	 * @generated
 	 */
-	int DELTA_STORE = 15;
+	int DELTA_STORE = 16;
 
 	/**
 	 * The feature id for the '<em><b>Add Map</b></em>' reference.
@@ -820,7 +903,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getCompleteFile()
 	 * @generated
 	 */
-	int COMPLETE_FILE = 16;
+	int COMPLETE_FILE = 17;
 
 	/**
 	 * The feature id for the '<em><b>Virt Models</b></em>' attribute list.
@@ -829,7 +912,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPLETE_FILE__VIRT_MODELS = 0;
+	int COMPLETE_FILE__VIRT_MODELS = ANY_ROOT_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Input Models</b></em>' attribute list.
@@ -838,7 +921,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPLETE_FILE__INPUT_MODELS = 1;
+	int COMPLETE_FILE__INPUT_MODELS = ANY_ROOT_FEATURE_COUNT + 1;
 
 	/**
 	 * The feature id for the '<em><b>Deltamodel</b></em>' containment reference.
@@ -847,7 +930,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPLETE_FILE__DELTAMODEL = 2;
+	int COMPLETE_FILE__DELTAMODEL = ANY_ROOT_FEATURE_COUNT + 2;
 
 	/**
 	 * The feature id for the '<em><b>Last Model Text</b></em>' attribute.
@@ -856,7 +939,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPLETE_FILE__LAST_MODEL_TEXT = 3;
+	int COMPLETE_FILE__LAST_MODEL_TEXT = ANY_ROOT_FEATURE_COUNT + 3;
 
 	/**
 	 * The feature id for the '<em><b>Current Model Text</b></em>' attribute.
@@ -865,7 +948,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPLETE_FILE__CURRENT_MODEL_TEXT = 4;
+	int COMPLETE_FILE__CURRENT_MODEL_TEXT = ANY_ROOT_FEATURE_COUNT + 4;
 
 	/**
 	 * The feature id for the '<em><b>Xtextlanguage</b></em>' containment reference.
@@ -874,7 +957,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPLETE_FILE__XTEXTLANGUAGE = 5;
+	int COMPLETE_FILE__XTEXTLANGUAGE = ANY_ROOT_FEATURE_COUNT + 5;
 
 	/**
 	 * The feature id for the '<em><b>Ecoredef</b></em>' containment reference list.
@@ -883,16 +966,16 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPLETE_FILE__ECOREDEF = 6;
+	int COMPLETE_FILE__ECOREDEF = ANY_ROOT_FEATURE_COUNT + 6;
 
 	/**
-	 * The feature id for the '<em><b>Root Objects</b></em>' containment reference list.
+	 * The feature id for the '<em><b>Root Objects</b></em>' reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int COMPLETE_FILE__ROOT_OBJECTS = 7;
+	int COMPLETE_FILE__ROOT_OBJECTS = ANY_ROOT_FEATURE_COUNT + 7;
 
 	/**
 	 * The number of structural features of the '<em>Complete File</em>' class.
@@ -901,7 +984,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPLETE_FILE_FEATURE_COUNT = 8;
+	int COMPLETE_FILE_FEATURE_COUNT = ANY_ROOT_FEATURE_COUNT + 8;
 
 	/**
 	 * The number of operations of the '<em>Complete File</em>' class.
@@ -910,7 +993,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int COMPLETE_FILE_OPERATION_COUNT = 0;
+	int COMPLETE_FILE_OPERATION_COUNT = ANY_ROOT_OPERATION_COUNT + 0;
 
 	/**
 	 * The meta object id for the '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.LanguageDefImpl <em>Language Def</em>}' class.
@@ -920,7 +1003,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getLanguageDef()
 	 * @generated
 	 */
-	int LANGUAGE_DEF = 17;
+	int LANGUAGE_DEF = 18;
 
 	/**
 	 * The feature id for the '<em><b>Lang Standalone Setup</b></em>' attribute.
@@ -957,7 +1040,7 @@ public interface VObjectModelPackage extends EPackage {
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getEcoreDef()
 	 * @generated
 	 */
-	int ECORE_DEF = 18;
+	int ECORE_DEF = 19;
 
 	/**
 	 * The feature id for the '<em><b>Factory Package</b></em>' attribute.
@@ -1079,6 +1162,38 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 */
 	EOperation getIdentifier__Init();
+
+	/**
+	 * Returns the meta object for class '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam <em>Identifier Param</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Identifier Param</em>'.
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam
+	 * @generated
+	 */
+	EClass getIdentifierParam();
+
+	/**
+	 * Returns the meta object for the reference '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam#getIdentifier <em>Identifier</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Identifier</em>'.
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam#getIdentifier()
+	 * @see #getIdentifierParam()
+	 * @generated
+	 */
+	EReference getIdentifierParam_Identifier();
+
+	/**
+	 * Returns the meta object for the reference list '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam#getIdentifierPars <em>Identifier Pars</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Identifier Pars</em>'.
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam#getIdentifierPars()
+	 * @see #getIdentifierParam()
+	 * @generated
+	 */
+	EReference getIdentifierParam_IdentifierPars();
 
 	/**
 	 * Returns the meta object for class '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierRefOrCmp <em>Identifier Ref Or Cmp</em>}'.
@@ -1259,6 +1374,17 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getVObjDeltaModel_Identifiers();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel#getIdentifierPars <em>Identifier Pars</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Identifier Pars</em>'.
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel#getIdentifierPars()
+	 * @see #getVObjDeltaModel()
+	 * @generated
+	 */
+	EReference getVObjDeltaModel_IdentifierPars();
 
 	/**
 	 * Returns the meta object for class '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.BasicFunction <em>Basic Function</em>}'.
@@ -1593,10 +1719,10 @@ public interface VObjectModelPackage extends EPackage {
 	EReference getCompleteFile_Ecoredef();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CompleteFile#getRootObjects <em>Root Objects</em>}'.
+	 * Returns the meta object for the reference list '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CompleteFile#getRootObjects <em>Root Objects</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Root Objects</em>'.
+	 * @return the meta object for the reference list '<em>Root Objects</em>'.
 	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.CompleteFile#getRootObjects()
 	 * @see #getCompleteFile()
 	 * @generated
@@ -1655,6 +1781,16 @@ public interface VObjectModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getEcoreDef_PackagePackage();
+
+	/**
+	 * Returns the meta object for class '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.AnyRoot <em>Any Root</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Any Root</em>'.
+	 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.AnyRoot
+	 * @generated
+	 */
+	EClass getAnyRoot();
 
 	/**
 	 * Returns the factory that creates the instances of the model.
@@ -1744,6 +1880,32 @@ public interface VObjectModelPackage extends EPackage {
 		 * @generated
 		 */
 		EOperation IDENTIFIER___INIT = eINSTANCE.getIdentifier__Init();
+
+		/**
+		 * The meta object literal for the '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.IdentifierParamImpl <em>Identifier Param</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.IdentifierParamImpl
+		 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getIdentifierParam()
+		 * @generated
+		 */
+		EClass IDENTIFIER_PARAM = eINSTANCE.getIdentifierParam();
+
+		/**
+		 * The meta object literal for the '<em><b>Identifier</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IDENTIFIER_PARAM__IDENTIFIER = eINSTANCE.getIdentifierParam_Identifier();
+
+		/**
+		 * The meta object literal for the '<em><b>Identifier Pars</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference IDENTIFIER_PARAM__IDENTIFIER_PARS = eINSTANCE.getIdentifierParam_IdentifierPars();
 
 		/**
 		 * The meta object literal for the '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.IdentifierRefOrCmpImpl <em>Identifier Ref Or Cmp</em>}' class.
@@ -1894,6 +2056,14 @@ public interface VObjectModelPackage extends EPackage {
 		 * @generated
 		 */
 		EReference VOBJ_DELTA_MODEL__IDENTIFIERS = eINSTANCE.getVObjDeltaModel_Identifiers();
+
+		/**
+		 * The meta object literal for the '<em><b>Identifier Pars</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference VOBJ_DELTA_MODEL__IDENTIFIER_PARS = eINSTANCE.getVObjDeltaModel_IdentifierPars();
 
 		/**
 		 * The meta object literal for the '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.BasicFunctionImpl <em>Basic Function</em>}' class.
@@ -2162,7 +2332,7 @@ public interface VObjectModelPackage extends EPackage {
 		EReference COMPLETE_FILE__ECOREDEF = eINSTANCE.getCompleteFile_Ecoredef();
 
 		/**
-		 * The meta object literal for the '<em><b>Root Objects</b></em>' containment reference list feature.
+		 * The meta object literal for the '<em><b>Root Objects</b></em>' reference list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
@@ -2212,6 +2382,16 @@ public interface VObjectModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute ECORE_DEF__PACKAGE_PACKAGE = eINSTANCE.getEcoreDef_PackagePackage();
+
+		/**
+		 * The meta object literal for the '{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.AnyRootImpl <em>Any Root</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.AnyRootImpl
+		 * @see at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjectModelPackageImpl#getAnyRoot()
+		 * @generated
+		 */
+		EClass ANY_ROOT = eINSTANCE.getAnyRoot();
 
 	}
 

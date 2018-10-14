@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
 
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Function;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierParam;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.StoredFuncs;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage;
@@ -33,6 +34,7 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelPackage;
  *   <li>{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjDeltaModelImpl#getFunctions <em>Functions</em>}</li>
  *   <li>{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjDeltaModelImpl#getStoredfuncs <em>Storedfuncs</em>}</li>
  *   <li>{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjDeltaModelImpl#getIdentifiers <em>Identifiers</em>}</li>
+ *   <li>{@link at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.impl.VObjDeltaModelImpl#getIdentifierPars <em>Identifier Pars</em>}</li>
  * </ul>
  *
  * @generated
@@ -67,6 +69,16 @@ public class VObjDeltaModelImpl extends MinimalEObjectImpl.Container implements 
 	 * @ordered
 	 */
 	protected EList<Identifier> identifiers;
+
+	/**
+	 * The cached value of the '{@link #getIdentifierPars() <em>Identifier Pars</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getIdentifierPars()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<IdentifierParam> identifierPars;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -128,6 +140,18 @@ public class VObjDeltaModelImpl extends MinimalEObjectImpl.Container implements 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EList<IdentifierParam> getIdentifierPars() {
+		if (identifierPars == null) {
+			identifierPars = new EObjectContainmentEList<IdentifierParam>(IdentifierParam.class, this, VObjectModelPackage.VOBJ_DELTA_MODEL__IDENTIFIER_PARS);
+		}
+		return identifierPars;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -137,6 +161,8 @@ public class VObjDeltaModelImpl extends MinimalEObjectImpl.Container implements 
 				return ((InternalEList<?>)getStoredfuncs()).basicRemove(otherEnd, msgs);
 			case VObjectModelPackage.VOBJ_DELTA_MODEL__IDENTIFIERS:
 				return ((InternalEList<?>)getIdentifiers()).basicRemove(otherEnd, msgs);
+			case VObjectModelPackage.VOBJ_DELTA_MODEL__IDENTIFIER_PARS:
+				return ((InternalEList<?>)getIdentifierPars()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -155,6 +181,8 @@ public class VObjDeltaModelImpl extends MinimalEObjectImpl.Container implements 
 				return getStoredfuncs();
 			case VObjectModelPackage.VOBJ_DELTA_MODEL__IDENTIFIERS:
 				return getIdentifiers();
+			case VObjectModelPackage.VOBJ_DELTA_MODEL__IDENTIFIER_PARS:
+				return getIdentifierPars();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -180,6 +208,10 @@ public class VObjDeltaModelImpl extends MinimalEObjectImpl.Container implements 
 				getIdentifiers().clear();
 				getIdentifiers().addAll((Collection<? extends Identifier>)newValue);
 				return;
+			case VObjectModelPackage.VOBJ_DELTA_MODEL__IDENTIFIER_PARS:
+				getIdentifierPars().clear();
+				getIdentifierPars().addAll((Collection<? extends IdentifierParam>)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -201,6 +233,9 @@ public class VObjDeltaModelImpl extends MinimalEObjectImpl.Container implements 
 			case VObjectModelPackage.VOBJ_DELTA_MODEL__IDENTIFIERS:
 				getIdentifiers().clear();
 				return;
+			case VObjectModelPackage.VOBJ_DELTA_MODEL__IDENTIFIER_PARS:
+				getIdentifierPars().clear();
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -219,6 +254,8 @@ public class VObjDeltaModelImpl extends MinimalEObjectImpl.Container implements 
 				return storedfuncs != null && !storedfuncs.isEmpty();
 			case VObjectModelPackage.VOBJ_DELTA_MODEL__IDENTIFIERS:
 				return identifiers != null && !identifiers.isEmpty();
+			case VObjectModelPackage.VOBJ_DELTA_MODEL__IDENTIFIER_PARS:
+				return identifierPars != null && !identifierPars.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

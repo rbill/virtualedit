@@ -247,7 +247,8 @@ public abstract class AbstractFunc<Src, Target, QR extends QueryResult<Src, Targ
 	}
 
 	protected QueryResult<Src, Target> getCacheIfExists(Src src) {
-		return this.cache.getIfExists(src);
+		 QueryResult<Src, Target> ret= this.cache.getIfExists(src);
+		 return ret;
 	}
 	
 	public AbstractFunctionNotifyer<?, Src, Target> getChangeNotifyer() {
