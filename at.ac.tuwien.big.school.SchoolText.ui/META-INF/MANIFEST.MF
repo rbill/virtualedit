@@ -26,7 +26,8 @@ Require-Bundle: at.ac.tuwien.big.school.SchoolText,
  intelledit
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: at.ac.tuwien.big.school.ui.contentassist,
- at.ac.tuwien.big.school.SchoolText.ui.internal,
+Export-Package: at.ac.tuwien.big.school.SchoolText.ui.internal,
+ at.ac.tuwien.big.school.editor,
+ at.ac.tuwien.big.school.ui.contentassist,
  at.ac.tuwien.big.school.ui.quickfix
 Bundle-Activator: at.ac.tuwien.big.school.SchoolText.ui.internal.SchoolTextActivator

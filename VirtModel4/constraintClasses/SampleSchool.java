@@ -10,6 +10,7 @@ import at.ac.tuwien.big.vfunc.nbasic.ConstantValue;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.NotifyingList;
 import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
+import at.ac.tuwien.big.vfunc.nbasic.constraint.ListRepeater;
 import org.eclipse.emf.ecore.EcoreFactory;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import java.util.List;
@@ -29,6 +30,7 @@ public class SampleSchool extends at.ac.tuwien.big.vfunc.nbasic.constraint.Sampl
 	}
 	public static final EReference $School_pupils = school.SchoolPackage.eINSTANCE.getSchool_Pupils();
 	protected NotifyingList<school.Pupil> pupils = new NotifyingList<>(new org.eclipse.emf.common.util.BasicEList<>());
+	{pupils.addListChangeListener(new ListRepeater<>((java.util.List)super_eGet($School_pupils)));}
 	public org.eclipse.emf.common.util.EList<school.Pupil> getPupils() {
 		return this.pupils;
 	}
@@ -38,6 +40,7 @@ public class SampleSchool extends at.ac.tuwien.big.vfunc.nbasic.constraint.Sampl
 	}
 	public static final EReference $School_courses = school.SchoolPackage.eINSTANCE.getSchool_Courses();
 	protected NotifyingList<school.Course> courses = new NotifyingList<>(new org.eclipse.emf.common.util.BasicEList<>());
+	{courses.addListChangeListener(new ListRepeater<>((java.util.List)super_eGet($School_courses)));}
 	public org.eclipse.emf.common.util.EList<school.Course> getCourses() {
 		return this.courses;
 	}

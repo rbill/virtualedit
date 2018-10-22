@@ -158,6 +158,12 @@ public class VMXtextEditor extends XtextEditor {
 
 	public static final int MAX_ANNOTATION_COLORS = 10;
 
+	public static VMXtextEditor INSTANCE;
+
+	public static Map<String, VMEObject> allStored = new HashMap<>();
+
+	private static WeakHashMap<IMarker, Boolean> knownMarkers = new WeakHashMap<>();
+
 	public static Resource getEcoreRes(Resource my) {
 		// TODO: W???re es nicht viel gescheiter, die ECore-Resource irgendwo
 		// statisch zu hinterlegen?
@@ -203,11 +209,9 @@ public class VMXtextEditor extends XtextEditor {
 	private static URI nrm(java.net.URI from) {
 		return nrm(URI.createURI(from.toString()));
 	}
-
 	private static URI nrm(URI from) {
 		return URIConverter.INSTANCE.normalize(from);
 	}
-
 	public static URI switchFile(URI fromFile, String newFile) {
 		String str = fromFile.toString();
 		int lastInd = str.lastIndexOf('/');
@@ -226,11 +230,6 @@ public class VMXtextEditor extends XtextEditor {
 	 * ecoreFile;
 	 */
 	private String basicModelText;
-	private String fullModelText;
-	private long lastAspectChange = -1;
-
-	// CompleteFile must be loaded ...
-	private CompleteFileHandler completeFile;
 
 	/*
 	 * private ResourceSetInfo curInfo;
@@ -238,9 +237,9 @@ public class VMXtextEditor extends XtextEditor {
 	 * private ResourceInfo curResourceInfo;
 	 */
 
-	private List<VMEObject> myResourceList = new ArrayList<>();
+	private String fullModelText;
 
-	private boolean inInit = false;
+	private long lastAspectChange = -1;
 
 	/*
 	 * IXtextModelListener listener = new IXtextModelListener() {
@@ -248,6 +247,13 @@ public class VMXtextEditor extends XtextEditor {
 	 * @Override public void modelChanged(XtextResource resource) {
 	 * refreshMarkers(); } };
 	 */
+
+	// CompleteFile must be loaded ...
+	private CompleteFileHandler completeFile;
+
+	private List<VMEObject> myResourceList = new ArrayList<>();
+
+	private boolean inInit = false;
 
 	private boolean ignore = false;
 
@@ -260,6 +266,14 @@ public class VMXtextEditor extends XtextEditor {
 	Map<Resource, Integer> usedIntegers = new HashMap<>();
 
 	public SimpleModelCorrespondance<EObject, VMEObject> xtextToViewCorrespondance = new SimpleModelCorrespondance<>();
+
+	{
+		INSTANCE = this;
+	}
+
+	// TODO: This will certainly be buggy ... for example if you replace A by B,
+	// and then C (another) by D and then B by C ...
+	private Map<Identifier, Identifier> replacementMap = new HashMap<>();
 
 	private void addFilesToResourceSet(ResourceSet rs, IContainer cont, List<Resource> toAdd) {
 		try {
@@ -354,9 +368,9 @@ public class VMXtextEditor extends XtextEditor {
 			for (MarkerAnnotation annot : candidates) {
 				Identifier uuid = getReferencedUUID(annot);
 				if (uuid != null) {
-					uuid = replacementMap.getOrDefault(uuid, uuid);
+					uuid = this.replacementMap.getOrDefault(uuid, uuid);
 					uuids.add(uuid);
-					uuid = replacementMap.getOrDefault(uuid, uuid);
+					uuid = this.replacementMap.getOrDefault(uuid, uuid);
 				} else {
 					System.err.println("Strange Marker Annotation: " + annot);
 					IMarker marker = annot.getMarker();
@@ -408,7 +422,9 @@ public class VMXtextEditor extends XtextEditor {
 		ret.getEntriesL2R().forEach(e -> {
 			Entry en = (Entry) e;
 			EObject src = (EObject) en.getKey();
-			allStored.put(src.eResource().getURIFragment(src), (VMEObject) en.getValue());
+			if (src.eResource() != null) {
+				allStored.put(src.eResource().getURIFragment(src), (VMEObject) en.getValue());
+			}
 		});
 		return ret;
 	}
@@ -615,6 +631,10 @@ public class VMXtextEditor extends XtextEditor {
 		return this.completeFile.getEManager();
 	}
 
+	public VMEObject getEObject(EObject stateObject) {
+		return allStored.get(stateObject.eResource().getURIFragment(stateObject));
+	}
+
 	public Resource getFakeXtextResource() {
 		if (this.fake == null) {
 			String thisExtension = getResource().getFileExtension();
@@ -752,8 +772,6 @@ public class VMXtextEditor extends XtextEditor {
 				List<Resource> toAdd = new ArrayList<>();
 				addFilesToResourceSet(rs, root, toAdd);
 
-				EObjectManager man = new EObjectManager();
-				man.addKnown(VObjectModelPackage.eINSTANCE);
 
 				final IPath cfilePath = mainpath.addFileExtension("cfile.xmi");
 				File cfile = cfilePath.toFile();
@@ -835,6 +853,11 @@ public class VMXtextEditor extends XtextEditor {
 
 	}
 
+	public void partialReset(VMEObject partialReset) {
+		this.completeFile.partialReset(partialReset);
+		updateXtext(getDocument());
+	}
+
 	public Identifier pickDeepest(List<Identifier> str) {
 		Identifier ret = pickDeepestUuid(str);
 		if (ret != null) {
@@ -842,7 +865,6 @@ public class VMXtextEditor extends XtextEditor {
 		}
 		return null;
 	}
-
 	public Identifier pickDeepestUuid(List<Identifier> uuids) {
 		Set<Identifier> possible = new HashSet<>(uuids);
 		for (Identifier sub : uuids) {
@@ -891,6 +913,25 @@ public class VMXtextEditor extends XtextEditor {
 
 	public void refreshMarkers() {
 		recalculateFile(true);
+	}
+
+	public void refreshText() {
+		updateXtext(getDocument());
+		// refreshMarkers();
+		updateState(getEditorInput());
+		validateState(getEditorInput());
+		updateXtext(getDocument());
+
+	}
+
+	public void refreshVirtual() {
+		updateVirtualModel(getXtextResource());
+	}
+
+	public void replace(VMEObject replaced, VMEObject newSub) {
+		this.completeFile.newSub(replaced, newSub);
+		refreshText();
+		// updateXtext(getDocument());
 	}
 
 	public void rerunTransformation() {
@@ -964,7 +1005,9 @@ public class VMXtextEditor extends XtextEditor {
 		equalizer.equalize();
 
 		this.xtextToViewCorrespondance.getEntriesL2R().forEach(entry -> {
-			allStored.put(entry.getKey().eResource().getURIFragment(entry.getKey()), entry.getValue());
+			if (entry.getKey().eResource() != null) {
+				allStored.put(entry.getKey().eResource().getURIFragment(entry.getKey()), entry.getValue());
+			}
 		});
 
 		this.completeFile.save();
@@ -975,20 +1018,7 @@ public class VMXtextEditor extends XtextEditor {
 		 */
 	}
 
-	public static VMXtextEditor INSTANCE;
-	public static Map<String, VMEObject> allStored = new HashMap<>();
-
-	public VMEObject getEObject(EObject stateObject) {
-		return allStored.get(stateObject.eResource().getURIFragment(stateObject));
-	}
-
-	{
-		INSTANCE = this;
-	}
-
-	// TODO: This will certainly be buggy ... for example if you replace A by B,
-	// and then C (another) by D and then B by C ...
-	private Map<Identifier, Identifier> replacementMap = new HashMap<>();
+	// From IntellEdit
 
 	public void updateXtext(IXtextDocument doc) {
 		updateModelProvs();
@@ -1026,7 +1056,7 @@ public class VMXtextEditor extends XtextEditor {
 
 				// System.out.println("Root objects before rev:
 				// "+myResourceList+" VS "+state.getContents());
-				SimpleModelEqualizer<VMEObject, EObject> reverseEqualizer = new SimpleModelEqualizer<VMEObject, EObject>(
+				SimpleModelEqualizer<VMEObject, EObject> reverseEqualizer = new SimpleModelEqualizer<>(
 						this.myResourceList, state.getContents(), inverse, newlyCreated, myEcoreCreater);
 
 				String oldCont = getDocument().get();
@@ -1316,36 +1346,8 @@ public class VMXtextEditor extends XtextEditor {
 																			// strange
 																			// results!
 		this.completeFile.save();
-		replacementMap.clear();
+		this.replacementMap.clear();
 	}
-
-	public void replace(VMEObject replaced, VMEObject newSub) {
-		completeFile.newSub(replaced, newSub);
-		refreshText();
-		// updateXtext(getDocument());
-	}
-
-	public void partialReset(VMEObject partialReset) {
-		completeFile.partialReset(partialReset);
-		updateXtext(getDocument());
-	}
-
-	public void refreshVirtual() {
-		updateVirtualModel(getXtextResource());
-	}
-
-	public void refreshText() {
-		updateXtext(getDocument());
-		// refreshMarkers();
-		updateState(getEditorInput());
-		validateState(getEditorInput());
-		updateXtext(getDocument());
-
-	}
-
-	// From IntellEdit
-
-	private static WeakHashMap<IMarker, Boolean> knownMarkers = new WeakHashMap<IMarker, Boolean>();
 
 	/*
 	@Override

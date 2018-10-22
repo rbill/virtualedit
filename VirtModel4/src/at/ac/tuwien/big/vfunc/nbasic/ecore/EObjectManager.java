@@ -80,21 +80,31 @@ public class EObjectManager {
 	
 	public static EObjectManager SINSTANCE;
 	
-	{
-		if (INSTANCE == null || INSTANCE.get() == null) {
-			INSTANCE = new WeakReference<>(this);
-		}
-		SINSTANCE = this;
-	}
-	
-	public static EObjectManager getInstance() {
-		return (INSTANCE == null || INSTANCE.get()==null)?SINSTANCE:INSTANCE.get();
-	}
-
 	static {
 		TEMP_CREATION.setName("TempCreate");
 	}
-
+	
+	private static <T extends EObject> void getAllReferenced(EObject start, Map<T,Boolean> functions, Class<T> type, Map<EObject,Boolean> subGo) {
+		for (EObject eobj : start.eCrossReferences()) {
+			if (type.isInstance(eobj)) {
+				functions.put((T) eobj, true);
+			} 
+			if (subGo.put(eobj,true) == null) {
+				getAllReferenced(eobj, functions, type, subGo);
+			}
+		}
+		start.eAllContents().forEachRemaining(x -> {
+			for (EObject eobj : x.eCrossReferences()) {
+				if (type.isInstance(eobj)) {
+					functions.put((T) eobj, true);
+				} 
+				if (subGo.put(eobj,true) == null) {
+					getAllReferenced(eobj, functions, type, subGo);
+				}
+			}
+		});
+	}
+	
 	public static Identifier getIdentifier(String str) {
 		String complete =  str ;
 		Resource res;
@@ -111,40 +121,36 @@ public class EObjectManager {
 
 		return null;
 	}
+	
+	public static EObjectManager getInstance() {
+		return (INSTANCE == null || INSTANCE.get()==null)?SINSTANCE:INSTANCE.get();
+	}
+
+	public static <T extends EObject> Set<T> getNoncomposite(EObject start, Class<T> type) {
+		IdentityHashMap<T,Boolean> ret = new IdentityHashMap();
+		getAllReferenced(start, ret, type, new IdentityHashMap<>());
+		IdentityHashMap<T,Boolean> included = new IdentityHashMap<>();
+		start.eAllContents().forEachRemaining(x -> {
+			if (type.isInstance(x)) {
+				included.put((T) x, true);
+			}
+		});
+		for (T func : ret.keySet()) {
+			func.eAllContents().forEachRemaining(x -> {
+				if (type.isInstance(x)) {
+					included.put((T) x, true);
+				}
+			});
+		}
+		ret.keySet().removeAll(included.keySet());
+		return ret.keySet();
+	}
 
 	public static Resource getVirtLangResource(File ecsslFile) throws IOException {
 		Injector injector = new VirtLangStandaloneSetup().createInjectorAndDoEMFRegistration();
 		XtextResourceSet rs = injector.getInstance(XtextResourceSet.class);
 		Resource ecsslResource = rs.getResource(URI.createFileURI(ecsslFile.getCanonicalPath()), true);
 		return ecsslResource;
-	}
-	
-	
-	//Would have to be updated ...
-	private Map<EClass, List<VMEObject>> cachedAdmissable = new HashMap<>();
-	
-	public List<VMEObject> getAllAdmissible(EClass cl) {
-		boolean[] recheck = new boolean[]{false}; 
-		List<VMEObject> rret = cachedAdmissable.computeIfAbsent(cl, a->{
-		Iterable<EObject> existingObjects = this.eobjReader.getAllObjects();
-		Map<EClass, Set<EObject>> allAdmissible = ObjectCreatorCreator.getExistingObjectMap(existingObjects);
-		if (allAdmissible.isEmpty()) {
-			recheck[0]=true;
-			return null;
-		}
-		List<VMEObject> ret = new ArrayList<VMEObject>();
-		Set<EObjectCreator> had = new HashSet<EObjectCreator>();
-		eobjectCreators.values().forEach(x->x.values().forEach(cr->{
-			if (cr instanceof ObjectCreatorCreator && had.add(cr)) {
-				ObjectCreatorCreator occ = (ObjectCreatorCreator)cr;
-				ret.addAll(occ.getAllAdmissible(allAdmissible));
-			}
-		}));
-		ret.removeIf(x->x == null || x.eClass() == null || (!Objects.equals(x.eClass(),cl) && !cl.isSuperTypeOf(x.eClass())));
-		return ret;
-		});
-		
-		return rret==null?new ArrayList<VMEObject>():rret;
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -198,6 +204,18 @@ public class EObjectManager {
 		manager.storeDelta(model);
 		delta.save(Collections.emptyMap());
 	}
+	
+	
+	{
+		if (INSTANCE == null || INSTANCE.get() == null) {
+			INSTANCE = new WeakReference<>(this);
+		}
+		SINSTANCE = this;
+	}
+	
+
+	//Would have to be updated ...
+	private Map<EClass, List<VMEObject>> cachedAdmissable = new HashMap<>();
 
 	private ResourceSet rs = new ResourceSetImpl();
 
@@ -226,6 +244,7 @@ public class EObjectManager {
 		addCreator(this.eobjReader);
 		addCreator(this.eobjCreator);
 	}
+	
 	
 	private Map<Identifier, VMEObject> newObjects = new HashMap<>();
 
@@ -281,15 +300,20 @@ public class EObjectManager {
 
 	private Map<String, EPackage> knownPackageUris = new HashMap<>();
 
+	public EObjectManager() {
+		System.out.println("Created EObjectManager!");
+		new Exception().printStackTrace();
+	}
+
+	// private Map<EObjectCreator, Map<Object[], VMEObject>> createdObjects =
+	// new HashMap<>();
+
 	private void addCreator(EObjectCreator creator) {
 		this.eobjectCreators.computeIfAbsent(creator.getName().getNamespace(), x -> new HashMap<>())
 				.put(creator.getName().getName(), creator);
 		// Double-put
 		this.eobjectCreators.computeIfAbsent(null, x -> new HashMap<>()).put(creator.getName().getName(), creator);
 	}
-
-	// private Map<EObjectCreator, Map<Object[], VMEObject>> createdObjects =
-	// new HashMap<>();
 
 	public void addCreator(String namespace, String name, EObjectCreator creator) {
 		this.eobjectCreators.computeIfAbsent(namespace, x -> new HashMap<>()).put(name, creator);
@@ -346,6 +370,30 @@ public class EObjectManager {
 		throw new UnsupportedOperationException("Cannot convert " + val + "!");
 	}
 
+	public List<VMEObject> getAllAdmissible(EClass cl) {
+		boolean[] recheck = new boolean[]{false}; 
+		List<VMEObject> rret = this.cachedAdmissable.computeIfAbsent(cl, a->{
+		Iterable<EObject> existingObjects = this.eobjReader.getAllObjects();
+		Map<EClass, Set<EObject>> allAdmissible = ObjectCreatorCreator.getExistingObjectMap(existingObjects);
+		if (allAdmissible.isEmpty()) {
+			recheck[0]=true;
+			return null;
+		}
+		List<VMEObject> ret = new ArrayList<>();
+		Set<EObjectCreator> had = new HashSet<>();
+		this.eobjectCreators.values().forEach(x->x.values().forEach(cr->{
+			if (cr instanceof ObjectCreatorCreator && had.add(cr)) {
+				ObjectCreatorCreator occ = (ObjectCreatorCreator)cr;
+				ret.addAll(occ.getAllAdmissible(allAdmissible));
+			}
+		}));
+		ret.removeIf(x->x == null || x.eClass() == null || (!Objects.equals(x.eClass(),cl) && !cl.isSuperTypeOf(x.eClass())));
+		return ret;
+		});
+		
+		return rret==null?new ArrayList<>():rret;
+	}
+
 	public Collection<EObject> getAllContents() {
 		Set<EObject> eobjs = new HashSet<>(this.createdObjects.values());
 		eobjs.removeIf(x->{
@@ -359,27 +407,6 @@ public class EObjectManager {
 			return false;
 		});
 		return eobjs;
-	}
-
-	private static <T extends EObject> void getAllReferenced(EObject start, Map<T,Boolean> functions, Class<T> type, Map<EObject,Boolean> subGo) {
-		for (EObject eobj : start.eCrossReferences()) {
-			if (type.isInstance(eobj)) {
-				functions.put((T) eobj, true);
-			} 
-			if (subGo.put(eobj,true) == null) {
-				getAllReferenced(eobj, functions, type, subGo);
-			}
-		}
-		start.eAllContents().forEachRemaining(x -> {
-			for (EObject eobj : x.eCrossReferences()) {
-				if (type.isInstance(eobj)) {
-					functions.put((T) eobj, true);
-				} 
-				if (subGo.put(eobj,true) == null) {
-					getAllReferenced(eobj, functions, type, subGo);
-				}
-			}
-		});
 	}
 
 	public EObjectCreator getBestCreatorOrNull(String namespace, String name) {
@@ -607,26 +634,6 @@ public class EObjectManager {
 		return ""+getNewObjNumb(cl);
 	}
 
-	public static <T extends EObject> Set<T> getNoncomposite(EObject start, Class<T> type) {
-		IdentityHashMap<T,Boolean> ret = new IdentityHashMap();
-		getAllReferenced(start, ret, type, new IdentityHashMap<>());
-		IdentityHashMap<T,Boolean> included = new IdentityHashMap<>();
-		start.eAllContents().forEachRemaining(x -> {
-			if (type.isInstance(x)) {
-				included.put((T) x, true);
-			}
-		});
-		for (T func : ret.keySet()) {
-			func.eAllContents().forEachRemaining(x -> {
-				if (type.isInstance(x)) {
-					included.put((T) x, true);
-				}
-			});
-		}
-		ret.keySet().removeAll(included.keySet());
-		return ret.keySet();
-	}
-
 	public VMEObject getObject(Identifier id) {
 		return this.createdObjects.get(id);
 	}
@@ -712,7 +719,7 @@ public class EObjectManager {
 		model.getFunctions().addAll(functions);
 		Set<Identifier> identifiers = getNoncomposite(model, Identifier.class);
 		model.getIdentifiers().addAll(identifiers);
-		Set<Identifier> allIdentifiers = new HashSet<Identifier>();
+		Set<Identifier> allIdentifiers = new HashSet<>();
 		model.getIdentifierPars().clear();
 		IteratorUtils.filterType(model.eAllContents(), Identifier.class).forEachRemaining(id->{
 			VMEObject vmeo = getObject(id);
@@ -730,6 +737,7 @@ public class EObjectManager {
 			
 		});
 	}
+
 	
 
 }

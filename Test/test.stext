@@ -1,11 +1,12 @@
 School {
 	
-	pupils {
-		Pupil BurgerA { 
-			   
-		inclass Lichnowskygasse  } 
-		
+	pupils {       
+ 		Pupil BurgerA {                                                 
+			                        
+		inclass "Blablaadf XYZ"  } 
 		  
-	}   
-	  
-}  
+		    
+	}     
+	       
+}   
+   

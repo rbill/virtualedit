@@ -26,7 +26,8 @@ public class NotifyingList<T> extends AbstractList<T> implements ListChangeNotif
 	@Override
 	public void add(int index, T obj) {
 		this.delegate.add(index,obj);
-		add(index, obj);
+		added(index, obj);
+		
 	}
 
 	@Override

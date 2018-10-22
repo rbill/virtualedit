@@ -17,7 +17,7 @@ public interface MultiAttributeHandler<T> extends AttributeHandler<T, List<T>> {
 	
 	@Override
 	public default boolean isSet() {
-		return exposeList().isEmpty();
+		return !exposeList().isEmpty();
 	}
 	
 	@Override

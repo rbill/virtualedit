@@ -16,7 +16,9 @@ Require-Bundle: at.ac.tuwien.big.virtlang.examples.school,
  org.eclipse.emf.mwe2.launch;bundle-version="2.9.0";visibility:=reexport,
  org.eclipse.emf.mwe2.lib;bundle-version="2.9.0";visibility:=reexport,
  VirtModel4,
- intelledit
+ intelledit,
+ at.ac.tuwien.big.school.SchoolText.ui;bundle-version="1.0.0",
+ xtextutils
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: at.ac.tuwien.big.school.scoping,
  at.ac.tuwien.big.school.parser.antlr.internal,

@@ -57,29 +57,15 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		AttributeHandler<T,?> attributeHandler;
 		
 		public void clear() {
-			if (deltaFunc != null) {
-				deltaFunc.clearCustom();
+			if (this.deltaFunc != null) {
+				this.deltaFunc.clearCustom();
 			}
 		}
 
 		public void mergeFrom(DeltaInfo<T> di) {
-			deltaFunc.mergeDelta(di.deltaFunc);
+			this.deltaFunc.mergeDelta(di.deltaFunc);
 		}
 	}
-	@Override
-	public void resetCustom() {
-		for (EStructuralFeature esf: eClass().getEAllStructuralFeatures()) {
-			AttributeHandler<?, ?> handler = getHandler(esf);
-			if (handler != null) {
-				
-			}
-			DeltaInfo<?> dinfo = attributeHandlerInfos.get(esf);
-			if (dinfo != null) {
-				dinfo.clear();
-			}
-		} 
-	}
-	
 	private static<T> BasicMapFunc<Treepos, T> getBasicMapFunc(boolean isDerived) {
 		BasicMapFunc<Treepos, T> bmf = new BasicMapFunc<>(Treepos.class);
 		if (isDerived) {
@@ -90,12 +76,12 @@ public class DeltaVMEObject extends AbstractVMEObject {
 	
 	private DeltaVMEObjectStore store;
 	
-	
-	
 	private Map<EStructuralFeature, DeltaInfo<?>> attributeHandlerInfos = new HashMap<>();
 	
+	
+	
 	private WeakHashMap<TreePosList<?>, BasicListenable> handlers = new WeakHashMap<>();
-
+	
 	private EClass myClass;
 
 	private Function<EObject, Identifier> convertToIdentifier = (eobj)->{
@@ -104,6 +90,7 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		}
 		return getManager().getFakeVirtual(eobj).getIdentificator();
 	};
+
 	private Function<Identifier, EObject> convertFromIdentifierToNormal = (id)->{
 		EObject ret = getManager().getObject(id);
 		if (ret instanceof VMEObject) {
@@ -111,7 +98,6 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		}
 		return ret;
 	};
-
 	private Function<Identifier, EObject> convertFromIdentifier = (id)->{
 		EObject ret = getManager().getObject(id);
 		return ret;
@@ -131,24 +117,13 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		DeltaInfo<?> info = getDeltaInfo(feat);
 		((BasicFiniteUnionFunc)info.unionFunc).addBase(func);
 	}
-	
-	public void removeBaseFunction(EStructuralFeature feat, AbstractFunc<Treepos, ?, ?> func) {
-		DeltaInfo<?> info = getDeltaInfo(feat);
-		((BasicFiniteUnionFunc)info.unionFunc).removeBase(func);
-	}
-	
+
 	/* Requirement: feature.isMany() */
 	public void addBasicFeature(EStructuralFeature feature, AbstractFunc<Treepos, ?, ?> func) {
 		addBaseFunction(feature, func);
 		
 	}
 	
-	/* Requirement: feature.isMany() */
-	public void removeBasicFeature(EStructuralFeature feature, AbstractFunc<Treepos, ?, ?> func) {
-		removeBaseFunction(feature, func);
-		
-	}
-
 	public <T> void addBasicFeature(EStructuralFeature feature, List<T> objectList, boolean isDerived) {
 		int prefix = getCurPrefix(feature);
 		addBasicFeature(feature, objectList, prefix, isDerived);
@@ -178,11 +153,11 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		
 	}
 	
-	
 	public <T> List<T> addBasicListFeature(EStructuralFeature feature, boolean isDerived) {
 		int prefix = getCurPrefix(feature);
 		return addBasicListFeature(feature, prefix, isDerived);
 	}
+
 	public <T> List<T> addBasicListFeature(EStructuralFeature feature, int prefix, boolean isDerived) {
 		BasicMapFunc<Treepos, T> bmf = getBasicMapFunc(isDerived);
 		TreePosList<T> tpl = (prefix==0)?new TreePosList(bmf):new TreePosList<>(bmf, prefix);
@@ -204,7 +179,8 @@ public class DeltaVMEObject extends AbstractVMEObject {
 			addBasicSingletonFeature(myFeature, otherObject, otherFeature, BasicListAttributeHandler.IDENTIY(), BasicListAttributeHandler.IDENTIY(), isDerived);
 		}
 	}
-
+	
+	
 	private <T, U> void addBasicSingletonFeature(EStructuralFeature myFeature, EObject otherObject,
 			EStructuralFeature otherFeature, Function<T, U> convertThere, Function<U, T> convertBack, boolean isDerived) {
 		if (otherFeature.isMany()) {
@@ -249,7 +225,14 @@ public class DeltaVMEObject extends AbstractVMEObject {
 			addBasicFeature(myFeature, bmf);
 		}
 	}
-
+	public void copyDeltaStore(DeltaVMEObject dreplaced) {
+		dreplaced.attributeHandlerInfos.forEach((esf,di)->{
+			DeltaInfo mydi = getDeltaInfo(esf);
+			mydi.mergeFrom(di);
+		});
+		
+	}
+	
 	@Override
 	public EClass eClass() {
 		return this.myClass;
@@ -261,8 +244,6 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		return prefix;
 	}
 
-
-	
 	public<T> DeltaInfo<T> getDeltaInfo(EStructuralFeature feat) {
 		DeltaInfo<?> mah = this.attributeHandlerInfos.computeIfAbsent(feat,(ft)->{
 			DeltaInfo<T> ret = new DeltaInfo<>();
@@ -328,7 +309,7 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		});
 		return (DeltaInfo)mah;
 	}
-	
+
 	public Collection<? extends BasicDerivationStatus> getDerivationStatus(EStructuralFeature esf) {
 		AttributeHandler<?,?> handler = getHandler(esf);
 		if (handler == null) {
@@ -336,15 +317,64 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		}
 		return handler.getDerivationStatus();
 	}
-	
-	
-	
+
+
 	
 	@Override
 	public AttributeHandler<?,?> getHandler(EStructuralFeature feature) {
 		return getDeltaInfo(feature).attributeHandler;
 	}
+	
+	public void partialPushdown() {
+		for (EStructuralFeature feat: eClass().getEAllStructuralFeatures()) {
+			AttributeHandler<?, ?> handler = getHandler(feat);
+			AbstractFunc<?, ?, ? extends QueryResult<?, ?>> tf = handler.getTreeposFuncOrNull();
+			if (tf instanceof BasicDeltaFunc)  {
+				BasicDeltaFunc bdf = (BasicDeltaFunc)tf;
+				bdf.partialPushdown();
+			}
+		}
+	}
+	
+	
+	
+	
+	public void partialReset() {
+		for (EStructuralFeature feat: eClass().getEAllStructuralFeatures()) {
+			AttributeHandler<?, ?> handler = getHandler(feat);
+			AbstractFunc<?, ?, ? extends QueryResult<?, ?>> tf = handler.getTreeposFuncOrNull();
+			if (tf instanceof BasicDeltaFunc)  {
+				BasicDeltaFunc bdf = (BasicDeltaFunc)tf;
+				bdf.partialReset();
+			}
+		}
+	}
 
+	public void removeBaseFunction(EStructuralFeature feat, AbstractFunc<Treepos, ?, ?> func) {
+		DeltaInfo<?> info = getDeltaInfo(feat);
+		((BasicFiniteUnionFunc)info.unionFunc).removeBase(func);
+	}
+
+	/* Requirement: feature.isMany() */
+	public void removeBasicFeature(EStructuralFeature feature, AbstractFunc<Treepos, ?, ?> func) {
+		removeBaseFunction(feature, func);
+		
+	}
+
+	@Override
+	public void resetCustom() {
+		for (EStructuralFeature esf: eClass().getEAllStructuralFeatures()) {
+			AttributeHandler<?, ?> handler = getHandler(esf);
+			if (handler != null) {
+				
+			}
+			DeltaInfo<?> dinfo = this.attributeHandlerInfos.get(esf);
+			if (dinfo != null) {
+				dinfo.clear();
+			}
+		} 
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -362,25 +392,6 @@ public class DeltaVMEObject extends AbstractVMEObject {
 			builder.append("\n");
 		});
 		return builder.toString();
-	}
-
-	public void copyDeltaStore(DeltaVMEObject dreplaced) {
-		dreplaced.attributeHandlerInfos.forEach((esf,di)->{
-			DeltaInfo mydi = getDeltaInfo(esf);
-			mydi.mergeFrom(di);
-		});
-		
-	}
-
-	public void partialReset() {
-		for (EStructuralFeature feat: eClass().getEAllStructuralFeatures()) {
-			AttributeHandler<?, ?> handler = getHandler(feat);
-			AbstractFunc<?, ?, ? extends QueryResult<?, ?>> tf = handler.getTreeposFuncOrNull();
-			if (tf instanceof BasicDeltaFunc)  {
-				BasicDeltaFunc bdf = (BasicDeltaFunc)tf;
-				bdf.partialReset();
-			}
-		}
 	}
 
 }

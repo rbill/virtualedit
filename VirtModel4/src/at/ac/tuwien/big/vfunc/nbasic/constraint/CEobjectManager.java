@@ -47,6 +47,7 @@ import at.ac.tuwien.big.vfunc.nbasic.ecore.EObjectCreator;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.EObjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.ExistingEObjectCreator;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.IdentifierInfo;
+import at.ac.tuwien.big.vfunc.nbasic.ecore.ModelDeltaVMEObject;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.NewEObjectCreator;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.ObjectCreatorCreator;
 import at.ac.tuwien.big.vfunc.nbasic.ecore.VMEObject;
@@ -200,7 +201,7 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 	}
 	
 	public Collection<EObject> getAllContents() {
-		Collection<EObject> eobjs= new HashSet<>(emanager.getAllContents());
+		Collection<EObject> eobjs= new HashSet<>(this.emanager.getAllContents());
 		
 		/*Set<EObject> eobjs = new HashSet<>();
 		this.existingObjects.values().forEach(x->x.values().forEach(y->eobjs.add(y)));*/
@@ -214,7 +215,7 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 			}
 			return false;
 		});
-		List<EObject> ret = new ArrayList<EObject>();
+		List<EObject> ret = new ArrayList<>();
 		for (EObject eobj :eobjs) {
 			ret.add(getOrCreateFull(eobj));
 		}
@@ -240,6 +241,19 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 		return this.emanager;
 	}
 
+	public Map<EObject, ? extends EObject> getGlobalMap() {
+		return this.globalMap;
+	}
+	
+
+	public Map<EObject, ? extends EObject> getGlobalMapInverse() {
+		Map<EObject, EObject> ret = new HashMap<>();
+		this.globalMap.forEach((k,v)-> {
+			ret.put(v, k);
+		});
+		return ret;
+	}
+	
 	public SampleEObject getOrCreateBasic(ObjectCreator creator, List<?> parameters) {
 		return this.existingObjects.computeIfAbsent(creator, x->new HashMap<>()).computeIfAbsent(parameters, x->{
 			SampleEObject ret = null;
@@ -288,6 +302,12 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 		Function<EObject, EObject> newInstanceProvider = (old)->{
 			if (old instanceof VMEObject) {
 				VMEObject vm = (VMEObject)old;
+				if (vm instanceof ModelDeltaVMEObject) {
+					ModelDeltaVMEObject mdve = (ModelDeltaVMEObject)vm;
+					if (!mdve.getBaseObjects().isEmpty()) {
+						vm = mdve.getBaseObjects().get(0);
+					}
+				}
 				Identifier id = vm.getIdentificator();
 				IdentifierInfo identifierInfo = vm.getIdentifierInfo();
 				List<?> oldObjPars = identifierInfo.getParameters();
@@ -300,6 +320,7 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 					}
 				}
 				EObjectCreator cr = identifierInfo.getCreator();
+				SampleEObject ret = null;
 				if (cr instanceof ExistingEObjectCreator) {
 					/*ExistingEObjectCreator eec = (ExistingEObjectCreator)cr;
 					//Here I will probably copy them normally
@@ -307,40 +328,45 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 					//Nope
 					ExistingEObjectCreator eoc = (ExistingEObjectCreator)cr;
 					//TODO: Problem if multiple eobjects of multiple classes exist ...
-					return generateBasic(vm.eClass()); 
+					ret = generateBasic(vm.eClass()); 
 				} else if (cr instanceof ObjectCreatorCreator) {
 					ObjectCreatorCreator occ = (ObjectCreatorCreator)cr;
 					ObjectCreator oc = occ.getCreator();
 					Class<? extends SampleEObject> scl = getCompiledClass(oc);
 					SampleEObject subret = getOrCreateBasic(oc, objPars);
 					subret.makeInitialized();
-					return subret;
+					ret = subret;
 				} else if (cr instanceof NewEObjectCreator) {
 					NewEObjectCreator occ = (NewEObjectCreator)cr;
 					
-					return generateBasic(vm.eClass());
+					ret= generateBasic(vm.eClass());
 				}   else {
 					System.err.println("Unknown creator: "+cr+"!");
 					return MyEcoreUtil.newInstance(vm);
 				}
+				ret.initIdentifier(id);
+				return ret;
 			} else {
 				System.err.println("Why is this called with normal EObjects?");
 				return MyEcoreUtil.newInstance(old);
 			}
 		};
-		EObject eret = MyEcoreUtil.nearCopy(existing, retriever, setter, newInstanceProvider);
-		if (eret instanceof SampleEObject) {
-			SampleEObject seo = (SampleEObject)eret;
-			seo.initDerived();
-		}
+		EObject eret = MyEcoreUtil.nearCopy(existing, retriever, setter, newInstanceProvider,(er)->{
+			if (er instanceof SampleEObject) {
+				SampleEObject seo = (SampleEObject)er;
+				seo.initDerived();
+			}
+			
+		});
 		
 		return eret;
 	}
 	
+	
 	public SampleEObject getOrNull(ObjectCreator creator, List<?> parameters) {
 		return this.existingObjects.getOrDefault(creator, Collections.emptyMap()).get(parameters);
 	}
-	
+
 	public void initWith(VirtualResource vr) {
 		
 		//Add to fakeResource
@@ -356,8 +382,6 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 		}
 		this.myFakeResource = MyResource.get(this.fakeResource);
 	}
-	
-	
 	public void recalcContents() {
 		//Get all objects
 		Collection<EObject> eobjs = getAllContents();
@@ -371,13 +395,12 @@ public class CEobjectManager implements Spawnable<CEobjectManager>{
 		eobjs.removeAll(this.fakeResource.getContents());
 		this.fakeResource.getContents().addAll(eobjs);
 	}
-
+	
 	@Override
 	public CEobjectManager spawnNew() {
 		CEobjectManager ret = new CEobjectManager(this);
 		return ret;
 	}
-	
 
 /*
 	public void addContents(Collection<EObject> contents) {

@@ -137,6 +137,7 @@ public class ObjectCreatorGenerator {
 				"import "+NotifyingList.class.getName()+ ";",
 				"import "+PatchUtil.class.getName()+ ";",
 				"import "+BasicListenable.class.getName()+ ";",
+				"import "+ListRepeater.class.getName()+ ";",
 				"import org.eclipse.emf.ecore.EcoreFactory;",
 				"import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;",
 				
@@ -174,6 +175,18 @@ public class ObjectCreatorGenerator {
 			String simpleFeatName = feat.getName();
 			appendLines(ret, "public static final "+featType+" "+featName+" = "+featRef+";");
 			appendLines(ret, "protected "+complexType+" "+simpleFeatName+" = "+this.cgm.getNotifyingJavaTypeInitalizer(feat)+";");
+			
+			if (feat instanceof EReference) {
+				EReference ref = (EReference)feat;
+				if (ref.isContainment()) {
+					if (ref.isMany()) {
+						appendLines(ret,"{"+feat.getName()+".addListChangeListener(new ListRepeater<>((java.util.List)super_eGet("+featName+")));}");
+					} else{
+						appendLines(ret,"{"+feat.getName()+".addChangeListener((o,nv)->super_eSet("+featType+", nv));}");
+					}
+				}
+			}
+			
 			appendLines(ret, "public "+simpleType+" "+getFunctionName+"() {");
 			appendLines(ret, "\treturn this."+(feat.isMany()?simpleFeatName:(simpleFeatName+".value()"))+";");
 			appendLines(ret, "}");
@@ -212,6 +225,7 @@ public class ObjectCreatorGenerator {
 				"import org.eclipse.emf.ecore.EReference;",
 				"import "+EList.class.getName()+";",
 				"import "+BasicEList.class.getName()+";",
+				"import "+ListRepeater.class.getName()+ ";",
 				"import org.eclipse.emf.ecore.EcoreFactory;",
 				"import at.ac.tuwien.big.xmlintelledit.intelledit.ecore.util.MyResource;",
 				"import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;",
@@ -572,6 +586,7 @@ public class ObjectCreatorGenerator {
 			if (parameters.contains(feat)) {
 				listenerContent = "";
 			}
+
 			contents.put(feat, new ArrayList<>(Arrays.asList(getContent, setContent, unsetContent, listenerContent)));
 		}
 		

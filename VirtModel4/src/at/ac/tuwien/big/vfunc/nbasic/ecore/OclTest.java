@@ -106,6 +106,7 @@ public class OclTest {
 		ResourceImpl tempRes = new ResourceImpl();
 		tempRes.getContents().addAll(cmanager.getContents());
 		dv.checkFile(tempRes);
+		
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {

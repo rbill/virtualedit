@@ -2,9 +2,7 @@
 <Citizen:Alle
     xmi:version="2.0"
     xmlns:xmi="http://www.omg.org/XMI"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:Citizen="http://www.example.org/Citizen"
-    xsi:schemaLocation="http://www.example.org/Citizen Citizen.ecore">
+    xmlns:Citizen="http://www.example.org/Citizen">
   <citizens
       svnr="12345"
       name="BurgerA"
@@ -12,5 +10,5 @@
   <citizens
       svnr="64534"
       name="BurgerB"
-      address="Blabla"/>
+      address="Blablaadf"/>
 </Citizen:Alle>

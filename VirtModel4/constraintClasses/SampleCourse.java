@@ -10,6 +10,7 @@ import at.ac.tuwien.big.vfunc.nbasic.ConstantValue;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.NotifyingList;
 import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
+import at.ac.tuwien.big.vfunc.nbasic.constraint.ListRepeater;
 import org.eclipse.emf.ecore.EcoreFactory;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import java.util.List;

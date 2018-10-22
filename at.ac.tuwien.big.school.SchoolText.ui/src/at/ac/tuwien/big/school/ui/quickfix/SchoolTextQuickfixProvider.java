@@ -22,7 +22,8 @@ import at.ac.tuwien.big.vfunc.nbasic.ecore.VMEObject;
  * See https://www.eclipse.org/Xtext/documentation/310_eclipse_support.html#quick-fixes
  */
 //extends at.ac.tuwien.big.xmlintelledit.intelledit.xtext.DynamicQuickfixProvider
-public class SchoolTextQuickfixProvider extends DefaultQuickfixProvider {
+//extends DefaultQuickfixProvider 
+public class SchoolTextQuickfixProvider extends at.ac.tuwien.big.xmlintelledit.intelledit.xtext.DynamicQuickfixProvider {
 
 
 	@Fix(SchoolTextValidator.CHANGE_ORIGIN)
@@ -44,25 +45,6 @@ public class SchoolTextQuickfixProvider extends DefaultQuickfixProvider {
 			
 		});
 	}
-	@Fix(SchoolTextValidator.RESET)
-	public void resetVirtual(Issue issue, IssueResolutionAcceptor acceptor) {
-		issue.getCode();
-		String[] data = issue.getData();
-		acceptor.accept(issue, issue.getMessage(), "", null, new ISemanticModification() {
-
-			@Override
-			public void apply(EObject element, IModificationContext context) throws Exception {
-				VMXtextEditor editor = VMXtextEditor.INSTANCE;
-				VMEObject eobj = editor.getEObject(element);
-				if (eobj != null) {
-					editor.refreshVirtual();
-					eobj.resetCustom();
-					editor.refreshText();
-				}
-			}
-			
-		});
-	}
 	@Fix(SchoolTextValidator.RESET_PARTIAL)
 	public void resetPartialVirtual(Issue issue, IssueResolutionAcceptor acceptor) {
 		issue.getCode();
@@ -76,6 +58,25 @@ public class SchoolTextQuickfixProvider extends DefaultQuickfixProvider {
 				if (eobj != null) {
 					editor.refreshVirtual();
 					editor.partialReset(eobj);
+					editor.refreshText();
+				}
+			}
+			
+		});
+	}
+	@Fix(SchoolTextValidator.RESET)
+	public void resetVirtual(Issue issue, IssueResolutionAcceptor acceptor) {
+		issue.getCode();
+		String[] data = issue.getData();
+		acceptor.accept(issue, issue.getMessage(), "", null, new ISemanticModification() {
+
+			@Override
+			public void apply(EObject element, IModificationContext context) throws Exception {
+				VMXtextEditor editor = VMXtextEditor.INSTANCE;
+				VMEObject eobj = editor.getEObject(element);
+				if (eobj != null) {
+					editor.refreshVirtual();
+					eobj.resetCustom();
 					editor.refreshText();
 				}
 			}

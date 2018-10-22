@@ -4,7 +4,8 @@ use "http://www.example.org/Citizen" as citizen;
 objects CitizenPupils (cit: citizen::Burger) : school::Pupil {
 	name+= ocl "cit.name";
 	//name+= ocl "cit.name + 'ASDF'"; 
-	inclass+= ocl "cit.address";
+	//inclass+= ocl "cit.address";
+	inclass+= ocl "cit.address+ ' XYZ'";
 	fix name;
 	fix inclass;
 	

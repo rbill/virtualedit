@@ -10,6 +10,7 @@ import at.ac.tuwien.big.vfunc.nbasic.ConstantValue;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.NotifyingList;
 import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import at.ac.tuwien.big.vfunc.nbasic.BasicListenable;
+import at.ac.tuwien.big.vfunc.nbasic.constraint.ListRepeater;
 import org.eclipse.emf.ecore.EcoreFactory;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import java.util.List;
@@ -47,6 +48,7 @@ public class SamplePupil extends at.ac.tuwien.big.vfunc.nbasic.constraint.Sample
 	}
 	public static final EReference $Pupil_grades = school.SchoolPackage.eINSTANCE.getPupil_Grades();
 	protected NotifyingList<school.Grade> grades = new NotifyingList<>(new org.eclipse.emf.common.util.BasicEList<>());
+	{grades.addListChangeListener(new ListRepeater<>((java.util.List)super_eGet($Pupil_grades)));}
 	public org.eclipse.emf.common.util.EList<school.Grade> getGrades() {
 		return this.grades;
 	}

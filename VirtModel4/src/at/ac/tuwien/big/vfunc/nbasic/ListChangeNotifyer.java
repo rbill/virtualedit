@@ -3,7 +3,7 @@ package at.ac.tuwien.big.vfunc.nbasic;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public interface ListChangeNotifyer<T> extends BasicChangeNotifyer {
+public interface ListChangeNotifyer<T> extends BasicChangeNotifyer, List<T> {
 
 	public default void added(int index, T object) {
 		List<WeakReference<ListListenable<T>>> changeListeners = getListChangeListeners();

@@ -188,6 +188,11 @@ public class BasicDeltaFunc<Src,Target> extends AbstractFunc<Src, Target, BasicQ
 	}
 	
 	
+	public void clearCustom() {
+		this.filterScope.clear();
+		this.addMap.clear();
+	}
+	
 	private void fullRecalc() {
 		super.refreshCache();
 	}
@@ -196,63 +201,100 @@ public class BasicDeltaFunc<Src,Target> extends AbstractFunc<Src, Target, BasicQ
 	public Scope<Src> getScope() {
 		return this.filteredScope;
 	}
+
+
+	@SuppressWarnings("deprecation")
+	public void mergeDelta(BasicDeltaFunc<Src, ? extends Target> deltaFunc) {
+		Map<Src, ? extends BasicResult<? extends Target>> storedMap = deltaFunc.addMap.getStoredMap();
+		storedMap.forEach((k,v)->{
+			this.addMap.putBasic(k, v.value());
+		});
+		Map<Src, ? extends BasicResult<? extends Boolean>> filterMap = deltaFunc.filterScope.getStoredMap();
+		filterMap.forEach((k,v)->{
+			this.filterScope.putBasic(k, v.value());
+		});
+		
+	}
+
+
+	public void partialPushdown() {
+
+		FunctionModificator fmod = this.originalFunc.getModificator();
+		if (fmod instanceof SetValueModificator) {
+			Map<Src, BasicResult<Target>> storedMap = this.addMap.getStoredMap();
+		
+		Map<Src, BasicResult<Boolean>> filterMap = this.filterScope.getStoredMap();
+		Set<Src> deleteFilter = new HashSet<>();
+		Set<Src> addFilter = new HashSet<>();
+		
+		filterMap.forEach((k,v)->{
+			Boolean b = v.value();
+			if (b  == null) {
+				//Don't do anything
+				deleteFilter.add(k);
+			} else if (b) {
+				if (!this.originalFunc.getScope().contains(k)) {
+					addFilter.add(k);
+				}
+			} else {
+				if (this.originalFunc.getScope().contains(k)) {
+					deleteFilter.add(k);
+				}
+			}
+		});
+			SetValueModificator<AbstractFunc<Src,Target,?>, Src, Target> svf = (SetValueModificator)fmod;
+			for (Src src: deleteFilter) {
+				svf.unsetValue(this.originalFunc, src);
+			}
+			storedMap.forEach((k,v)->{
+				//Delete what is not in scope or what is equal to the other value
+				if (deleteFilter.contains(k)) {
+					return; //Ignore what was deleted
+				}
+				if (addFilter.contains(k) || this.originalFunc.getScope().contains(k)) {
+					svf.setValue(this.originalFunc, k, v.value());
+				}
+			});
+		}
+		partialReset();
+	}
 	
-	public BasicDeltaFunc<Src, Target> reapplyFor(AbstractFunc<Src, Target, ?> newOriginal) {
-		return new BasicDeltaFunc<>(this.sourceClass, newOriginal, this.addMap, this.filterScope);
-	}
-
-
-	public void clearCustom() {
-		filterScope.clear();
-		addMap.clear();
-	}
-
-
 	public void partialReset() {
-		Map<Src, BasicResult<Target>> storedMap = addMap.getStoredMap();
+		Map<Src, BasicResult<Target>> storedMap = this.addMap.getStoredMap();
 		Set<Src> deleteStored = new HashSet<>();
 		storedMap.forEach((k,v)->{
 			//Delete what is not in scope or what is equal to the other value
-			boolean delete = !getScope().contains(k) || Objects.equals(originalFunc.evaluateBasic(k),v.value());
+			boolean delete = !getScope().contains(k) || Objects.equals(this.originalFunc.evaluateBasic(k),v.value());
 			if (delete) {
 				deleteStored.add(k);
 			}
 		});
-		Map<Src, BasicResult<Boolean>> filterMap = filterScope.getStoredMap();
+		Map<Src, BasicResult<Boolean>> filterMap = this.filterScope.getStoredMap();
 		Set<Src> deleteFilter = new HashSet<>();  
 		filterMap.forEach((k,v)->{
 			Boolean b = v.value();
 			if (b  == null) {
 				deleteFilter.add(k);
 			} else if (b) {
-				if (originalFunc.getScope().contains(k)) {
+				if (this.originalFunc.getScope().contains(k)) {
 					deleteFilter.add(k);
 				}
 			} else {
-				if (!originalFunc.getScope().contains(k)) {
+				if (!this.originalFunc.getScope().contains(k)) {
 					deleteFilter.add(k);
 				}
 			}
 		});
 		for (Src ds: deleteStored) {
-			addMap.putBasic(ds, null);
+			this.addMap.putBasic(ds, null);
 		}
 		for (Src ds: deleteFilter) {
-			filterScope.putBasic(ds, null);
+			this.filterScope.putBasic(ds, null);
 		}
 	}
 
-	@SuppressWarnings("deprecation")
-	public void mergeDelta(BasicDeltaFunc<Src, ? extends Target> deltaFunc) {
-		Map<Src, ? extends BasicResult<? extends Target>> storedMap = deltaFunc.addMap.getStoredMap();
-		storedMap.forEach((k,v)->{
-			addMap.putBasic(k, v.value());
-		});
-		Map<Src, ? extends BasicResult<? extends Boolean>> filterMap = deltaFunc.filterScope.getStoredMap();
-		filterMap.forEach((k,v)->{
-			filterScope.putBasic(k, v.value());
-		});
-		
+	public BasicDeltaFunc<Src, Target> reapplyFor(AbstractFunc<Src, Target, ?> newOriginal) {
+		return new BasicDeltaFunc<>(this.sourceClass, newOriginal, this.addMap, this.filterScope);
 	}
 
 
