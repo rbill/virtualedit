@@ -1,1 +1,1 @@
-School { pupils { Pupil BurgerA { inclass "Blablaadf XYZ" } } }
+School { pupils { Pupil BurgerA { inclass "Lichnowskygasse XYZ" } } }

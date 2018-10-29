@@ -298,5 +298,11 @@ public class BasicDeltaFunc<Src,Target> extends AbstractFunc<Src, Target, BasicQ
 	}
 
 
+	public AbstractFunc<Src, Target, ?> getOriginal() {
+		return originalFunc;
+		
+	}
+
+
 
 }

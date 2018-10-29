@@ -22,6 +22,7 @@ import at.ac.tuwien.big.virtmod.basic.Treepos;
 public class SetUtils {
 
 	public static<T> List<List<T>> getAllLists(List<List<T>> admissiblePerParameters) {
+		
 		int[] max = new int[admissiblePerParameters.size()];
 		for (int i = 0; i < admissiblePerParameters.size(); ++i) {
 			max[i] = admissiblePerParameters.get(i).size();
@@ -30,6 +31,10 @@ public class SetUtils {
 			}
 		}
 		List<List<T>> ret = new ArrayList<>();
+		if (admissiblePerParameters.isEmpty()) {
+			ret.add(new ArrayList<>());
+			return ret;
+		}
 		int[] cur = new int[max.length];
 		while (cur[0] < max[0]) {
 			List<T> addRet = new ArrayList<>();

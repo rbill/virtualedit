@@ -29,12 +29,12 @@ public class SampleSchool extends at.ac.tuwien.big.vfunc.nbasic.constraint.Sampl
 	$SampleSchool_CLASS.setName("School_single");
 	}
 	public static final EReference $School_pupils = school.SchoolPackage.eINSTANCE.getSchool_Pupils();
-	protected NotifyingList<school.Pupil> pupils = new NotifyingList<>(new org.eclipse.emf.common.util.BasicEList<>());
+	protected NotifyingList<school.impl.PupilImpl> pupils = new NotifyingList<>(new org.eclipse.emf.common.util.BasicEList<>());
 	{pupils.addListChangeListener(new ListRepeater<>((java.util.List)super_eGet($School_pupils)));}
-	public org.eclipse.emf.common.util.EList<school.Pupil> getPupils() {
+	public org.eclipse.emf.common.util.EList<school.impl.PupilImpl> getPupils() {
 		return this.pupils;
 	}
-	public void setPupils(org.eclipse.emf.common.util.EList<school.Pupil> newValue) {
+	public void setPupils(org.eclipse.emf.common.util.EList<school.impl.PupilImpl> newValue) {
 		super_eSet($School_pupils,newValue);
 		PatchUtil.applyPatch(this.pupils,newValue);
 	}
@@ -64,7 +64,7 @@ public Object eGet(EStructuralFeature feature) {
 @Override
 public void eSet(EStructuralFeature feature, Object newValue) {
 	if (feature == $School_pupils) {
-	setPupils((org.eclipse.emf.common.util.EList<school.Pupil>)newValue);
+	setPupils((org.eclipse.emf.common.util.EList<school.impl.PupilImpl>)newValue);
 	} else 	if (feature == $School_courses) {
 	setCourses((org.eclipse.emf.common.util.EList<school.Course>)newValue);
 	} else  {

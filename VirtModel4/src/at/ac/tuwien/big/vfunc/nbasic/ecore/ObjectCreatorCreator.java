@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,6 +30,7 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.IdentifierRef;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
 import at.ac.tuwien.big.util.SetUtils;
+import at.ac.tuwien.big.vfunc.nbasic.constraint.OclExpressionGetter;
 import at.ac.tuwien.big.vfunc.nbasic.ocl.OclAssignment;
 import at.ac.tuwien.big.vfunc.nbasic.ocl.OclEvaluationList;
 import at.ac.tuwien.big.vfunc.nbasic.ocl.TracingEvaluationVisitor;
@@ -188,18 +190,21 @@ public class ObjectCreatorCreator implements EObjectCreator {
 		synchronized (oclHelper) {
 			EClass ecl = eobj.eClass();
 			map = this.oclExpressions.computeIfAbsent(ecl, x->new HashMap<>());
+			Map<String,Object> values = new HashMap<>();
+			Collection<?> parameters = eobj.getParameters();
+			Iterator<?> iter = parameters.iterator();
+			for (int i = 0; i < this.creator.getPars().size(); ++i)  {
+				Object obj = null;
+				if (iter.hasNext()) {
+					obj = iter.next();
+				}
+				values.put(this.creator.getPars().get(i).getName(), obj);
+			}
 			for (Selection sel: this.creator.getSel()) {
 				String eString = getExprString(sel.getExpr());
-				oclHelper.setContext(ecl);
+				oclHelper.setInstanceContext(eobj);
 				OCLExpression oe = map.computeIfAbsent(eString, x->{
-					try {
-						return oclHelper.createQuery(eString);
-					} catch (ParserException e) {
-						// TODO Auto-generated catch block
-						System.err.println("Could not evaluate expression: "+eString+": "+e.getMessage());
-						e.printStackTrace();
-						return null;
-					}
+					return OclExpressionGetter.getExpression(eobj, x, values);
 				});
 				if (oe == null) {
 					return false;
@@ -209,6 +214,9 @@ public class ObjectCreatorCreator implements EObjectCreator {
 				EvaluationVisitor ev = fact
 						.createEvaluationVisitor(fact.createEnvironment(), env, extents);
 				env.add(Environment.SELF_VARIABLE_NAME, eobj);
+				values.forEach((k,v)->{
+					env.add(k, v);
+				});
 				Object ret = oe.accept(ev);
 				if (!(ret instanceof Boolean) || !((Boolean)ret)) {
 					return false;

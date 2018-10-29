@@ -64,4 +64,7 @@ Require-Bundle: org.apache.httpcomponents.httpcore,
  xmltext,
  at.ac.tuwien.big.school.SchoolText,
  at.ac.tuwien.big.vobjlang.VObjectLang,
- org.eclipse.xtext.ui
+ org.eclipse.xtext.ui,
+ at.ac.tuwien.big.example.reqLang;bundle-version="1.0.0",
+ router;bundle-version="0.1.0",
+ at.ac.tuwien.big.example.requirements;bundle-version="0.1.0"

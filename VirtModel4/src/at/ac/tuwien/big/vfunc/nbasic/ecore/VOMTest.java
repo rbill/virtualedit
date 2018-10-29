@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.apache.http.client.fluent.Request;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -41,6 +42,7 @@ import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.JavaValue;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.LanguageDef;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjDeltaModel;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.VObjectModelFactory;
+import at.ac.tuwien.big.example.reqLang.RequirementsLangStandaloneSetup;
 import at.ac.tuwien.big.school.SchoolTextStandaloneSetup;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.CEobjectManager;
 import at.ac.tuwien.big.vfunc.nbasic.constraint.ObjectCreatorGenerator;
@@ -57,6 +59,8 @@ import at.ac.tuwien.big.xtext.equalizer.impl.PatchUtil;
 import at.ac.tuwien.big.xtext.equalizer.impl.SimpleModelCorrespondance;
 import at.ac.tuwien.big.xtext.equalizer.impl.SimpleModelEqualizer;
 import at.ac.tuwien.big.xtext.util.DocumentChanger;
+import requirements.RequirementsPackage;
+import router.RouterPackage;
 import school.Pupil;
 import school.School;
 import school.SchoolFactory;
@@ -79,7 +83,7 @@ public class VOMTest {
 		EcoreDef schoolDef = VObjectModelFactory.eINSTANCE.createEcoreDef();
 		schoolDef.setPackagePackage(SchoolPackage.class.getCanonicalName());
 		EcoreDef citizenDef = VObjectModelFactory.eINSTANCE.createEcoreDef();
-		citizenDef.setPackagePackage(SchoolPackage.class.getCanonicalName());
+		citizenDef.setPackagePackage(CitizenPackage.class.getCanonicalName());
 		file.getEcoredef().addAll(Arrays.asList(schoolDef,citizenDef));
 		
 		file.getInputModels().add(rootVFile.getAbsolutePath()+"\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi");
@@ -124,6 +128,44 @@ public class VOMTest {
 			e.printStackTrace();
 		}
 		doThingsWithVOM(file);
+	}
+	
+
+	public static void buildVOMFileRouter(CompleteFile file) {
+		EcoreDef schoolDef = VObjectModelFactory.eINSTANCE.createEcoreDef();
+		schoolDef.setPackagePackage(RequirementsPackage.class.getCanonicalName());
+		EcoreDef citizenDef = VObjectModelFactory.eINSTANCE.createEcoreDef();
+		citizenDef.setPackagePackage(RouterPackage.class.getCanonicalName());
+		file.getEcoredef().addAll(Arrays.asList(schoolDef,citizenDef));
+		
+		file.getInputModels().add(rootVFile.getAbsolutePath()+"\\router\\model\\Router.xmi");
+		file.getVirtModels().add(rootVFile.getAbsolutePath()+"\\Test\\testrouter.virt");
+		//File 	citFile = new File(rootVFile.getAbsolutePath()+"\\at.ac.tuwien.big.virtlang.examples.citizen\\model\\Citizen.xmi");
+		VMEObject school = null; 
+		try {
+			EObjectManager manager = new EObjectManager();
+			manager.addKnown(RequirementsPackage.eINSTANCE);
+			manager.addKnown(RouterPackage.eINSTANCE);
+			manager.knowVirtualDefinition((VirtualModel)ConvertToXmi.getVirtLangResource(new File(rootVFile.getAbsolutePath()+"\\Test\\test.virt")).getContents().get(0));
+			//Resource r = ConvertToXmi.getXmiResource(citFile);
+			
+			school = manager.getNewObject(RequirementsPackage.eINSTANCE.getRequirementsSystem());
+			
+			file.getRootObjects().add(school.getIdentificator());
+			VObjDeltaModel deltamodel = file.getDeltamodel();
+			if (deltamodel == null) {
+				file.setDeltamodel(deltamodel = VObjectModelFactory.eINSTANCE.createVObjDeltaModel());
+			}
+			manager.storeDelta(deltamodel);
+			file.setLastModelText("School {	pupils {		Pupil bla {			grades { Grade  { grade 4 course c1  } }		}	}	courses {		Course c1 , Course c2	}");
+			LanguageDef ld = VObjectModelFactory.eINSTANCE.createLanguageDef();
+			ld.setLangStandaloneSetup(RequirementsLangStandaloneSetup.class.getCanonicalName());
+			file.setXtextlanguage(ld);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//doThingsWithVOM(file);
 	}
 
 	public static AnyValue containmentAv(AnyValue av) {

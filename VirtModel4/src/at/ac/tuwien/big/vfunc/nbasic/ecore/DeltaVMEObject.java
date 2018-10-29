@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 
+import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.FiniteUnionFunction;
 import at.ac.tuwien.big.vom.vobjectmodel.vobjectmodel.Identifier;
 import at.ac.tuwien.big.vfunc.basic.impl.BasicUnionScope;
 import at.ac.tuwien.big.vfunc.nbasic.AbstractFunc;
@@ -361,17 +362,45 @@ public class DeltaVMEObject extends AbstractVMEObject {
 		
 	}
 
+	public boolean isEmpty(BasicFiniteUnionFunc<?, ?> fuf) {
+		for (AbstractFunc<?, ?, ?> base: fuf.getBases()) {
+			if (base instanceof BasicDeltaFunc) {
+				if (!isEmpty((BasicDeltaFunc)base)) {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean isEmpty(BasicDeltaFunc<?, ?> bdf) {
+		AbstractFunc original = bdf.getOriginal();
+		boolean hasNonempty = false;
+		
+		if (original instanceof BasicFiniteUnionFunc) {
+			return isEmpty((BasicFiniteUnionFunc<?, ?>)original);
+		}
+		return false;
+	}
+	
 	@Override
 	public void resetCustom() {
 		for (EStructuralFeature esf: eClass().getEAllStructuralFeatures()) {
 			AttributeHandler<?, ?> handler = getHandler(esf);
-			if (handler != null) {
-				
+			if (handler == null) {
+				continue;
 			}
-			DeltaInfo<?> dinfo = this.attributeHandlerInfos.get(esf);
-			if (dinfo != null) {
-				dinfo.clear();
+			AbstractFunc<?, ?, ? extends QueryResult<?, ?>> tf = handler.getTreeposFuncOrNull();
+			boolean isEmpty = (tf instanceof BasicDeltaFunc) && isEmpty((BasicDeltaFunc)tf);
+			if (!isEmpty)  {			
+				DeltaInfo<?> dinfo = this.attributeHandlerInfos.get(esf);
+				if (dinfo != null) {
+					dinfo.clear();
+				}
 			}
+			
 		} 
 	}
 	

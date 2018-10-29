@@ -1,0 +1,14 @@
+use "http://router/1.0" as router;
+use "http://www.example.org/requirements" as req;
+
+objects Provider (prov: router::Provider) : req::AnyProvider {
+	name+= ocl "prov.name";
+	fix name;
+	
+	inv speedEnough: ocl "self.speed >= prov.speed";
+	sel goodSpeed: ocl "prov.speed > 10";
+}
+
+
+
+

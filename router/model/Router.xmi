@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<router:Container
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:router="http://router/1.0"
+    xsi:schemaLocation="http://router/1.0 file:/E:/patrick/eclipse/workspacePatrickMaven/router/model/router.ecore">
+  <agents xsi:type="router:Provider"
+      name="PA"
+      speed="5"/>
+  <agents xsi:type="router:Provider"
+      name="PB"
+      speed="100"/>
+  <devices xsi:type="router:Server"
+      name="A">
+    <outgoing
+        xsi:type="router:GlassFiberCable"
+        speed="100"/>
+  </devices>
+  <devices xsi:type="router:Server"
+      name="B">
+    <outgoing
+        xsi:type="router:CopperCable"
+        speed="1"/>
+  </devices>
+  <devices xsi:type="router:Computer"
+      name="Comp"/>
+</router:Container>

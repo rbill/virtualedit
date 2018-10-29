@@ -1,9 +1,9 @@
 School {
 	
 	pupils {       
- 		Pupil BurgerA {                                                 
+ 		Pupil BurgerA {                                                  
 			                        
-		inclass "Blablaadf XYZ"  } 
+		inclass "Lichnowskygasse XYZ"  } 
 		  
 		    
 	}     

@@ -90,15 +90,17 @@ public class ExistingEObjectCreator implements EObjectCreator {
 	}
 	
 	private DeltaVMEObject getVMEObject(Identifier ide, EObject eeobj, List<?> parameters) {
-		return this.existingObjectMap.computeIfAbsent(eeobj, (eobj)->{ 
-		EClass ecl = eobj.eClass();
-		DeltaVMEObject ret = new DeltaVMEObject(this.manager, this, ide, ecl, parameters);
-		ecl.getEAllStructuralFeatures().forEach(esf->{
-			ret.addBasicSingletonFeature(esf, eobj, esf, false);
-		});
-		this.realObjects.put(ide, eobj);
+		DeltaVMEObject ret = this.existingObjectMap.get(eeobj);
+		if (ret == null) {
+			EClass ecl = eeobj.eClass();
+			this.realObjects.put(ide, eeobj);
+			DeltaVMEObject fret = ret = new DeltaVMEObject(this.manager, this, ide, ecl, parameters);
+			this.existingObjectMap.put(eeobj, ret);
+			ecl.getEAllStructuralFeatures().forEach(esf->{
+				fret.addBasicSingletonFeature(esf, eeobj, esf, false);
+			});			
+		}
 		return ret;
-		});
 	}
 	
 

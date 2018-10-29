@@ -302,7 +302,7 @@ public class EObjectManager {
 
 	public EObjectManager() {
 		System.out.println("Created EObjectManager!");
-		new Exception().printStackTrace();
+		//new Exception().printStackTrace();
 	}
 
 	// private Map<EObjectCreator, Map<Object[], VMEObject>> createdObjects =

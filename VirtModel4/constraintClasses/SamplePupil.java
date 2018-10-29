@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.ArrayList;
 import at.ac.tuwien.big.vfunc.nbasic.NewValueListenable;
 
-public class SamplePupil extends at.ac.tuwien.big.vfunc.nbasic.constraint.SampleEObject implements school.Pupil {
+public class SamplePupil extends at.ac.tuwien.big.vfunc.nbasic.constraint.SampleEObject implements school.impl.PupilImpl {
 	public static final EClass $SamplePupil_CLASS = EcoreFactory.eINSTANCE.createEClass();
 	static {
 	CEobjectManager.getFakePackage().getEClassifiers().add($SamplePupil_CLASS);
